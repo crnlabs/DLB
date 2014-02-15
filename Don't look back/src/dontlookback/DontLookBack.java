@@ -15,6 +15,6 @@ public class DontLookBack {
         if(condition == true)
         System.out.println("This is going to commit");
         }
-        //That command will say "This is going to commit"
+        //That command will send "This is going to commit"
     
 }
