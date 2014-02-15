@@ -1,15 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package dontlookback;
 
-/**
- *
- * @author Carl
- */
+
 public interface Player {
-    
+    public int speed();
+    public int weight();
+    public boolean jump();
+    public int jumpHeight();
+    public int height();
+    public int width();
+    public int depth();
+    public Object[] inverntory(); 
+    public Object heldItem();
 }
+
