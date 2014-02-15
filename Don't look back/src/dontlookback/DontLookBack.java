@@ -12,9 +12,12 @@ public class DontLookBack {
     public static void main(String[] args) {
         // TODO code application logic here
         boolean condition = true; //default condition to true
-        if(condition == true)
+        if(condition == true){
         System.out.println("This is going to commit");
+        }else{
+        System.out.println("This is not going to commit");
         }
-        //That command will send "This is going to commit"
+        //That command will send "This is not going to commit"
+        
     
 }
