@@ -4,10 +4,6 @@
  */
 package dontlookback;
 
-/**
- *
- * @author samantha
- */
 public class DontLookBack {
 
     /**
@@ -15,6 +11,9 @@ public class DontLookBack {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        boolean condition = true; //default condition to true
+        if(condition == true)
         System.out.println("This is going to commit");
-    }
+        }
+    
 }
