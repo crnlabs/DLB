@@ -6,4 +6,5 @@ public interface Object {
     public int height();
     public int depth();
     public int weight();
+    public int[] position();
 }
