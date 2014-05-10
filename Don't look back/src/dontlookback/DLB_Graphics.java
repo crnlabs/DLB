@@ -26,6 +26,7 @@ import org.lwjgl.input.*;
 public class DLB_Graphics{
     
     private Button exitButton;
+    private Button exitBorder;
     
     public DLB_Graphics(){
         
@@ -45,6 +46,8 @@ public class DLB_Graphics{
         glMatrixMode(GL_MODELVIEW);
         
         exitButton=new Button(10,10);
+        exitBorder=new Button(9,9);
+        exitBorder.setColor(0.75f,0,0.55f);
         
 	while(!Display.isCloseRequested()) {
             
@@ -54,7 +57,14 @@ public class DLB_Graphics{
                 Display.destroy();
                 System.exit(0);
             }
+            if(exitButton.isInBounds(Mouse.getX(), 600-Mouse.getY())){
+                exitButton.setColor(0.5f,0.5f,0.5f);
+            }
+            else{
+                exitButton.setColor(0.75f,0.75f,0.75f);
+            }
             
+            exitBorder.draw(77,27);
             exitButton.draw();
             
             Display.update();
@@ -68,6 +78,7 @@ public class DLB_Graphics{
     private static class Button {
 
         public int x, y;
+        public float red,green,blue;
 
         Button(int x, int y) {
             this.x = x;
@@ -77,8 +88,15 @@ public class DLB_Graphics{
         boolean isInBounds(int mouseX, int mouseY) {
             return mouseX > x && mouseX < x + 75 && mouseY > y && mouseY < y + 25;
         }
+        
+        void setColor(float red, float green, float blue){
+            this.red=red;
+            this.green=green;
+            this.blue=blue;
+        }
 
         void draw(){
+            glColor3f(red,green,blue);
             glBegin(GL_QUADS);
                 glVertex2f(x, y);
                 glVertex2f(x + 75, y);
@@ -86,6 +104,17 @@ public class DLB_Graphics{
                 glVertex2f(x, y + 25);
             glEnd();
         }
+        
+        void draw(float x2,float y2){
+            glColor3f(red,green,blue);
+            glBegin(GL_QUADS);
+                glVertex2f(x, y);
+                glVertex2f(x + x2, y);
+                glVertex2f(x + x2, y + y2);
+                glVertex2f(x, y + y2);
+            glEnd();
+        }
+        
     }
     
 }
