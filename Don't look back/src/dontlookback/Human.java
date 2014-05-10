@@ -11,5 +11,6 @@ package dontlookback;
  * @author Carl
  */
 public interface Human {
-    
+    public boolean isHolding();
+    public int reactiontime(); 
 }
