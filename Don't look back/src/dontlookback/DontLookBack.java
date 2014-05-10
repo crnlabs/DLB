@@ -18,7 +18,7 @@ public class DontLookBack {
     System.out.println("This condition is FALSE");
 }
         //That command will send "This is going to commit"
-        
+        //change is a natural part of life, evolution literally translates to change
     
     }
 }
