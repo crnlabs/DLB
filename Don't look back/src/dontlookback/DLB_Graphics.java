@@ -39,7 +39,7 @@ public class DLB_Graphics{
         
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, 640, 480, 0, 1, -1);
+        glOrtho(0, 800, 600, 0, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         
 	while(!Display.isCloseRequested()) {
