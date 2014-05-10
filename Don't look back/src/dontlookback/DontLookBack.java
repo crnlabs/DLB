@@ -10,11 +10,11 @@ public class DontLookBack {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        DLB_Graphics awesomeGraphics=new DLB_Graphics();
         
-        //DLB_Graphics awesomeGraphics=new DLB_Graphics();'
+        //System.out.println("Don't look back.");
         
-        System.out.println("Don't look back.");
-        
+
     }
         //That command will send "This is going to commit"
         //change is a natural part of life, evolution literally translates to change
