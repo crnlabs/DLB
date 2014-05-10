@@ -6,10 +6,16 @@
 
 package dontlookback;
 
+import java.awt.Color;
+
 /**
  *
  * @author Carl
  */
 public interface Light {
+    
+    public int getIntensity();
+    public double getAngle();
+    public Color getLightColor();
     
 }
