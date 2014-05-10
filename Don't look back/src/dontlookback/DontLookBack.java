@@ -11,9 +11,8 @@ public class DontLookBack {
      */
     public static void main(String[] args) {
         
-        //DLB_Graphics awesomeGraphics=new DLB_Graphics();'
+        DLB_Graphics awesomeGraphics=new DLB_Graphics();
         
-        System.out.println("Don't look back.");
         
     }
         //That command will send "This is going to commit"
