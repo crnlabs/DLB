@@ -25,6 +25,8 @@ import org.lwjgl.input.*;
  */
 public class DLB_Graphics{
     
+    private Button exitButton;
+    
     public DLB_Graphics(){
         
         try {
@@ -42,16 +44,18 @@ public class DLB_Graphics{
         glOrtho(0, 800, 600, 0, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         
+        exitButton=new Button(10,10);
+        
 	while(!Display.isCloseRequested()) {
             
             glClear(GL_COLOR_BUFFER_BIT);
             
-            glBegin(GL_QUADS);
-                glVertex2i(10,10);
-                glVertex2i(85,10);
-                glVertex2i(85,35);
-                glVertex2i(10,35);
-            glEnd();
+            if(Mouse.isButtonDown(0) && exitButton.isInBounds(Mouse.getX(), 600-Mouse.getY())){
+                Display.destroy();
+                System.exit(0);
+            }
+            
+            exitButton.draw();
             
             Display.update();
             Display.sync(60);
@@ -59,6 +63,29 @@ public class DLB_Graphics{
         Display.destroy();
         System.exit(0);
         
+    }
+    
+    private static class Button {
+
+        public int x, y;
+
+        Button(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        boolean isInBounds(int mouseX, int mouseY) {
+            return mouseX > x && mouseX < x + 75 && mouseY > y && mouseY < y + 25;
+        }
+
+        void draw(){
+            glBegin(GL_QUADS);
+                glVertex2f(x, y);
+                glVertex2f(x + 75, y);
+                glVertex2f(x + 75, y + 25);
+                glVertex2f(x, y + 25);
+            glEnd();
+        }
     }
     
 }
