@@ -10,15 +10,11 @@ public class DontLookBack {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        boolean condition = true; //default condition to true
-        if(condition == true){
-        System.out.println("This condtion is TRUE");
-        }else{
-    System.out.println("This condition is FALSE");
-}
+        
+        DLB_Graphics awesomeGraphics=new DLB_Graphics();
+        
+    }
         //That command will send "This is going to commit"
         //change is a natural part of life, evolution literally translates to change
     
-    }
 }
