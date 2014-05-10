@@ -1,7 +1,7 @@
 
 package dontlookback;
 
-public interface Object {
+public interface Tangible {
     public int width();
     public int height();
     public int depth();

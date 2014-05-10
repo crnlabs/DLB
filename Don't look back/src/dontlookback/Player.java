@@ -10,7 +10,7 @@ public interface Player {
     public int height();
     public int width();
     public int depth();
-    public Object[] inverntory(); 
-    public Object heldItem();
+    public Tangible[] inverntory(); 
+    public Tangible heldItem();
 }
 
