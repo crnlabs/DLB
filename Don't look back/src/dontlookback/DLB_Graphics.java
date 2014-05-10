@@ -7,7 +7,7 @@
 package dontlookback;
 
 import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.GL44.*;
+import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.*;
 import org.lwjgl.input.*;
 
@@ -36,7 +36,23 @@ public class DLB_Graphics{
             Display.destroy();
             System.exit(1);
         }
+        
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, 640, 480, 0, 1, -1);
+        glMatrixMode(GL_MODELVIEW);
+        
 	while(!Display.isCloseRequested()) {
+            
+            glClear(GL_COLOR_BUFFER_BIT);
+            
+            glBegin(GL_QUADS);
+                glVertex2i(10,10);
+                glVertex2i(85,10);
+                glVertex2i(85,35);
+                glVertex2i(10,35);
+            glEnd();
+            
             Display.update();
             Display.sync(60);
 	}
