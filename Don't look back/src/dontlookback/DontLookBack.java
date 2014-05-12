@@ -14,7 +14,7 @@ public class DontLookBack {
         System.out.println("Don't look back.");
         System.out.println("A Game By:");
         System.out.println("Carl & James");
-        
+        System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~**~*~");
         System.out.println();
         System.out.println("The following is movement tracking:");
         
