@@ -14,7 +14,7 @@ public class DLB_Graphics{
 	
 	private int delta;
         private static long lastFrame;
-	private final int walkingSpeed=10;
+	private final int walkingSpeed=50;
 
 	public DLB_Graphics(){
 
@@ -30,13 +30,13 @@ public class DLB_Graphics{
 		}
 		
 		cameraX=0f;cameraZ=0f;
-		cameraY=70f;
+		cameraY=-70f;
 		
 		rotX=0;rotY=0;rotZ=0;
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 100f);
+		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 10000f);
 		glMatrixMode(GL_MODELVIEW);
 		glEnable(GL_DEPTH_TEST);
 		
@@ -45,10 +45,10 @@ public class DLB_Graphics{
 			delta=getDelta();
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			glLoadIdentity();
 
 			render();
+			
+			glLoadIdentity();
                         
 			glRotatef(rotX, 1, 0, 0);
 			glRotatef(rotY, 0, 1, 0);
@@ -188,55 +188,54 @@ public class DLB_Graphics{
 	
 	private void render(){
             
-            /*
-            glColor3f(0.5f,0.5f,1.0f);
-
-		glBegin(GL_QUADS);
+            glBegin(GL_QUADS);
 		
-			glColor3f(1.0f,1.0f,0.0f);
-			glVertex3f(45.0f,30.0f,15.0f);
-			glVertex3f(15.0f,30.0f,15.0f);
-			glVertex3f(15.0f,30.0f,45.0f);
-			glVertex3f(45.0f,30.0f,45.0f);
+		glColor3f(1.0f,1.0f,0.0f);
+		glVertex3f(45.0f,30.0f,15.0f);
+		glVertex3f(15.0f,30.0f,15.0f);
+		glVertex3f(15.0f,30.0f,45.0f);
+		glVertex3f(45.0f,30.0f,45.0f);
 			
-			glColor3f(1.0f,0.5f,0.0f);
-			glVertex3f(45.0f,0.0f,45.0f);
-			glVertex3f(15.0f,0.0f,45.0f);
-			glVertex3f(15.0f,0.0f,15.0f);
-			glVertex3f(45.0f,0.0f,15.0f);
+		glColor3f(1.0f,0.5f,0.0f);
+		glVertex3f(45.0f,0.0f,45.0f);
+		glVertex3f(15.0f,0.0f,45.0f);
+		glVertex3f(15.0f,0.0f,15.0f);
+		glVertex3f(45.0f,0.0f,15.0f);
 			
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(45.0f,30.0f,45.0f);
-			glVertex3f(15.0f,30.0f,45.0f);
-			glVertex3f(15.0f,0.0f,45.0f);
-			glVertex3f(45.0f,0.0f,45.0f);
+		glColor3f(1.5f,0.0f,0.0f);
+		glVertex3f(45.0f,30.0f,45.0f);
+		glVertex3f(15.0f,30.0f,45.0f);
+		glVertex3f(15.0f,0.0f,45.0f);
+		glVertex3f(45.0f,0.0f,45.0f);
 			
-			glColor3f(1.0f,1.0f,0.0f);
-			glVertex3f(45.0f,0.0f,15.0f);
-			glVertex3f(15.0f,0.0f,15.0f);
-			glVertex3f(15.0f,30.0f,15.0f);
-			glVertex3f(45.0f,30.0f,15.0f);
+		glColor3f(0.5f,0.5f,0.5f);
+		glVertex3f(45.0f,0.0f,15.0f);
+		glVertex3f(15.0f,0.0f,15.0f);
+		glVertex3f(15.0f,30.0f,15.0f);
+		glVertex3f(45.0f,30.0f,15.0f);
 			
-			glColor3f(0.0f,0.0f,1.0f);
-			glVertex3f(15.0f,30.0f,45.0f);
-			glVertex3f(15.0f,30.0f,15.0f);
-			glVertex3f(15.0f,0.0f,15.0f);
-			glVertex3f(15.0f,0.0f,45.0f);
+		glColor3f(0.0f,0.0f,1.0f);
+		glVertex3f(15.0f,30.0f,45.0f);
+		glVertex3f(15.0f,30.0f,15.0f);
+		glVertex3f(15.0f,0.0f,15.0f);
+		glVertex3f(15.0f,0.0f,45.0f);
+		
+		glColor3f(1.0f,0.0f,1.0f);
+		glVertex3f(45.0f,30.0f,15.0f);
+		glVertex3f(45.0f,30.0f,45.0f);
+		glVertex3f(45.0f,0.0f,45.0f);
+		glVertex3f(45.0f,0.0f,15.0f);
 			
-			glColor3f(1.0f,0.0f,1.0f);
-			glVertex3f(45.0f,30.0f,15.0f);
-			glVertex3f(45.0f,30.0f,45.0f);
-			glVertex3f(45.0f,0.0f,45.0f);
-			glVertex3f(45.0f,0.0f,15.0f);
-			
-		glEnd(); */
+            glEnd();
+        
+            glColor3f(1,1,1);
             
             glBegin(GL_QUADS);
             
-                glVertex3f(15f,0f,15f);
-                glVertex3f(15f,0f,-15f);
-                glVertex3f(-15f,0f,-15f);
-                glVertex3f(-15f,0f,15f);
+                glVertex3f(150f,0f,150f);
+                glVertex3f(150f,0f,-150f);
+                glVertex3f(-150f,0f,-150f);
+                glVertex3f(-150f,0f,150f);
              
             glEnd();
             
