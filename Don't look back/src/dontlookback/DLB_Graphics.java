@@ -1,151 +1,256 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package dontlookback;
 
 import org.lwjgl.opengl.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.util.glu.GLU.gluPerspective;
 import org.lwjgl.*;
 import org.lwjgl.input.*;
 
-/**
- *
- * @author willi_000
- * 
- * I haven't done this in a LONG time like 5+ years so this is going to take
- * some time. -StrangeBard (James)
- * 
- * Realized I will need to be using OpenGL which I have no experience with
- * will get to work on learning and coding immediately. Do not be shocked to see
- * temporary code that has nothing to do with the game in here while I practice.
- * -StrangeBard (James)
- */
 public class DLB_Graphics{
-    
-    private Button exitButton;
-    private Button exitBorder;
-    private Button startButton;
-    private Button startBorder;
-    
-    private static enum State{
-        MENU, GAME;
-    }
-    private State state=State.MENU;
-    
-    public DLB_Graphics(){
-        
-        try {
-            Display.setDisplayMode(new DisplayMode(800, 600));
-            Display.setTitle("Don't Look Back");
-            Display.create();
-	} catch (LWJGLException e) {
-            e.printStackTrace();
-            Display.destroy();
-            System.exit(1);
-        }
-        
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, 800, 600, 0, 1, -1);
-        glMatrixMode(GL_MODELVIEW);
-        
-        exitButton=new Button(325,180,150,75);
-        exitBorder=new Button(320,175,160,85);
-        exitBorder.setColor(0.75f,0,0.55f);
-        
-        startButton=new Button(325,75,150,75);
-        startBorder=new Button(320,70,160,85);
-        startBorder.setColor(0.75f,0,0.55f);
-        
-	while(!Display.isCloseRequested()) {
-            
-            glClear(GL_COLOR_BUFFER_BIT);
-            
-            render();
-            
-            Display.update();
-            Display.sync(60);
+
+	private static float cameraX,cameraY,cameraZ;
+	private static float rotX,rotY,rotZ;
+	
+	private int delta;
+        private static long lastFrame;
+	private final int walkingSpeed=10;
+
+	public DLB_Graphics(){
+
+		try {
+			Display.setDisplayMode(new DisplayMode(800, 600));
+			Display.setTitle("Don't Look Back");
+			Display.create();
+		}
+		catch (LWJGLException e) {
+			e.printStackTrace();
+			Display.destroy();
+			System.exit(1);
+		}
+		
+		cameraX=0f;cameraZ=0f;
+		cameraY=70f;
+		
+		rotX=0;rotY=0;rotZ=0;
+		
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 100f);
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_DEPTH_TEST);
+		
+		while(!Display.isCloseRequested()) {
+		
+			delta=getDelta();
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			glLoadIdentity();
+
+			render();
+                        
+			glRotatef(rotX, 1, 0, 0);
+			glRotatef(rotY, 0, 1, 0);
+			glRotatef(rotZ, 0, 0, 1);
+			glTranslatef(cameraX,cameraY,cameraZ);
+			
+			camera();
+                        
+                        System.out.println(cameraX+" "+cameraY+" "+cameraZ);
+                        System.out.println(rotX+" "+rotY);
+
+			Display.update();
+			Display.sync(60);
+		}
+		Display.destroy();
+		System.exit(0);
+
+}
+	
+	private void camera(){
+	
+            if(Mouse.isButtonDown(0)){
+		float mouseDX = Mouse.getDX() * 2f * 0.16f;
+		float mouseDY = Mouse.getDY() * 2f * 0.16f;
+		
+		if (rotY + mouseDX >= 360) {
+			rotY = rotY + mouseDX - 360;
+		}
+		else if (rotY + mouseDX < 0) {
+			rotY = 360 - rotY + mouseDX;
+		}
+		else {
+			rotY += mouseDX;
+		}
+		
+		if (rotX - mouseDY >= -85 && rotX - mouseDY <= 85) {
+			rotX += -mouseDY;
+		}
+		else if (rotX - mouseDY < -85) {
+			rotX = -85;
+		}
+		else if (rotX - mouseDY > 85) {
+			rotX = 85;
+		}
+            }
+	
+            boolean keyUp = Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W);
+            boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
+            boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
+            boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
+            boolean keySprint = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+	
+            float angle,hypotenuse;
+            angle=hypotenuse=-1;
+            	if (keyUp && keyRight && !keyLeft && !keyDown) {
+            	angle = rotY + 45;
+	
+            	if(!keySprint){
+            		hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+            	else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyUp && keyLeft && !keyRight && !keyDown) {
+		angle = rotY - 45;
+		if(!keySprint){
+			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyUp && !keyLeft && !keyRight && !keyDown) {
+		angle = rotY;
+		if(!keySprint){
+			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyDown && keyLeft && !keyRight && !keyUp) {
+		angle = rotY - 135;
+		if(!keySprint){
+			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyDown && keyRight && !keyLeft && !keyUp) {
+		angle = rotY + 135;
+		if(!keySprint){
+			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyDown && !keyUp && !keyLeft && !keyRight) {
+		angle = rotY;
+		if(!keySprint){
+			hypotenuse = -(walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = -((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyLeft && !keyRight && !keyUp && !keyDown) {
+		angle = rotY - 90;
+		if(!keySprint){
+			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }
+            else if (keyRight && !keyLeft && !keyUp && !keyDown) {
+		angle = rotY + 90;
+		if(!keySprint){
+			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+		}
+		else{
+			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+		}
+            }   
+	
+            if(angle!=-1){
+		float adjacent = hypotenuse * (float) Math.cos(Math.toRadians(angle));
+		float opposite = (float) (Math.sin(Math.toRadians(angle)) * hypotenuse);
+		cameraZ += adjacent;
+		cameraX -= opposite;
+            }
+	
 	}
-        Display.destroy();
-        System.exit(0);
-        
-    }
-    
-    private void render(){
-        switch(state){
-            case MENU:
-                if(Mouse.isButtonDown(0) && exitButton.isInBounds(Mouse.getX(), 600-Mouse.getY())){
-                    Display.destroy();
-                    System.exit(0);
-                }
-                else if(Mouse.isButtonDown(0) && startButton.isInBounds(Mouse.getX(), 600-Mouse.getY())){
-                    state=State.GAME;
-                }
-                
-                
-                if(exitButton.isInBounds(Mouse.getX(), 600-Mouse.getY())){
-                    exitButton.setColor(0.5f,0.5f,0.5f);
-                }
-                else if(startButton.isInBounds(Mouse.getX(), 600-Mouse.getY())){
-                    startButton.setColor(0.5f,0.5f,0.5f);
-                }
-                else{
-                    exitButton.setColor(0.75f,0.75f,0.75f);
-                    startButton.setColor(0.75f,0.75f,0.75f);
-                }
-                
-                glColor3f(0.75f,0.75f,0);
-                glRecti(250,30,550,570);
-                
-                exitBorder.draw();
-                startBorder.draw();
-                
-                exitButton.draw();
-                startButton.draw();
-                break;
-            case GAME:
-                if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
-                    state=State.MENU;
-                }
-        }
-    }
-    
-    private static class Button {
+	
+	private void render(){
+            
+            /*
+            glColor3f(0.5f,0.5f,1.0f);
 
-        public int x, y;
-        public int x2,y2;
-        public float red,green,blue;
-
-        Button(int x, int y, int x2, int y2) {
-            this.x = x;
-            this.y = y;
-            this.x2=x2;
-            this.y2=y2;
-        }
-
-        boolean isInBounds(int mouseX, int mouseY) {
-            return mouseX > x && mouseX < x + x2 && mouseY > y && mouseY < y + y2;
-        }
-        
-        void setColor(float red, float green, float blue){
-            this.red=red;
-            this.green=green;
-            this.blue=blue;
-        }
-        
-        void draw(){
-            glColor3f(red,green,blue);
+		glBegin(GL_QUADS);
+		
+			glColor3f(1.0f,1.0f,0.0f);
+			glVertex3f(45.0f,30.0f,15.0f);
+			glVertex3f(15.0f,30.0f,15.0f);
+			glVertex3f(15.0f,30.0f,45.0f);
+			glVertex3f(45.0f,30.0f,45.0f);
+			
+			glColor3f(1.0f,0.5f,0.0f);
+			glVertex3f(45.0f,0.0f,45.0f);
+			glVertex3f(15.0f,0.0f,45.0f);
+			glVertex3f(15.0f,0.0f,15.0f);
+			glVertex3f(45.0f,0.0f,15.0f);
+			
+			glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(45.0f,30.0f,45.0f);
+			glVertex3f(15.0f,30.0f,45.0f);
+			glVertex3f(15.0f,0.0f,45.0f);
+			glVertex3f(45.0f,0.0f,45.0f);
+			
+			glColor3f(1.0f,1.0f,0.0f);
+			glVertex3f(45.0f,0.0f,15.0f);
+			glVertex3f(15.0f,0.0f,15.0f);
+			glVertex3f(15.0f,30.0f,15.0f);
+			glVertex3f(45.0f,30.0f,15.0f);
+			
+			glColor3f(0.0f,0.0f,1.0f);
+			glVertex3f(15.0f,30.0f,45.0f);
+			glVertex3f(15.0f,30.0f,15.0f);
+			glVertex3f(15.0f,0.0f,15.0f);
+			glVertex3f(15.0f,0.0f,45.0f);
+			
+			glColor3f(1.0f,0.0f,1.0f);
+			glVertex3f(45.0f,30.0f,15.0f);
+			glVertex3f(45.0f,30.0f,45.0f);
+			glVertex3f(45.0f,0.0f,45.0f);
+			glVertex3f(45.0f,0.0f,15.0f);
+			
+		glEnd(); */
+            
             glBegin(GL_QUADS);
-                glVertex2i(x, y);
-                glVertex2i(x + x2, y);
-                glVertex2i(x + x2, y + y2);
-                glVertex2i(x, y + y2);
+            
+                glVertex3f(15f,0f,15f);
+                glVertex3f(15f,0f,-15f);
+                glVertex3f(-15f,0f,-15f);
+                glVertex3f(-15f,0f,15f);
+             
             glEnd();
-        }
-        
-    }
-    
+            
+	}
+	
+	private static long getTime() {
+		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+	}
+
+	private static int getDelta() {
+		long currentTime = getTime();
+		int delta = (int) (currentTime - lastFrame);
+		lastFrame = getTime();
+		return delta;
+	}
+
 }
