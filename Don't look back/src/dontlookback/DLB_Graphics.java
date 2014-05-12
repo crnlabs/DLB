@@ -16,13 +16,14 @@ public class DLB_Graphics{
         
 	private int delta; //something used to control movement independently of fps
         private static long lastFrame; //used in calculating delta
-	private final float walkingSpeed=70.4f; //walking speed (approx 5 ft/s)
+	private final float walkingSpeed=3f; //walking speed (approx 5 ft/s)
 
 	public DLB_Graphics(){
 
 		try {
 			Display.setDisplayMode(new DisplayMode(1024, 768));
 			Display.setTitle("Don't Look Back");
+                        Display.setResizable(true);
 			Display.create();
 		}
 		catch (LWJGLException e) {
@@ -38,7 +39,7 @@ public class DLB_Graphics{
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 10000f); //what is this refering to
+		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to
 		glMatrixMode(GL_MODELVIEW);
 		glEnable(GL_DEPTH_TEST);
 		
@@ -80,6 +81,59 @@ public class DLB_Graphics{
                         if(rotX != rX || rotY != rY){
                         System.out.println("RotX: " + rotX+", RotY: "+rotY);
                         }
+                        
+                        if(Mouse.isButtonDown(0)&&!Mouse.isGrabbed()){
+                            Mouse.setGrabbed(true);
+                        }
+                        
+                        while(Keyboard.next()){
+                            
+                            if (Keyboard.isKeyDown(Keyboard.KEY_F11)) {
+                                try {
+                                    if (!Display.isFullscreen()) {
+                                        Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
+                                        glViewport(0, 0, Display.getWidth(), Display.getHeight());
+                                        glMatrixMode(GL_PROJECTION);
+                                        glLoadIdentity();
+                                        gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f);
+                                        glMatrixMode(GL_MODELVIEW);
+                                        glLoadIdentity();
+                                        Mouse.setGrabbed(true);
+                                    } else {
+                                        Display.setFullscreen(false);
+                                        Display.setResizable(true);
+                                        Display.setDisplayMode(new DisplayMode(1024, 768));
+                                        glViewport(0, 0, Display.getWidth(), Display.getHeight());
+                                        glMatrixMode(GL_PROJECTION);
+                                        glLoadIdentity();
+                                        gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f);
+                                        glMatrixMode(GL_MODELVIEW);
+                                        glLoadIdentity();
+                                    }
+                                }
+                                catch (LWJGLException ex) {
+                                    ex.printStackTrace();
+                                }
+                            }
+                            if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+                                if (!Mouse.isGrabbed() || Display.isFullscreen()) {
+                                    Display.destroy();
+                                    System.exit(0);
+                                }           
+                                else {
+                                    Mouse.setGrabbed(false);
+                                }
+                            }
+                        }
+                        
+                        if (Display.wasResized()) {
+                            glViewport(0, 0, Display.getWidth(), Display.getHeight());
+                            glMatrixMode(GL_PROJECTION);
+                            glLoadIdentity();
+                            gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f);
+                            glMatrixMode(GL_MODELVIEW);
+                            glLoadIdentity();
+                        }
 
 			Display.update();
 			Display.sync(60);
@@ -91,7 +145,7 @@ public class DLB_Graphics{
 	//A bunch of calculations that make the camera work like it should
 	private void camera(){
 	    //the mouse should be captured not needed to be held down
-            if(Mouse.isButtonDown(0)){
+            if(Mouse.isGrabbed()||Display.isFullscreen()){
 		float mouseDX = Mouse.getDX() * 2f * 0.16f;
 		float mouseDY = Mouse.getDY() * 2f * 0.16f;
 		
@@ -249,16 +303,27 @@ public class DLB_Graphics{
 			
             glEnd();
         
-            glColor3f(1,1,1);
-            
-            glBegin(GL_QUADS); //this is the floor, no color, We should add a checker board texture to this
-            
-                glVertex3f(100f,0f,100f); //100 meters
-                glVertex3f(100f,0f,-100f);
-                glVertex3f(-100f,0f,-100f);
-                glVertex3f(-100f,0f,100f);
-             
+            int GridSizeX = 150;
+            int GridSizeZ = 150;
+ 
+            glBegin(GL_QUADS);
+            for (int x =-150;x<GridSizeX;++x){
+		for (int z =-150;z<GridSizeZ;++z){
+                    if ((x+z)%2==0) //modulo 2
+			glColor3f(1.0f,1.0f,1.0f); //white
+                    else
+			glColor3f(0.0f,0.0f,0.0f); //black
+ 
+                    glVertex3f(x,0,z);
+                    glVertex3f((x+1),0,z);
+                    glVertex3f((x+1),0,(z+1));
+                    glVertex3f(x,0,(z+1));
+ 
+		}
+            }
             glEnd();
+            
+            glColor3f(1,1,1);
             
 	}
 	
