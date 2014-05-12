@@ -9,12 +9,12 @@ import org.lwjgl.input.*;
 
 public class DLB_Graphics{
 
-	private static float cameraX,cameraY,cameraZ;
-	private static float rotX,rotY,rotZ;
+	private static float cameraX,cameraY,cameraZ; //camera pos x,y,z
+	private static float rotX,rotY,rotZ; //rotation of camera around x,y,z axis
 	
-	private int delta;
-        private static long lastFrame;
-	private final int walkingSpeed=50;
+	private int delta; //something used to control movement independently of fps
+        private static long lastFrame; //used in calculating delta
+	private final float walkingSpeed=70.4f; //walking speed (approx 5 ft/s)
 
 	public DLB_Graphics(){
 
@@ -50,13 +50,17 @@ public class DLB_Graphics{
 			
 			glLoadIdentity();
                         
+                        //moves camera
 			glRotatef(rotX, 1, 0, 0);
 			glRotatef(rotY, 0, 1, 0);
 			glRotatef(rotZ, 0, 0, 1);
 			glTranslatef(cameraX,cameraY,cameraZ);
 			
+                        //calculates new camera pos
 			camera();
                         
+                        //outputs current x,y,z coords
+                        //and the rotation about the x and y axis
                         System.out.println(cameraX+" "+cameraY+" "+cameraZ);
                         System.out.println(rotX+" "+rotY);
 
@@ -67,7 +71,7 @@ public class DLB_Graphics{
 		System.exit(0);
 
 }
-	
+	//A bunch of calculations that make the camera work like it should
 	private void camera(){
 	
             if(Mouse.isButtonDown(0)){
@@ -241,10 +245,12 @@ public class DLB_Graphics{
             
 	}
 	
+        //helps calculate delta
 	private static long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
 	}
-
+        
+        //calculates delta or miliseconds since last frame udpate
 	private static int getDelta() {
 		long currentTime = getTime();
 		int delta = (int) (currentTime - lastFrame);
