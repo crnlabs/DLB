@@ -16,7 +16,7 @@ public class DLB_Graphics{
         
 	private int delta; //something used to control movement independently of fps
         private static long lastFrame; //used in calculating delta
-	private final float walkingSpeed=3f; //walking speed (approx 5 ft/s)
+	private final float walkingSpeed=54f; //walking speed (approx 5 ft/s)
 
 	public DLB_Graphics(){
 
@@ -42,6 +42,9 @@ public class DLB_Graphics{
 		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to
 		glMatrixMode(GL_MODELVIEW);
 		glEnable(GL_DEPTH_TEST);
+                
+                int count=0;
+                float sum=0;
 		
 		while(!Display.isCloseRequested()) {
 		
@@ -63,7 +66,6 @@ public class DLB_Graphics{
                         rX = rotX;
                         rY = rotY;
                         
-                        
                         //moves camera
 			glRotatef(rotX, 1, 0, 0);
 			glRotatef(rotY, 0, 1, 0);
@@ -73,6 +75,15 @@ public class DLB_Graphics{
                         //calculates new camera pos
 			camera();
                         
+                        if(count<60){
+                            sum+=(cameraX-cX);
+                            count+=1;
+                        }
+                        else{
+                            System.out.println("DX "+sum);
+                            count=0;
+                        }
+                        
                         //outputs current x,y,z coords
                         //and the rotation about the x and y axis
                         if(cameraX != cX || cameraY != cY || cameraZ != cZ){
@@ -81,6 +92,7 @@ public class DLB_Graphics{
                         if(rotX != rX || rotY != rY){
                         System.out.println("RotX: " + rotX+", RotY: "+rotY);
                         }
+                        System.out.println("DX "+(cX-cameraX)*delta);
                         
                         if(Mouse.isButtonDown(0)&&!Mouse.isGrabbed()){
                             Mouse.setGrabbed(true);
