@@ -10,11 +10,15 @@ public class DontLookBack {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        DLB_Graphics awesomeGraphics=new DLB_Graphics();
         
         System.out.println("Don't look back.");
         System.out.println("A Game By:");
         System.out.println("Carl & James");
-
+        
+        System.out.println();
+        System.out.println("The following is movement tracking:");
+        
+        DLB_Graphics awesomeGraphics=new DLB_Graphics();
+        
     }
 }

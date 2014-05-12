@@ -21,7 +21,7 @@ public class DLB_Graphics{
 	public DLB_Graphics(){
 
 		try {
-			Display.setDisplayMode(new DisplayMode(800, 600));
+			Display.setDisplayMode(new DisplayMode(1024, 768));
 			Display.setTitle("Don't Look Back");
 			Display.create();
 		}
@@ -31,14 +31,14 @@ public class DLB_Graphics{
 			System.exit(1);
 		}
 		
-		cameraX=0f;cameraZ=0f;
-		cameraY=-70f; //what is the f? what is the 70 here
+		cameraX = 0f; cameraZ = 0f;
+		cameraY = -1.75f; //changed to 1.75 meters //never mind i see it means FLOAT not feet
 		
 		rotX=0;rotY=0;rotZ=0;
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 10000f);
+		gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 10000f); //what is this refering to
 		glMatrixMode(GL_MODELVIEW);
 		glEnable(GL_DEPTH_TEST);
 		
@@ -90,7 +90,7 @@ public class DLB_Graphics{
 }
 	//A bunch of calculations that make the camera work like it should
 	private void camera(){
-	
+	    //the mouse should be captured not needed to be held down
             if(Mouse.isButtonDown(0)){
 		float mouseDX = Mouse.getDX() * 2f * 0.16f;
 		float mouseDY = Mouse.getDY() * 2f * 0.16f;
@@ -120,7 +120,7 @@ public class DLB_Graphics{
             boolean keyDown = Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S);
             boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
             boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
-            boolean keySprint = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+            boolean keySprint = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT); //neat I didn't know you could "or" booleans
 	
             float angle,hypotenuse;
             angle=hypotenuse=-1;
@@ -209,59 +209,60 @@ public class DLB_Graphics{
 	
 	private void render(){
             
-            glBegin(GL_QUADS);
+            glBegin(GL_QUADS); //this is the color cube
 		
-		glColor3f(1.0f,1.0f,0.0f);
+		glColor3f(1.0f,1.0f,0.0f); //side 1, color:
 		glVertex3f(45.0f,30.0f,15.0f);
 		glVertex3f(15.0f,30.0f,15.0f);
 		glVertex3f(15.0f,30.0f,45.0f);
 		glVertex3f(45.0f,30.0f,45.0f);
 			
-		glColor3f(1.0f,0.5f,0.0f);
+		glColor3f(1.0f,0.5f,0.0f); //side 2, color:
 		glVertex3f(45.0f,0.0f,45.0f);
 		glVertex3f(15.0f,0.0f,45.0f);
 		glVertex3f(15.0f,0.0f,15.0f);
 		glVertex3f(45.0f,0.0f,15.0f);
 			
-		glColor3f(1.5f,0.0f,0.0f);
+		glColor3f(1.5f,0.0f,0.0f); //side 3, color:
 		glVertex3f(45.0f,30.0f,45.0f);
 		glVertex3f(15.0f,30.0f,45.0f);
 		glVertex3f(15.0f,0.0f,45.0f);
 		glVertex3f(45.0f,0.0f,45.0f);
 			
-		glColor3f(0.5f,0.5f,0.5f);
+		glColor3f(0.5f,0.5f,0.5f); //side 4, color:
 		glVertex3f(45.0f,0.0f,15.0f);
 		glVertex3f(15.0f,0.0f,15.0f);
 		glVertex3f(15.0f,30.0f,15.0f);
 		glVertex3f(45.0f,30.0f,15.0f);
 			
-		glColor3f(0.0f,0.0f,1.0f);
+		glColor3f(0.0f,0.0f,1.0f); //side 5, color:
 		glVertex3f(15.0f,30.0f,45.0f);
 		glVertex3f(15.0f,30.0f,15.0f);
 		glVertex3f(15.0f,0.0f,15.0f);
 		glVertex3f(15.0f,0.0f,45.0f);
 		
-		glColor3f(1.0f,0.0f,1.0f);
+		glColor3f(1.0f,0.0f,1.0f); //side 6, color:
 		glVertex3f(45.0f,30.0f,15.0f);
 		glVertex3f(45.0f,30.0f,45.0f);
 		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,15.0f);
+		glVertex3f(45.0f,0.0f,15.0f); 
 			
             glEnd();
         
             glColor3f(1,1,1);
             
-            glBegin(GL_QUADS);
+            glBegin(GL_QUADS); //this is the floor, no color, We should add a checker board texture to this
             
-                glVertex3f(150f,0f,150f);
-                glVertex3f(150f,0f,-150f);
-                glVertex3f(-150f,0f,-150f);
-                glVertex3f(-150f,0f,150f);
+                glVertex3f(100f,0f,100f); //100 meters
+                glVertex3f(100f,0f,-100f);
+                glVertex3f(-100f,0f,-100f);
+                glVertex3f(-100f,0f,100f);
              
             glEnd();
             
 	}
 	
+        
         //helps calculate delta
 	private static long getTime() {
 		return (Sys.getTime() * 1000) / Sys.getTimerResolution();
