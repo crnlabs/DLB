@@ -11,7 +11,9 @@ public class DLB_Graphics{
 
 	private static float cameraX,cameraY,cameraZ; //camera pos x,y,z
 	private static float rotX,rotY,rotZ; //rotation of camera around x,y,z axis
-	
+	private static float cX,cY,cZ; //last camera pos x,y,z
+	private static float rX,rY,rZ; //last rotation of camera around x,y,z axis
+        
 	private int delta; //something used to control movement independently of fps
         private static long lastFrame; //used in calculating delta
 	private final float walkingSpeed=70.4f; //walking speed (approx 5 ft/s)
@@ -30,7 +32,7 @@ public class DLB_Graphics{
 		}
 		
 		cameraX=0f;cameraZ=0f;
-		cameraY=-70f;
+		cameraY=-70f; //what is the f? what is the 70 here
 		
 		rotX=0;rotY=0;rotZ=0;
 		
@@ -50,6 +52,17 @@ public class DLB_Graphics{
 			
 			glLoadIdentity();
                         
+                        //if i'm getting this right...
+                        //I can grab the old camera postions here?
+                        //if not move this piece of code to whereever the "old"
+                        //or last camera position was.
+                        cX = cameraX;
+                        cY = cameraY;
+                        cZ = cameraZ;
+                        rX = rotX;
+                        rY = rotY;
+                        
+                        
                         //moves camera
 			glRotatef(rotX, 1, 0, 0);
 			glRotatef(rotY, 0, 1, 0);
@@ -61,8 +74,12 @@ public class DLB_Graphics{
                         
                         //outputs current x,y,z coords
                         //and the rotation about the x and y axis
-                        System.out.println(cameraX+" "+cameraY+" "+cameraZ);
-                        System.out.println(rotX+" "+rotY);
+                        if(cameraX != cX || cameraY != cY || cameraZ != cZ){
+                        System.out.println( "X: " + cameraX+",  Y: "+cameraY+", Z: "+cameraZ);
+                        }
+                        if(rotX != rX || rotY != rY){
+                        System.out.println("RotX: " + rotX+", RotY: "+rotY);
+                        }
 
 			Display.update();
 			Display.sync(60);
