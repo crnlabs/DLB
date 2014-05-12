@@ -12,4 +12,8 @@ package dontlookback;
  */
 public interface NPC {
     
+    public boolean Interactive();
+    public boolean Quest();
+    
+    
 }

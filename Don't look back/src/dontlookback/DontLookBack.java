@@ -12,11 +12,9 @@ public class DontLookBack {
     public static void main(String[] args) {
         DLB_Graphics awesomeGraphics=new DLB_Graphics();
         
-        //System.out.println("Don't look back.");
-        
+        System.out.println("Don't look back.");
+        System.out.println("A Game By:");
+        System.out.println("Carl & James");
 
     }
-        //That command will send "This is going to commit"
-        //change is a natural part of life, evolution literally translates to change
-    
 }

@@ -10,6 +10,6 @@ package dontlookback;
  *
  * @author Carl
  */
-public interface Objects {
-    
+public interface Objects extends Tangible{
+    public boolean interactive();
 }

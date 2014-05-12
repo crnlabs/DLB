@@ -10,6 +10,6 @@ package dontlookback;
  *
  * @author Carl
  */
-public interface Furnature {
+public interface Furnature extends Tangible{
     
 }

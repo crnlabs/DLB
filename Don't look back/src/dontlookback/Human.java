@@ -10,7 +10,7 @@ package dontlookback;
  *
  * @author Carl
  */
-public interface Human {
+public interface Human extends Biped{
     public boolean isHolding();
-    public int reactiontime(); 
+    public int reactionTime(); 
 }

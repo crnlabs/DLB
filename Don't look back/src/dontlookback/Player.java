@@ -2,7 +2,7 @@
 package dontlookback;
 
 
-public interface Player {
+public interface Player extends Human{
     public int speed();
     public int weight();
     public boolean jump();

@@ -10,6 +10,6 @@ package dontlookback;
  *
  * @author Carl
  */
-public interface Monsters {
+public interface Monsters extends Enemy{
     
 }

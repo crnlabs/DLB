@@ -12,7 +12,7 @@ import java.awt.Color;
  *
  * @author Carl
  */
-public interface Light {
+public interface Light extends Intangibles{
     
     public int getIntensity();
     public double getAngle();
