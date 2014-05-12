@@ -185,7 +185,7 @@ public class DLB_Graphics{
             		hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
             	else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyUp && keyLeft && !keyRight && !keyDown) {
@@ -194,7 +194,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyUp && !keyLeft && !keyRight && !keyDown) {
@@ -203,7 +203,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyDown && keyLeft && !keyRight && !keyUp) {
@@ -212,7 +212,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyDown && keyRight && !keyLeft && !keyUp) {
@@ -221,7 +221,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyDown && !keyUp && !keyLeft && !keyRight) {
@@ -230,7 +230,7 @@ public class DLB_Graphics{
 			hypotenuse = -(walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = -((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = -((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyLeft && !keyRight && !keyUp && !keyDown) {
@@ -239,7 +239,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }
             else if (keyRight && !keyLeft && !keyUp && !keyDown) {
@@ -248,7 +248,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed * 0.0002f) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*4) * 0.0002f) * delta;
+			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
 		}
             }   
 	
