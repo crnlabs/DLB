@@ -16,7 +16,7 @@ public class DLB_Graphics{
         
 	private int delta; //something used to control movement independently of fps
         private static long lastFrame; //used in calculating delta
-	private final float walkingSpeed=27f; //walking speed (approx 5 ft/s)
+	private final float walkingSpeed=.01666666666f; //walking speed (approx 5 ft/s)
 
 	public DLB_Graphics(){
 
@@ -181,73 +181,73 @@ public class DLB_Graphics{
             	angle = rotY + 45;
 	
             	if(!keySprint){
-            		hypotenuse = (walkingSpeed * 0.0002f) * delta;
+            		hypotenuse = (walkingSpeed) * delta;
 		}
             	else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }
             else if (keyUp && keyLeft && !keyRight && !keyDown) {
 		angle = rotY - 45;
 		if(!keySprint){
-			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
             }
             else if (keyUp && !keyLeft && !keyRight && !keyDown) {
 		angle = rotY;
 		if(!keySprint){
-			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
             }
             else if (keyDown && keyLeft && !keyRight && !keyUp) {
 		angle = rotY - 135;
 		if(!keySprint){
-			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
             }
             else if (keyDown && keyRight && !keyLeft && !keyUp) {
 		angle = rotY + 135;
 		if(!keySprint){
-			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }
             else if (keyDown && !keyUp && !keyLeft && !keyRight) {
 		angle = rotY;
 		if(!keySprint){
-			hypotenuse = -(walkingSpeed * 0.0002f) * delta;
+			hypotenuse = -(walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = -((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = -(walkingSpeed*3) * delta;
 		}
             }
             else if (keyLeft && !keyRight && !keyUp && !keyDown) {
 		angle = rotY - 90;
 		if(!keySprint){
-			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }
             else if (keyRight && !keyLeft && !keyUp && !keyDown) {
 		angle = rotY + 90;
 		if(!keySprint){
-			hypotenuse = (walkingSpeed * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = ((walkingSpeed*3) * 0.0002f) * delta;
+			hypotenuse = (walkingSpeed) * delta;
 		}
             }   
 	
