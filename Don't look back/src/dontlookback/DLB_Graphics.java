@@ -16,7 +16,7 @@ public class DLB_Graphics{
         
 	private int delta; //something used to control movement independently of fps
         private static long lastFrame; //used in calculating delta
-	private final float walkingSpeed=.01666666666f; //walking speed (approx 5 ft/s)
+	private final float walkingSpeed=.003125f; //walking speed (approx 5 ft/s)
 
 	public DLB_Graphics(){
 
