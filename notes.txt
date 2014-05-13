@@ -1,3 +1,20 @@
 what fundemental idea are we explorering?
 
 human curiousity, and the idea the unknown is more frigtening than what we can see.
+
+here is a blerb:
+Here is my game concept. It's currently about 1/5 playable at the moment. and there's a lot more to the game than outlined, that gives it personality and stuff. but this is the core concept:
+
+
+"don't look back" is a unique horror game where if you look somewhere and see a monster it will come after you and if it gets to you: you die. but if you look away, either by running or hiding for five whole seconds in a row (remember that if it touches you, you lose, so looking away is a horrible act of desperation because you can only HEAR how close it's getting).  If you open a door and walk through, and then close it, say it's a closet and 5 seconds later you turn around and reopen the dor and come out, you could be in an entirely different room because nothing lasts after 5 seconds of you looking away, you never know what will be there when you look back, or what you will run into when you move forward. Everything is created randomly. The game explores the concept of human fears in a way that most games don't. where most games simply have you avoid fears by placing them in your way, and you waiting so you can proceed. This game is a constant feed of choices that in essence is your story, as the choices you make directly respond in game, are you someone who can turn away and run without looking back, are you someone who hides in relative safety?
+
+There are some people who decided that a valid strategy is to go into a corner and look down, if you don't see anything it won't generate and it can't hurt you. so we implemented a game design where the lights will flicker and go out sometimes, and if you don't have a light source (matches, candles, fireplace) you will be eaten by a grue. A monster that comes out when the lights go out, kills you INSTANTLY. This way you HAVE to keep moving and finding new light sources like candles or matches and can't just hide in a corner and stare at the floor forever.
+
+
+Ideally it's going to be using rift as an option, a head mounted display that means you will have to consciously have to stop yourself from turning your head to look around, which is a feat of itself and brings a whole new level of immersion to the game.
+
+To recap looking anywhere you haven't seen in the last five seconds could contain anything, doors appearing and disappearing, tables, chairs, monsters, anything could be there. you could even turn and have one an inch from your face.
+
+horror games aren't meant to have super scarey monsters, and that's not really the feeling we are going for, it's more of the players insecurities, and powerlessness. maybe the monster isn't looking and you can run, maybe the lights go out and you take a match out and can't see more than a foot in front of your face, and so you trip on a small chair, or you run face first into a monster.
+
+And to be honest horror games really aren't my thing, this is a game I can't possibly make WRONG so I'm doing it for my first project. my second game coming immediately after is an adventure game (dead genre) with a small rabbit that performs alchemy and a small boy he rescued and is trying to return home. but he keeps getting side tracked because of other events. eventually he brings the boy home but the boy decides that he wants to share in the responsibility of saving people and they head off together, very cute and hopeful.
