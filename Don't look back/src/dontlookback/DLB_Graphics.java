@@ -193,7 +193,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = (walkingSpeed) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }
             else if (keyUp && !keyLeft && !keyRight && !keyDown) {
@@ -202,7 +202,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = (walkingSpeed) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }
             else if (keyDown && keyLeft && !keyRight && !keyUp) {
@@ -211,7 +211,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = (walkingSpeed) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }
             else if (keyDown && keyRight && !keyLeft && !keyUp) {
@@ -247,7 +247,7 @@ public class DLB_Graphics{
 			hypotenuse = (walkingSpeed) * delta;
 		}
 		else{
-			hypotenuse = (walkingSpeed) * delta;
+			hypotenuse = (walkingSpeed*3) * delta;
 		}
             }   
 	
