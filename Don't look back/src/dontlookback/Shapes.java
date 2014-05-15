@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glColor3f;
 import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glNormal3f;
 import static org.lwjgl.opengl.GL11.glVertex3f;
 
 
@@ -52,87 +53,113 @@ public class Shapes {
 			
             glEnd();
     }
-    public void renderCube(double center){
+    public static void renderCube(float[] center){
         //lets default this to length, width, height, of 5
             glBegin(GL_QUADS); //this is the color cube
 		
-		glColor3f(1.0f,1.0f,0.0f); //side 1, color:
-		glVertex3f(45.0f,30.0f,15.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(45.0f,30.0f,45.0f);
+                    // top
+                    glColor3f(1.0f, 0.0f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + 1.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+ 
+                    // front
+                    glColor3f(0.0f, 1.0f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + 0.0f, center[2] + 1.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] + 0.5f);
+ 
+                    // right
+                    glColor3f(0.0f, 0.0f, 1.0f);
+                    glNormal3f(center[0]+ 1.0f, center[1] + 0.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] +-0.5f);
 			
-		glColor3f(1.0f,0.5f,0.0f); //side 2, color:
-		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(45.0f,0.0f,15.0f);
-			
-		glColor3f(1.5f,0.0f,0.0f); //side 3, color:
-		glVertex3f(45.0f,30.0f,45.0f);
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,45.0f);
-			
-		glColor3f(0.5f,0.5f,0.5f); //side 4, color:
-		glVertex3f(45.0f,0.0f,15.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(45.0f,30.0f,15.0f);
-			
-		glColor3f(0.0f,0.0f,1.0f); //side 5, color:
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		
-		glColor3f(1.0f,0.0f,1.0f); //side 6, color:
-		glVertex3f(45.0f,30.0f,15.0f);
-		glVertex3f(45.0f,30.0f,45.0f);
-		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,15.0f); 
+                    // left
+                    glColor3f(0.0f, 0.0f, 0.5f);
+                    glNormal3f(center[0]+-1.0f, center[1] + 0.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] +-0.5f);
+ 
+                    // bottom
+                    glColor3f(0.5f, 0.0f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + -1.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + -0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + -0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + -0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + -0.5f, center[2] +-0.5f);
+ 
+                    // back
+                    glColor3f(0.0f, 0.5f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + 0.0f, center[2] +-1.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+ 
 			
             glEnd();
     }
-    public void renderCube(double center, double size){
+    public void renderCube(float[] center, float size){
         
             glBegin(GL_QUADS); //this is the color cube
 		
-		glColor3f(1.0f,1.0f,0.0f); //side 1, color:
-		glVertex3f(45.0f,30.0f,15.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(45.0f,30.0f,45.0f);
+                    // top
+                    glColor3f(1.0f, 0.0f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + 1.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+ 
+                    // front
+                    glColor3f(0.0f, 1.0f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + 0.0f, center[2] + 1.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] + 0.5f);
+ 
+                    // right
+                    glColor3f(0.0f, 0.0f, 1.0f);
+                    glNormal3f(center[0]+ 1.0f, center[1] + 0.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] +-0.5f);
 			
-		glColor3f(1.0f,0.5f,0.0f); //side 2, color:
-		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(45.0f,0.0f,15.0f);
-			
-		glColor3f(1.5f,0.0f,0.0f); //side 3, color:
-		glVertex3f(45.0f,30.0f,45.0f);
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,45.0f);
-			
-		glColor3f(0.5f,0.5f,0.5f); //side 4, color:
-		glVertex3f(45.0f,0.0f,15.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(45.0f,30.0f,15.0f);
-			
-		glColor3f(0.0f,0.0f,1.0f); //side 5, color:
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		
-		glColor3f(1.0f,0.0f,1.0f); //side 6, color:
-		glVertex3f(45.0f,30.0f,15.0f);
-		glVertex3f(45.0f,30.0f,45.0f);
-		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,15.0f); 
+                    // left
+                    glColor3f(0.0f, 0.0f, 0.5f);
+                    glNormal3f(center[0]+-1.0f, center[1] + 0.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] +-0.5f);
+ 
+                    // bottom
+                    glColor3f(0.5f, 0.0f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + -1.0f, center[2] + 0.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + -0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + -0.5f, center[2] + 0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + -0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + -0.5f, center[2] +-0.5f);
+ 
+                    // back
+                    glColor3f(0.0f, 0.5f, 0.0f);
+                    glNormal3f(center[0]+ 0.0f, center[1] + 0.0f, center[2] +-1.0f);
+                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] +-0.5f);
+                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+ 
 			
             glEnd();
     }

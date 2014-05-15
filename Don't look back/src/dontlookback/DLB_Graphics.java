@@ -53,10 +53,6 @@ public class DLB_Graphics{
 			
 			glLoadIdentity();
                         
-                        //if i'm getting this right...
-                        //I can grab the old camera postions here?
-                        //if not move this piece of code to whereever the "old"
-                        //or last camera position was.
                         cX = cameraX;
                         cY = cameraY;
                         cZ = cameraZ;
@@ -261,12 +257,17 @@ public class DLB_Graphics{
 	}
 	
 	private void render(){
+            //broken but close
+            //shape1 = new Shapes.renderCube();
+            //shapeTriangle1 = new Shapes.renderTriangle();    
+            //working but wrong
+            //Shapes.renderTriangle();
+            //Shapes.renderCube();
+            //testing but not end goal
+            float[] testCenter = {2f,5f,3f};
+            Shapes.renderCube(testCenter);
             
-            // shape1 = new Shapes.renderCube();
-            //shapeTriangle1 = new Shapes.renderTriangle();
-        
-            Shapes.renderTriangle();
-            Shapes.renderCube();
+            
             int GridSizeX = 150;
             int GridSizeZ = 150;
  
