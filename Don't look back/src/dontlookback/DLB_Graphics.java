@@ -262,46 +262,11 @@ public class DLB_Graphics{
 	
 	private void render(){
             
-            glBegin(GL_QUADS); //this is the color cube
-		
-		glColor3f(1.0f,1.0f,0.0f); //side 1, color:
-		glVertex3f(45.0f,30.0f,15.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(45.0f,30.0f,45.0f);
-			
-		glColor3f(1.0f,0.5f,0.0f); //side 2, color:
-		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(45.0f,0.0f,15.0f);
-			
-		glColor3f(1.5f,0.0f,0.0f); //side 3, color:
-		glVertex3f(45.0f,30.0f,45.0f);
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,45.0f);
-			
-		glColor3f(0.5f,0.5f,0.5f); //side 4, color:
-		glVertex3f(45.0f,0.0f,15.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(45.0f,30.0f,15.0f);
-			
-		glColor3f(0.0f,0.0f,1.0f); //side 5, color:
-		glVertex3f(15.0f,30.0f,45.0f);
-		glVertex3f(15.0f,30.0f,15.0f);
-		glVertex3f(15.0f,0.0f,15.0f);
-		glVertex3f(15.0f,0.0f,45.0f);
-		
-		glColor3f(1.0f,0.0f,1.0f); //side 6, color:
-		glVertex3f(45.0f,30.0f,15.0f);
-		glVertex3f(45.0f,30.0f,45.0f);
-		glVertex3f(45.0f,0.0f,45.0f);
-		glVertex3f(45.0f,0.0f,15.0f); 
-			
-            glEnd();
+            // shape1 = new Shapes.renderCube();
+            //shapeTriangle1 = new Shapes.renderTriangle();
         
+            Shapes.renderTriangle();
+            Shapes.renderCube();
             int GridSizeX = 150;
             int GridSizeZ = 150;
  
