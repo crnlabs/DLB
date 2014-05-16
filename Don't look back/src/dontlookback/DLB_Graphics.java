@@ -261,8 +261,8 @@ public class DLB_Graphics{
             //shape1 = new Shapes.renderCube();
             //shapeTriangle1 = new Shapes.renderTriangle();    
             //working but wrong
-            //Shapes.renderTriangle();
-            //Shapes.renderCube();
+            Shapes.renderTriangle();
+            Shapes.renderCube();
             //testing but not end goal
             float[] testCenter = {2f,5f,3f};
             Shapes.renderCube(testCenter);
