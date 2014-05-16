@@ -265,7 +265,9 @@ public class DLB_Graphics{
             Shapes.renderCube();
             //testing but not end goal
             float[] testCenter = {2f,5f,3f};
+            float[] testCenter2 = {-2f,5f,-3f};
             Shapes.renderCube(testCenter);
+            Shapes.renderCube(testCenter2,2f);
             
             
             int GridSizeX = 150;

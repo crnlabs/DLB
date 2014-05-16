@@ -15,7 +15,7 @@ public class DontLookBack {
         System.out.println("A Game By:");
         System.out.println("Carl & James");
         System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~**~*~");
-        System.out.println();
+        System.out.println(1+ 5 *6);
         System.out.println("The following is movement tracking:");
         
         DLB_Graphics awesomeGraphics=new DLB_Graphics();

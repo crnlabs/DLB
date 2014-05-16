@@ -108,57 +108,57 @@ public class Shapes {
 			
             glEnd();
     }
-    public void renderCube(float[] center, float size){
+    public static void renderCube(float[] center, float size){
         
             glBegin(GL_QUADS); //this is the color cube
 		
                     // top
                     glColor3f(1.0f, 0.0f, 0.0f);
-                    glNormal3f(center[0]+ 0.0f, center[1] + 1.0f, center[2] + 0.0f);
-                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glNormal3f(center[0]+ 0.0f *size, center[1] + 1.0f *size, center[2] + 0.0f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + 0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + 0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + 0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + 0.5f *size, center[2] +-0.5f *size);
  
                     // front
                     glColor3f(0.0f, 1.0f, 0.0f);
-                    glNormal3f(center[0]+ 0.0f, center[1] + 0.0f, center[2] + 1.0f);
-                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] + 0.5f);
+                    glNormal3f(center[0]+ 0.0f *size, center[1] + 0.0f *size, center[2] + 1.0f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] +-0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + 0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + 0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] +-0.5f *size, center[2] + 0.5f *size);
  
                     // right
                     glColor3f(0.0f, 0.0f, 1.0f);
-                    glNormal3f(center[0]+ 1.0f, center[1] + 0.0f, center[2] + 0.0f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] +-0.5f);
+                    glNormal3f(center[0]+ 1.0f *size, center[1] + 0.0f *size, center[2] + 0.0f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + 0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + 0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] +-0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] +-0.5f *size, center[2] +-0.5f *size);
 			
                     // left
                     glColor3f(0.0f, 0.0f, 0.5f);
-                    glNormal3f(center[0]+-1.0f, center[1] + 0.0f, center[2] + 0.0f);
-                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] +-0.5f);
+                    glNormal3f(center[0]+-1.0f *size, center[1] + 0.0f *size, center[2] + 0.0f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] +-0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + 0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + 0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] +-0.5f *size, center[2] +-0.5f *size);
  
                     // bottom
                     glColor3f(0.5f, 0.0f, 0.0f);
-                    glNormal3f(center[0]+ 0.0f, center[1] + -1.0f, center[2] + 0.0f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + -0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + -0.5f, center[2] + 0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + -0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + -0.5f, center[2] +-0.5f);
+                    glNormal3f(center[0]+ 0.0f *size, center[1] + -1.0f *size, center[2] + 0.0f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + -0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + -0.5f *size, center[2] + 0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + -0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + -0.5f *size, center[2] +-0.5f *size);
  
                     // back
                     glColor3f(0.0f, 0.5f, 0.0f);
-                    glNormal3f(center[0]+ 0.0f, center[1] + 0.0f, center[2] +-1.0f);
-                    glVertex3f(center[0]+ 0.5f, center[1] + 0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+ 0.5f, center[1] +-0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] +-0.5f, center[2] +-0.5f);
-                    glVertex3f(center[0]+-0.5f, center[1] + 0.5f, center[2] +-0.5f);
+                    glNormal3f(center[0]+ 0.0f *size, center[1] + 0.0f *size, center[2] +-1.0f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] + 0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+ 0.5f *size, center[1] +-0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] +-0.5f *size, center[2] +-0.5f *size);
+                    glVertex3f(center[0]+-0.5f *size, center[1] + 0.5f *size, center[2] +-0.5f *size);
  
 			
             glEnd();
