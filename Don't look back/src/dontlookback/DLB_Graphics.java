@@ -1,7 +1,7 @@
 package dontlookback;
 
 import org.lwjgl.opengl.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 import org.lwjgl.*;
 import org.lwjgl.input.*;
@@ -211,7 +211,7 @@ public class DLB_Graphics {
         cZ = cameraZ;
         rX = rotX;
         rY = rotY;
-
+        
         glRotatef(rotX, 1, 0, 0);
         glRotatef(rotY, 0, 1, 0);
         glRotatef(rotZ, 0, 0, 1);
