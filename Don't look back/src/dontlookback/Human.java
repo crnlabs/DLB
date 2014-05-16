@@ -1,16 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package dontlookback;
 
-/**
- *
- * @author Carl
- */
 public interface Human extends Biped{
+    public float speed();
+    public double weight();
+    public boolean jump();
+    public int jumpHeight();
+    public int height(); //default to 1.75
+    public int width();
+    public int depth();
+    public float positionX();
+    public float positionY();
+    public float positionZ();
+    public float rotX();
+    public float rotY();
+    public float rotZ();
+    public Object[] inverntory(); 
+    public Object heldItem();
     public boolean isHolding();
-    public int reactionTime(); 
+    public int reactionTime();
 }

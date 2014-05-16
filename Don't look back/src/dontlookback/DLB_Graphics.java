@@ -1,7 +1,7 @@
 package dontlookback;
 
 import org.lwjgl.opengl.*;
-import static org.lwjgl.opengl.GL31.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 import org.lwjgl.*;
 import org.lwjgl.input.*;
@@ -81,6 +81,8 @@ public class DLB_Graphics {
             Display.update();
             Display.sync(60);
         }
+                System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+
         Display.destroy();
         System.exit(0);
 
