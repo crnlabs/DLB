@@ -15,7 +15,7 @@ public class DLB_Graphics {
 
     private int delta; //something used to control movement independently of fps
     private static long lastFrame; //used in calculating delta
-    private final float walkingSpeed = .003125f; //walking speed (approx 5 ft/s)
+    private final float walkingSpeed = new Player.speed(); //walking speed (approx 5 ft/s)
 
     public DLB_Graphics() {
 
@@ -88,10 +88,8 @@ public class DLB_Graphics {
 
     }
 
-    //A bunch of calculations that make the camera work like it should
 
     private void camera() {
-        //the mouse should be captured not needed to be held down
         if (Mouse.isGrabbed() || Display.isFullscreen()) {
             float mouseDX = Mouse.getDX() * 2f * 0.16f;
             float mouseDY = Mouse.getDY() * 2f * 0.16f;

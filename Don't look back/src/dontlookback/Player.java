@@ -1,30 +1,35 @@
 package dontlookback;
 
-public class Player implements Human{
+public class Player implements Human {
 
     private boolean gender = true; //1 or true = male, false or 0 is female
     private double weight = 35; //default weight in Kg for a small child is 30-40
-    
-    
+    private float speed = .001666f; //this is my run speed hahah //yours is .003125f
+
     public float speed() {
-        return .00016666f;
+        return this.speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 
     public double weight() {
-        return weight;
-    
-        
-    public void setWeight(double weight){
+        return this.weight;
+    }
+
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
-    public boolean gender(){
-        return gender;
+    public boolean gender() {
+        return this.gender;
     }
-    public void setGender(boolean gender){
-           this.gender = gender;
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
     }
-    
+
     public boolean jump() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -81,9 +86,10 @@ public class Player implements Human{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
     public float rotZ() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     
+
 }
