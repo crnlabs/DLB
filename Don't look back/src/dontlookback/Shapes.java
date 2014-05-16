@@ -252,4 +252,28 @@ glEnd();
         
     }
     
+     public static void floorTest(){
+        int GridSizeX = 150;
+        int GridSizeZ = 150;
+
+         glBegin(GL_QUADS);
+        for (int x = -150; x < GridSizeX; ++x) {
+            for (int z = -150; z < GridSizeZ; ++z) {
+                if ((x + z) % 2 == 0) //modulo 2
+                {
+                    glColor3f(1.0f, 1.0f, 1.0f); //white
+                } else {
+                    glColor3f(0.0f, 0.0f, 0.0f); //black
+                }
+                glVertex3f(x, 0, z);
+                glVertex3f((x + 1), 0, z);
+                glVertex3f((x + 1), 0, (z + 1));
+                glVertex3f(x, 0, (z + 1));
+            }
+        }
+        glEnd();
+
+        glColor3f(1, 1, 1);
+     }
+     
 }

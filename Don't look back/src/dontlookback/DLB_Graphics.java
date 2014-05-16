@@ -32,7 +32,7 @@ public class DLB_Graphics {
 
         cameraX = 0f;
         cameraZ = 0f;
-        cameraY = -1.75f; //changed to 1.75 meters //never mind i see it means FLOAT not feet
+        cameraY = -1.75f; //I bet there is a setting to reverse what Y is, that would make things conveniant going forward.
 
         rotX = 0;
         rotY = 0;
@@ -40,7 +40,7 @@ public class DLB_Graphics {
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to
+        gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
 
@@ -188,7 +188,7 @@ public class DLB_Graphics {
     }
 
     private void render() {
-            //broken but close
+        //broken but close
         //shape1 = new Shapes.renderCube();
         //shapeTriangle1 = new Shapes.renderTriangle();    
         //working but wrong
@@ -199,29 +199,8 @@ public class DLB_Graphics {
         float[] testCenter2 = {-2f, 5f, -3f};
         Shapes.renderCube(testCenter);
         Shapes.renderCube(testCenter2, 2f);
-
-        int GridSizeX = 150;
-        int GridSizeZ = 150;
-
-        glBegin(GL_QUADS);
-        for (int x = -150; x < GridSizeX; ++x) {
-            for (int z = -150; z < GridSizeZ; ++z) {
-                if ((x + z) % 2 == 0) //modulo 2
-                {
-                    glColor3f(1.0f, 1.0f, 1.0f); //white
-                } else {
-                    glColor3f(0.0f, 0.0f, 0.0f); //black
-                }
-                glVertex3f(x, 0, z);
-                glVertex3f((x + 1), 0, z);
-                glVertex3f((x + 1), 0, (z + 1));
-                glVertex3f(x, 0, (z + 1));
-
-            }
-        }
-        glEnd();
-
-        glColor3f(1, 1, 1);
+        Shapes.floorTest();
+        
 
     }
 
