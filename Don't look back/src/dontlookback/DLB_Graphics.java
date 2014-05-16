@@ -53,29 +53,12 @@ public class DLB_Graphics{
 			
 			glLoadIdentity();
                         
-                        cX = cameraX;
-                        cY = cameraY;
-                        cZ = cameraZ;
-                        rX = rotX;
-                        rY = rotY;
                         
-                        //moves camera
-			glRotatef(rotX, 1, 0, 0);
-			glRotatef(rotY, 0, 1, 0);
-			glRotatef(rotZ, 0, 0, 1);
-			glTranslatef(cameraX,cameraY,cameraZ);
-			
-                        //calculates new camera pos
-			camera();
+                        //updates camera
+                        updateCamera();
+                        //runs debug code that outputs camera position to console when a change occurs
+                        debugCamera();
                         
-                        //outputs current x,y,z coords
-                        //and the rotation about the x and y axis
-                        if(cameraX != cX || cameraY != cY || cameraZ != cZ){
-                        System.out.println( "X: " + cameraX+",  Y: "+cameraY+", Z: "+cameraZ);
-                        }
-                        if(rotX != rX || rotY != rY){
-                        System.out.println("RotX: " + rotX+", RotY: "+rotY);
-                        }
                         
                         if(Mouse.isButtonDown(0)&&!Mouse.isGrabbed()){
                             Mouse.setGrabbed(true);
@@ -293,7 +276,32 @@ public class DLB_Graphics{
             glColor3f(1,1,1);
             
 	}
-	
+
+        private void updateCamera(){
+            //used in debug code
+                        cX = cameraX;
+                        cY = cameraY;
+                        cZ = cameraZ;
+                        rX = rotX;
+                        rY = rotY;
+                        
+            glRotatef(rotX, 1, 0, 0);
+            glRotatef(rotY, 0, 1, 0);
+            glRotatef(rotZ, 0, 0, 1);
+            glTranslatef(cameraX,cameraY,cameraZ);
+            camera();
+        }
+        
+        private void debugCamera(){
+                        //outputs current x,y,z coords
+                        //and the rotation about the x and y axis
+                        if(cameraX != cX || cameraY != cY || cameraZ != cZ){
+                        System.out.println( "X: " + cameraX+",  Y: "+cameraY+", Z: "+cameraZ);
+                        }
+                        if(rotX != rX || rotY != rY){
+                        System.out.println("RotX: " + rotX+", RotY: "+rotY);
+                        }
+}
         
         //helps calculate delta
 	private static long getTime() {
