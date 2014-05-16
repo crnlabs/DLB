@@ -5,7 +5,7 @@ public class Player implements Human {
     private boolean gender = true; //1 or true = male, false or 0 is female
     private double weight = 35; //default weight in Kg for a small child is 30-40
     private float speed = .001666f; //this is my run speed hahah //yours is .003125f
-
+    
     public float speed() {
         return this.speed;
     }

@@ -15,10 +15,12 @@ public class DLB_Graphics {
 
     private int delta; //something used to control movement independently of fps
     private static long lastFrame; //used in calculating delta
-    private final float walkingSpeed = new Player.speed(); //walking speed (approx 5 ft/s)
+    private final float walkingSpeed; //walking speed (approx 5 ft/s)
 
     public DLB_Graphics() {
-
+        Player Carl = new Player();
+        this.walkingSpeed = Carl.speed();
+           
         try {
             Display.setDisplayMode(new DisplayMode(1024, 768));
             Display.setTitle("Don't Look Back");
