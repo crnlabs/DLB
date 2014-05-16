@@ -186,21 +186,54 @@ glEnd();
     }
     public static void renderRectangle(){
         
+            glBegin(GL_QUADS); //this is the color cube
+                    glColor3f(0.0f, 1.0f, 0.0f);
+                    glNormal3f(0.0f, 0.0f, 1.0f);
+                    glVertex3f(0.5f, -0.5f, 0.5f);
+                    glVertex3f(0.5f, 0.5f, 0.5f);
+                    glVertex3f(-0.5f, 0.5f, 0.5f);
+                    glVertex3f(-0.5f, -0.5f, 0.5f);
+           glEnd();
     }
-    public static void renderRectangle(float[]position){ //A good way to tackle the rotation is to add it in as a fourth value, and even fifth for some things, XYZ center, XYZ rotation. = POSITION
+    public static void renderRectangle(float[] position){ //A good way to tackle the rotation is to add it in as a fourth value, and even fifth for some things, XYZ center, XYZ rotation. = POSITION
+            
+            glBegin(GL_QUADS);
+                    glColor3f(0.0f, 1.0f, 0.0f);
+                    glNormal3f(position[0]+ 0.0f, position[1] + 0.0f, position[2] + 1.0f);
+                    glVertex3f(position[0]+ 0.5f, position[1] +-0.5f, position[2] + 0.5f);
+                    glVertex3f(position[0]+ 0.5f, position[1] + 0.5f, position[2] + 0.5f);
+                    glVertex3f(position[0]+-0.5f, position[1] + 0.5f, position[2] + 0.5f);
+                    glVertex3f(position[0]+-0.5f, position[1] +-0.5f, position[2] + 0.5f);
+           glEnd();
+    }   
+    public static void renderRectangle(float[] position, float[] dimensions){  //second value is iffy here, should rectangles be a constant height? like wall height? a constant length??? hmm
+        glBegin(GL_QUADS);
+                    glColor3f(0.0f, 1.0f, 0.0f); //can't scale until i decide how we determine length width
+                    glNormal3f(position[0]+ 0.0f, position[1] + 0.0f, position[2] + 1.0f);
+                    glVertex3f(position[0]+ 0.5f, position[1] +-0.5f, position[2] + 0.5f);
+                    glVertex3f(position[0]+ 0.5f, position[1] + 0.5f, position[2] + 0.5f);
+                    glVertex3f(position[0]+-0.5f, position[1] + 0.5f, position[2] + 0.5f);
+                    glVertex3f(position[0]+-0.5f, position[1] +-0.5f, position[2] + 0.5f);
+           glEnd();
+    }
+    public static void renderQuadrilateral(){
         
     }
-    public static void renderRectangle(float[] position, float[] scale){  //second value is iffy here, should rectangles be a constant height? like wall height? a constant length??? hmm
+    public static void renderQuadrilateral(float[] position){
+        
+    }
+    public static void renderQuadrilateral(float[] position, float[] dimensions){
         
     }
     
+    //should walls have depth? 
     public static void renderWall(){
-        
+        //can we only have glBegin only happen ONCE before all the methods? and the end after? 
     }
     public static void renderWall(float[] center){
         
     }
-    public static void renderWall(float[] center, float size){
+    public static void renderWall(float[] center, float[] dimensions){
         
     }
     
@@ -211,9 +244,12 @@ glEnd();
     public static void renderRoom(float[] center){
         
     }
-    public static void renderRoom(float[] center, float size){
+    public static void renderRoom(float[] center, float[] dimensions){
         
     }
-    
+    //below is a test method for rooms with preset dimensions. such as hallway, narrow room, living room, idk room. but preseting and using those is probably better than setting manual dimensions each time.
+     public static void renderRoom(float[] center, int type){ //alternatively, for rooms, we can derive the center by the dimensions and use the point of entry as the forming factor
+        
+    }
     
 }
