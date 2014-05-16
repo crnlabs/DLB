@@ -170,4 +170,50 @@ public class Shapes {
         glVertex3f( 1.0f,-1.0f, 0.0f);              // Bottom Right
 glEnd();
     }
+    public static void renderTriangle(float[] center){
+        glBegin(GL_TRIANGLES);                      // Drawing Using Triangles
+        glVertex3f(center[0] + 0.0f, center[1] + 1.0f, center[2] + 0.0f);              // Top
+        glVertex3f(center[0] +-1.0f, center[1] +-1.0f, center[2] + 0.0f);              // Bottom Left
+        glVertex3f(center[0] + 1.0f, center[1] +-1.0f, center[2] + 0.0f);              // Bottom Right
+glEnd();
+    } // we should add a version with rotation but lets do that after rectangles are well constructed.
+    public static void renderTriangle(float[] center, float size){
+        glBegin(GL_TRIANGLES);                      // Drawing Using Triangles
+        glVertex3f(center[0] + 0.0f * size, center[1] + 1.0f * size, center[2] + 0.0f * size);              // Top
+        glVertex3f(center[0] +-1.0f * size, center[1] +-1.0f * size, center[2] + 0.0f * size);              // Bottom Left
+        glVertex3f(center[0] + 1.0f * size, center[1] +-1.0f * size, center[2] + 0.0f * size);              // Bottom Right
+glEnd();
+    }
+    public static void renderRectangle(){
+        
+    }
+    public static void renderRectangle(float[]position){ //A good way to tackle the rotation is to add it in as a fourth value, and even fifth for some things, XYZ center, XYZ rotation. = POSITION
+        
+    }
+    public static void renderRectangle(float[] position, float[] scale){  //second value is iffy here, should rectangles be a constant height? like wall height? a constant length??? hmm
+        
+    }
+    
+    public static void renderWall(){
+        
+    }
+    public static void renderWall(float[] center){
+        
+    }
+    public static void renderWall(float[] center, float size){
+        
+    }
+    
+    //these are tests, they will NOT be how rooms are in anyway rendered, but are nessessary for early play testing.
+    public static void renderRoom(){ 
+        
+    }
+    public static void renderRoom(float[] center){
+        
+    }
+    public static void renderRoom(float[] center, float size){
+        
+    }
+    
+    
 }
