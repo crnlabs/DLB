@@ -100,6 +100,21 @@ public class Player implements Human {
     public void moveToLeft() {
         System.out.println("moving left");
     }
+    
+    public void moveToRight() {
+        System.out.println("moving right");
+    }
+    
+    public void moveToFront() {
+        System.out.println("moving forward");
+    }
+    
+    public void moveToBack() {
+        System.out.println("moving backward");
+    }
+    
+    
+    
 
     
 
