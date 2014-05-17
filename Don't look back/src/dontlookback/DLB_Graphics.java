@@ -18,9 +18,9 @@ public class DLB_Graphics {
     private final float walkingSpeed; //walking speed (approx 5 ft/s)
 
     public DLB_Graphics() {
-        Player Carl = new Player();
-        this.walkingSpeed = Carl.speed();
-           
+        Player player = new Player();
+        this.walkingSpeed = player.speed();
+
         try {
             Display.setDisplayMode(new DisplayMode(1024, 768));
             Display.setTitle("Don't Look Back");
@@ -45,7 +45,7 @@ public class DLB_Graphics {
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
-        
+
         System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
         while (!Display.isCloseRequested()) {
 
@@ -65,6 +65,15 @@ public class DLB_Graphics {
             grabMouse();
 
             while (Keyboard.next()) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_LEFT ) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                    player.moveToLeft();
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+                    player.jump();
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
+                    player.pickUpItem();
+                }
 
                 if (Keyboard.isKeyDown(Keyboard.KEY_F11)) {
                     toggleFullscreen();
@@ -78,18 +87,17 @@ public class DLB_Graphics {
                     }
                 }
             }
-            
+
             displayResize();
 
             Display.update();
             Display.sync(60);
         }
-        
+
         Display.destroy();
         System.exit(0);
 
     }
-
 
     private void camera() {
         if (Mouse.isGrabbed() || Display.isFullscreen()) {
@@ -202,7 +210,6 @@ public class DLB_Graphics {
         Shapes.renderCube(testCenter);
         Shapes.renderCube(testCenter2, 2f);
         Shapes.floorTest();
-        
 
     }
 
@@ -213,7 +220,7 @@ public class DLB_Graphics {
         cZ = cameraZ;
         rX = rotX;
         rY = rotY;
-        
+
         glRotatef(rotX, 1, 0, 0);
         glRotatef(rotY, 0, 1, 0);
         glRotatef(rotZ, 0, 0, 1);
@@ -222,7 +229,7 @@ public class DLB_Graphics {
     }
 
     private void debugCamera() {
-                        //outputs current x,y,z coords
+        //outputs current x,y,z coords
         //and the rotation about the x and y axis
         if (cameraX != cX || cameraY != cY || cameraZ != cZ) {
             System.out.println("X: " + cameraX + ",  Y: " + cameraY + ", Z: " + cameraZ);
@@ -232,17 +239,17 @@ public class DLB_Graphics {
         }
     }
 
-    private void displayResize(){
-            if (Display.wasResized()) {
-                glViewport(0, 0, Display.getWidth(), Display.getHeight());
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f);
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-            }
+    private void displayResize() {
+        if (Display.wasResized()) {
+            glViewport(0, 0, Display.getWidth(), Display.getHeight());
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+        }
     }
-    
+
     private void toggleFullscreen() {
         try {
 

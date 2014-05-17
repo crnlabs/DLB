@@ -13,6 +13,11 @@ public class Player implements Human {
     public void setSpeed(float speed) {
         this.speed = speed;
     }
+    
+    
+    public void pickUpItem(){
+        System.out.println("there is nothing to pickup dumbass");
+    }
 
     public double weight() {
         return this.weight;
@@ -31,7 +36,9 @@ public class Player implements Human {
     }
 
     public boolean jump() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       System.out.println("this isn't one of those games!");
+        System.out.println("besides you need legs to jump!");
+        return false;
     }
 
     public int jumpHeight() {
@@ -88,6 +95,10 @@ public class Player implements Human {
 
     public float rotZ() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void moveToLeft() {
+        System.out.println("moving left");
     }
 
     
