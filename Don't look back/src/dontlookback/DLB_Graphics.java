@@ -1,7 +1,7 @@
 package dontlookback;
 
 import org.lwjgl.opengl.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.*; //should be 30 or above up to 44 (30 = 3.0 etc)
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 import org.lwjgl.*;
 import org.lwjgl.input.*;
@@ -46,7 +46,7 @@ public class DLB_Graphics {
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
 
-        System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+        System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION)); // test code, should run at very last line of console but can't get that 100% working all the time
         while (!Display.isCloseRequested()) {
 
             delta = getDelta();
