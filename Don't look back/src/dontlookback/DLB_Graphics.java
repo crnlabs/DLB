@@ -45,7 +45,8 @@ public class DLB_Graphics {
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST);
-
+        
+        System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
         while (!Display.isCloseRequested()) {
 
             delta = getDelta();
@@ -83,8 +84,7 @@ public class DLB_Graphics {
             Display.update();
             Display.sync(60);
         }
-                System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
-
+        
         Display.destroy();
         System.exit(0);
 
