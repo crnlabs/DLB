@@ -15,7 +15,10 @@ public class DLB_Graphics {
 
     private int delta; //something used to control movement independently of fps
     private static long lastFrame; //used in calculating delta
-    private final float walkingSpeed; //walking speed (approx 5 ft/s)
+    private final float walkingSpeed; //walking speed (approx 1 m/s)
+    private float velocityX = 0; //curent velocity in X direction. starts as 0 or rest state.
+    private float velocityY = 0; //curent velocity in Y direction. starts as 0 or rest state.
+    private float velocityZ = 0; //curent velocity in Z direction. starts at 0 or rest state.
 
     public DLB_Graphics() {
         Player player = new Player();
@@ -65,19 +68,19 @@ public class DLB_Graphics {
             grabMouse();
 
             while (Keyboard.next()) { //this is event driven actions, not polled
-                if (Keyboard.isKeyDown(Keyboard.KEY_LEFT ) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
                     player.moveToLeft();
                 }
-                if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT ) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
                     player.moveToRight();
                 }
-                if (Keyboard.isKeyDown(Keyboard.KEY_UP ) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
                     player.moveToFront();
                 }
-                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN ) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
                     player.moveToBack();
                 }
-                
+
                 //below are the ACTUAL event driven actions, above is practice
                 if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
                     player.jump();
@@ -137,60 +140,70 @@ public class DLB_Graphics {
         boolean keyLeft = Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A);
         boolean keyRight = Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D);
         boolean keySprint = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT); //neat I didn't know you could "or" booleans
-
+        // i want to ramp up to full speed. if we don't have something like sliding to overcome inertia, then everyone will always run.
+        //thus ramping up to full sprint is best. allowing for people to find a speed at which they are most comfortable with. this is tricky however
+        //as we must account for the various conservations of inertia, but lets just start with it ramping up from 1 to 3 over 5 seconds or so
+        //and then ramping down if you let go. if we use velocity to move, instead of individual commands, we can ramp it and change it over time, and have far more control over it.
+        //as opposed to having to account for each if statement, we can just use them to modify and run different conditions.
+        //this would be easier if the player always faced in one direction
+        //anyway Lets ramp to 3 in 3 seconds, drop to 2 in 1 seconds. once you hit 1 m/s you can instantly change direction like normal.
+        //since you don't run in a catesian direction, and we can't lock the velocity to the view angle, UNLESS we slow the view angle down to compensate for interia
+        //IE you turn slower the faster you move, and the at a walk you have free movement again. in fact this might be best because it gives the impression of tunnel vision.
         float angle, hypotenuse;
         angle = hypotenuse = -1;
-        if (keyUp && keyRight && !keyLeft && !keyDown) {
+        if (keyUp && keyRight && !keyLeft && !keyDown) { //forward to the right //diagonal
             angle = rotY + 45;
 
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
+
             } else {
                 hypotenuse = (walkingSpeed * 3) * delta;
+
             }
-        } else if (keyUp && keyLeft && !keyRight && !keyDown) {
+        } else if (keyUp && keyLeft && !keyRight && !keyDown) { //forward to the left //diagonal
             angle = rotY - 45;
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
             } else {
                 hypotenuse = (walkingSpeed * 3) * delta;
             }
-        } else if (keyUp && !keyLeft && !keyRight && !keyDown) {
+        } else if (keyUp && !keyLeft && !keyRight && !keyDown) { //forward
             angle = rotY;
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
             } else {
                 hypotenuse = (walkingSpeed * 3) * delta;
             }
-        } else if (keyDown && keyLeft && !keyRight && !keyUp) {
+        } else if (keyDown && keyLeft && !keyRight && !keyUp) { //reverse and to the left //diagonal
             angle = rotY - 135;
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
             } else {
                 hypotenuse = (walkingSpeed * 3) * delta;
             }
-        } else if (keyDown && keyRight && !keyLeft && !keyUp) {
+        } else if (keyDown && keyRight && !keyLeft && !keyUp) { //reverse and to the right //diagonal
             angle = rotY + 135;
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
             } else {
                 hypotenuse = (walkingSpeed * 3) * delta;
             }
-        } else if (keyDown && !keyUp && !keyLeft && !keyRight) {
+        } else if (keyDown && !keyUp && !keyLeft && !keyRight) { //reverse
             angle = rotY;
             if (!keySprint) {
                 hypotenuse = -(walkingSpeed) * delta;
             } else {
                 hypotenuse = -(walkingSpeed * 3) * delta;
             }
-        } else if (keyLeft && !keyRight && !keyUp && !keyDown) {
+        } else if (keyLeft && !keyRight && !keyUp && !keyDown) { //left
             angle = rotY - 90;
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
             } else {
                 hypotenuse = (walkingSpeed * 3) * delta;
             }
-        } else if (keyRight && !keyLeft && !keyUp && !keyDown) {
+        } else if (keyRight && !keyLeft && !keyUp && !keyDown) { //right
             angle = rotY + 90;
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
