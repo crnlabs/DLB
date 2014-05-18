@@ -9,7 +9,7 @@ public class DontLookBack {
         newWindow(); //create window
         consoleIntro(); //output Into text to console
         consoleDebug(); //output debug code to console
-        //loadSettings(); causes crash for some reason
+        loadSettings(); //causes crash for some reason
         mainSequence(true); //this is the current "game" location, needs to be split up from window creation as turning off open gl 1.1 will break that class and thus all windows.
         //begin game
         //etc
