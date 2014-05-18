@@ -19,12 +19,15 @@ public class DLB_Graphics {
     private float velocityX = 0; //curent velocity in X direction. starts as 0 or rest state.
     private float velocityY = 0; //curent velocity in Y direction. starts as 0 or rest state.
     private float velocityZ = 0; //curent velocity in Z direction. starts at 0 or rest state.
+    private float sprintSpeed = 0; // temporary. will be moved into player class as a max speed mulitplier.
 
-    public DLB_Graphics() {
+    public DLB_Graphics(boolean debug) {
+        
         Player player = new Player();
         this.walkingSpeed = player.speed();
-
+        
         try {
+            
             Display.setDisplayMode(new DisplayMode(1024, 768));
             Display.setTitle("Don't Look Back");
             Display.setResizable(true);
@@ -47,9 +50,11 @@ public class DLB_Graphics {
         glLoadIdentity();
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
-        glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_DEPTH_TEST); TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
+        glEnable(GL_CULL_FACE);
+        //glCullFace(GL_FRONT); // Doesn't draw front faces
+        glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
 
-        System.out.println("you are running OpenGL version: " + GL11.glGetString(GL11.GL_VERSION)); // test code, should run at very last line of console but can't get that 100% working all the time
         while (!Display.isCloseRequested()) {
 
             delta = getDelta();
@@ -63,7 +68,7 @@ public class DLB_Graphics {
             //updates camera
             updateCamera();
             //runs debug code that outputs camera position to console when a change occurs
-            debugCamera();
+            debugCamera(debug);
 
             grabMouse();
 
@@ -149,11 +154,16 @@ public class DLB_Graphics {
         //anyway Lets ramp to 3 in 3 seconds, drop to 2 in 1 seconds. once you hit 1 m/s you can instantly change direction like normal.
         //since you don't run in a catesian direction, and we can't lock the velocity to the view angle, UNLESS we slow the view angle down to compensate for interia
         //IE you turn slower the faster you move, and the at a walk you have free movement again. in fact this might be best because it gives the impression of tunnel vision.
+        //-----------
+        //easiest will just ave velocity tied to the 3D coordinate system
+        //and then use math to decide what direction "left" should be, all floats MANDATORY"
+        //this IS how it currently behaves but it becomes slightly more complex when we have
+        //the system remember and calculate total velocity
         float angle, hypotenuse;
         angle = hypotenuse = -1;
         if (keyUp && keyRight && !keyLeft && !keyDown) { //forward to the right //diagonal
             angle = rotY + 45;
-
+            
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
 
@@ -252,7 +262,8 @@ public class DLB_Graphics {
         camera();
     }
 
-    private void debugCamera() {
+    private void debugCamera(boolean debug) {
+        if(debug==true){
         //outputs current x,y,z coords
         //and the rotation about the x and y axis
         if (cameraX != cX || cameraY != cY || cameraZ != cZ) {
@@ -260,6 +271,7 @@ public class DLB_Graphics {
         }
         if (rotX != rX || rotY != rY) {
             System.out.println("RotX: " + rotX + ", RotY: " + rotY);
+        }
         }
     }
 
