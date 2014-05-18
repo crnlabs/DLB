@@ -10,7 +10,6 @@ public class Window {
 
     public Window() {
         setUpDisplay();
-        System.out.println("Your OpenGL version is " + GL11.glGetString(GL11.GL_VERSION));
             Display.sync(60);
             Display.update();
             //programming in the main menu here would probably be conveniant.

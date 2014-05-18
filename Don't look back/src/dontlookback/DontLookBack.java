@@ -1,6 +1,7 @@
 package dontlookback;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.GL11;
 
 public class DontLookBack {
     
@@ -23,9 +24,8 @@ public class DontLookBack {
 
     private static void consoleDebug() throws LWJGLException {
         String modelPath = System.getProperty("user.dir") + "/res/models/";
-        //VersionTest version = new VersionTest(); moved version test
         System.out.println("Debug Information: ");
-        //System.out.println(version.text); movedS
+        System.out.println("Your OpenGL version is " + GL11.glGetString(GL11.GL_VERSION));
         System.out.println(modelPath + "monkey3.obj");
         System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~**~*~");
 
