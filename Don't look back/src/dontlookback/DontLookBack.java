@@ -7,7 +7,8 @@ public class DontLookBack {
     public static void main(String[] args) throws LWJGLException { //exception thrown for version test
         consoleIntro();
         consoleDebug();
-        consoleTracking(true);
+        newWindow();
+        //consoleTracking(true);
         //create window
         //begin game
         //etc
@@ -21,7 +22,7 @@ public class DontLookBack {
     }
 
     private static void consoleDebug() throws LWJGLException {
-        String modelPath = System.getProperty("user.dir") + "/resources/models/";
+        String modelPath = System.getProperty("user.dir") + "/res/models/";
         VersionTest version = new VersionTest();
         System.out.println("Debug Information: ");
         System.out.println(version.text);
@@ -33,5 +34,9 @@ public class DontLookBack {
     private static void consoleTracking(boolean debug) {
         System.out.println("The following is movement tracking:");
         DLB_Graphics Graphics = new DLB_Graphics(debug);
+    }
+    
+    private static void newWindow(){
+        Window window = new Window();
     }
 }

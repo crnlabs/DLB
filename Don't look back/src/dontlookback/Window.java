@@ -22,7 +22,7 @@ public class Window {
         try {
             Display.setDisplayMode(new DisplayMode(640, 480));
             PNGDecoder imageDecoder = new PNGDecoder(new FileInputStream("res/images/logo128.png"));
-            if (!imageDecoder.hasAlpha() && imageDecoder.getHeight() != 128 && imageDecoder.getHeight() != 128) {
+            if (!imageDecoder.hasAlpha() && imageDecoder.getHeight() != 128 && imageDecoder.getWidth() != 128) {
                 System.err.println("Icon does not have transparency info and cannot serve as an icon for the application.");
             }
             Display.create();
