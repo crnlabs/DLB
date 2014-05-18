@@ -7,9 +7,8 @@ public class DontLookBack {
     public static void main(String[] args) throws LWJGLException { //exception thrown for version test
         consoleIntro();
         consoleDebug();
-        newWindow();
-        //consoleTracking(true);
-        //create window
+        newWindow(); //create window
+        //consoleTracking(true); //this is the current "game" location, needs to be split up from window creation as turning off open gl 1.1 will break that class and thus all windows.
         //begin game
         //etc
     }
@@ -37,6 +36,6 @@ public class DontLookBack {
     }
     
     private static void newWindow(){
-        Window window = new Window();
+        Window window = new Window(); //should add "size" as a factor here?
     }
 }

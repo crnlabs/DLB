@@ -6,9 +6,9 @@ import java.nio.ByteBuffer;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
-
 public class Window {
-        public static void main(String[] args) {
+
+    public Window() {
         setUpDisplay();
         while (!Display.isCloseRequested()) {
             Display.sync(60);
@@ -17,7 +17,8 @@ public class Window {
         Display.destroy();
         System.exit(0);
     }
-        private static void setUpDisplay() {
+
+    private static void setUpDisplay() {
         Display.setTitle("Custom Icon Test");
         try {
             Display.setDisplayMode(new DisplayMode(640, 480));
@@ -29,16 +30,16 @@ public class Window {
             ByteBuffer imageData = BufferUtils.createByteBuffer(4 * imageDecoder.getWidth() * imageDecoder.getHeight());
             imageDecoder.decode(imageData, imageDecoder.getWidth() * 4, PNGDecoder.Format.RGBA);
             imageData.flip();
-            System.out.println(Display.setIcon(new ByteBuffer[]{imageData}));
+            System.out.println(Display.setIcon(new ByteBuffer[]{imageData})); //this is where the 0 is coming from right now
         } catch (LWJGLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         /**
-         On Windows you should supply at least one 16x16 icon and one 32x32.
-         Linux (and similar platforms) expect one 32x32 icon.
-         Mac OS X should be supplied one 128x128 icon
+         * On Windows you should supply at least one 16x16 icon and one 32x32.
+         * Linux (and similar platforms) expect one 32x32 icon. Mac OS X should
+         * be supplied one 128x128 icon
          */
         // 16x16, 32x32, 32x32, 128x128
     }
