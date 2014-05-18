@@ -1,5 +1,7 @@
 package dontlookback;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.lwjgl.opengl.*;
 import static org.lwjgl.opengl.GL11.*; //should be 30 or above up to 44 (30 = 3.0 etc)
 import static org.lwjgl.util.glu.GLU.gluPerspective;
@@ -22,20 +24,21 @@ public class DLB_Graphics {
     private float sprintSpeed = 0; // temporary. will be moved into player class as a max speed mulitplier.
 
     public DLB_Graphics(boolean debug) {
-        
+
         Player player = new Player();
         this.walkingSpeed = player.speed();
-        
+        int resolutionX = 1024, resolutionY = 768;
         try {
             
-            Display.setDisplayMode(new DisplayMode(1024, 768));
+            Display.setDisplayMode(new DisplayMode(resolutionX, resolutionY)); //these modify the existing window
+            glScissor(0, 0, resolutionX, resolutionY);
+            glViewport(0, 0, resolutionX, resolutionY);
             Display.setTitle("Don't Look Back");
             Display.setResizable(true);
-            Display.create();
-        } catch (LWJGLException e) {
-            e.printStackTrace();
-            Display.destroy();
-            System.exit(1);
+            Display.sync(60);
+            Display.update();
+        } catch (LWJGLException ex) {
+            Logger.getLogger(DLB_Graphics.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         cameraX = 0f;
@@ -163,7 +166,7 @@ public class DLB_Graphics {
         angle = hypotenuse = -1;
         if (keyUp && keyRight && !keyLeft && !keyDown) { //forward to the right //diagonal
             angle = rotY + 45;
-            
+
             if (!keySprint) {
                 hypotenuse = (walkingSpeed) * delta;
 
@@ -263,15 +266,15 @@ public class DLB_Graphics {
     }
 
     private void debugCamera(boolean debug) {
-        if(debug==true){
-        //outputs current x,y,z coords
-        //and the rotation about the x and y axis
-        if (cameraX != cX || cameraY != cY || cameraZ != cZ) {
-            System.out.println("X: " + cameraX + ",  Y: " + cameraY + ", Z: " + cameraZ);
-        }
-        if (rotX != rX || rotY != rY) {
-            System.out.println("RotX: " + rotX + ", RotY: " + rotY);
-        }
+        if (debug == true) {
+            //outputs current x,y,z coords
+            //and the rotation about the x and y axis
+            if (cameraX != cX || cameraY != cY || cameraZ != cZ) {
+                System.out.println("X: " + cameraX + ",  Y: " + cameraY + ", Z: " + cameraZ);
+            }
+            if (rotX != rX || rotY != rY) {
+                System.out.println("RotX: " + rotX + ", RotY: " + rotY);
+            }
         }
     }
 

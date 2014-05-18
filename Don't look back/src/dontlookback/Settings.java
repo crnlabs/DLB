@@ -5,10 +5,10 @@ package dontlookback;
  * @author Carl
  * For this Class I want to just bundle together all of the values that we might
  * need to pull or use anywhere else, gravity, wind speed, or even something
- * as simple as Admin mode = on/off; All of those options should be in here.
+ * as simple as administrator mode = on/off; All of those options should be in here.
  * 
  */
-public class World {
+public class Settings {
     private final boolean admin;
     private final boolean monsterSpawn;
     private final boolean trialMode;
@@ -16,10 +16,13 @@ public class World {
     private final boolean lightsFlicker;
     private final boolean achievements;
     private final boolean feedback;
+    private final int[] resolution = null;
     
     public boolean lightsOn;
 
-    public World() {
+    public Settings() {
+        this.resolution[0] = 1024; //set horizonal resolutoin
+        this.resolution[1] = 768; //set verticle resolution
         this.monsterSpawn = true;
         this.admin = true;
         this.trialMode = true;
@@ -29,4 +32,7 @@ public class World {
         this.feedback = true; //before we even test beta we need to have these games send back stats to a server that records times, deaths, by what, as much data as we can.
     }
     
+    public int[] resolution(){
+        return resolution;
+    }
 }

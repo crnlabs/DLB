@@ -10,12 +10,13 @@ public class Window {
 
     public Window() {
         setUpDisplay();
-        while (!Display.isCloseRequested()) {
+        System.out.println("Your OpenGL version is " + GL11.glGetString(GL11.GL_VERSION));
             Display.sync(60);
             Display.update();
-        }
-        Display.destroy();
-        System.exit(0);
+            //programming in the main menu here would probably be conveniant.
+        
+        //Display.destroy();
+        //System.exit(0);
     }
 
     private static void setUpDisplay() {
@@ -42,5 +43,9 @@ public class Window {
          * be supplied one 128x128 icon
          */
         // 16x16, 32x32, 32x32, 128x128
+    }
+    private static void mainSequence(boolean debug) {
+        System.out.println("The following is movement tracking:");
+        DLB_Graphics Graphics = new DLB_Graphics(debug);
     }
 }
