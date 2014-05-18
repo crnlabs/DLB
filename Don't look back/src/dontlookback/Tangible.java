@@ -1,4 +1,3 @@
-
 package dontlookback;
 
 public interface Tangible {

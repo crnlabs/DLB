@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL11.glVertex3f;
 public class Shapes {
     public static void renderCube(){
         
-            glBegin(GL_QUADS); //this is the color cube
+            glBegin(GL_QUADS); //this is the big color cube
 		
 		glColor3f(1.0f,1.0f,0.0f); //side 1, color:
 		glVertex3f(45.0f,30.0f,15.0f);
