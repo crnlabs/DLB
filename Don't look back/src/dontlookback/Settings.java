@@ -17,8 +17,6 @@ public class Settings {
     private final boolean achievements;
     private final boolean feedback;
     private final int[] resolution = new int[2]; //to be honest this needs to be changed to ...profiles? or something? it's opengl something or another. james should know
-    
-    public boolean lightsOn;
 
     public Settings() {
         this.resolution[0] = 1024; //set horizonal resolutoin
