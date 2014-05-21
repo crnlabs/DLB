@@ -250,8 +250,8 @@ public class DLB_Graphics {
         cube1.setZ(30);
         cube1.setWidth(30);
         cube1.setOrientation(45);
-        Cube cube2=new Cube(testCenter,10,0);
-        Cube cube3=new Cube(testCenter2,14,0);
+        Cube cube2=new Cube(testCenter,0,10);
+        Cube cube3=new Cube(testCenter2,0,14);
         
         Shapes.floorTest();
         
