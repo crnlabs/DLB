@@ -1,6 +1,6 @@
 package dontlookback;
 
 
-public interface Furnature extends Tangible{
+public interface Furnature extends Entities{
     
 }

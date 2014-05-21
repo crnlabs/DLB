@@ -26,7 +26,8 @@ public class DLB_Graphics {
     public DLB_Graphics(boolean debug) {
 
         Player player = new Player();
-        this.walkingSpeed = player.speed();
+        //this.walkingSpeed = player.speed();
+        walkingSpeed=.005f;
         int resolutionX = 1024, resolutionY = 768;
         try {
             
@@ -53,10 +54,10 @@ public class DLB_Graphics {
         glLoadIdentity();
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
-        //glEnable(GL_DEPTH_TEST); TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
-        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST); //TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
+        //glEnable(GL_CULL_FACE);
         //glCullFace(GL_FRONT); // Doesn't draw front faces
-        glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
+        //glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
 
         while (!Display.isCloseRequested()) {
 
@@ -239,14 +240,24 @@ public class DLB_Graphics {
         //shape1 = new Shapes.renderCube();
         //shapeTriangle1 = new Shapes.renderTriangle();    
         //working but wrong
-        Shapes.renderTriangle();
-        Shapes.renderCube();
-        //testing but not end goal
+        
         float[] testCenter = {2f, 5f, 3f};
-        float[] testCenter2 = {-2f, 5f, -3f};
-        Shapes.renderCube(testCenter);
-        Shapes.renderCube(testCenter2, 2f);
+        float[] testCenter2 = {-2f, 7f, -3f};
+        
+        Cube cube1=new Cube();
+        cube1.setX(30);
+        cube1.setY(15);
+        cube1.setZ(30);
+        cube1.setWidth(30);
+        cube1.setOrientation(45);
+        Cube cube2=new Cube(testCenter,10,0);
+        Cube cube3=new Cube(testCenter2,14,0);
+        
         Shapes.floorTest();
+        
+        cube1.render();
+        cube2.render();
+        cube3.render();
 
     }
 
