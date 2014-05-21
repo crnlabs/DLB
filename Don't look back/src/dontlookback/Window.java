@@ -43,8 +43,4 @@ public class Window {
          */
         // 16x16, 32x32, 32x32, 128x128
     }
-    private static void mainSequence(boolean debug) {
-        System.out.println("The following is movement tracking:");
-        DLB_Graphics Graphics = new DLB_Graphics(debug);
-    }
 }
