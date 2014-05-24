@@ -4,13 +4,14 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.GL11;
 
 public class DontLookBack {
-    
+
     public static void main(String[] args) throws LWJGLException { //exception thrown for version test
         newWindow(); //create window
+        //splash screen/intro?
         consoleIntro(); //output Into text to console
         consoleDebug(); //output debug code to console
-        loadSettings(); //causes crash for some reason
-        mainSequence(true); //this is the current "game" location, needs to be split up from window creation as turning off open gl 1.1 will break that class and thus all windows.
+        //loadSettings(); //loads up settings
+        mainSequence(loadSettings()); //this is the current "game" location
         //begin game
         //etc
     }
@@ -31,16 +32,19 @@ public class DontLookBack {
 
     }
 
-    private static void mainSequence(boolean debug) {
+    private static void mainSequence(Settings debug) {
         System.out.println("The following is movement tracking:");
-        DLB_Graphics Graphics = new DLB_Graphics(debug);
+        DLB_Graphics Graphics = new DLB_Graphics();
     }
-    
-    private static void loadSettings(){
+
+    private static Settings loadSettings() {
         Settings config = new Settings();
+        return config;
+        //IDEALY it will all share one settings, but for now i'm satisfied with just using instances, we can go through and fix it all later
+        //once opengl is moved off of 1.1 entirely.
     }
-    
-    private static void newWindow(){
+
+    private static void newWindow() {
         Window window = new Window(); //should add "size" as a factor here?
     }
 }

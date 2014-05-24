@@ -1,5 +1,5 @@
 package dontlookback;
 
-public interface Enemy extends NPC{
-    
+public interface Enemy extends NPC {
+
 }

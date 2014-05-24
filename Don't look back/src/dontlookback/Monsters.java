@@ -1,5 +1,5 @@
 package dontlookback;
 
-public interface Monsters extends Enemy{
-    
+public interface Monsters extends Enemy {
+
 }

@@ -10,6 +10,7 @@ import org.lwjgl.input.*;
 
 public class DLB_Graphics {
 
+    Settings config = new Settings();
     private static float cameraX, cameraY, cameraZ; //camera pos x,y,z
     private static float rotX, rotY, rotZ; //rotation of camera around x,y,z axis
     private static float cX, cY, cZ; //last camera pos x,y,z
@@ -23,14 +24,18 @@ public class DLB_Graphics {
     private float velocityZ = 0; //curent velocity in Z direction. starts at 0 or rest state.
     private float sprintSpeed = 0; // temporary. will be moved into player class as a max speed mulitplier.
 
-    public DLB_Graphics(boolean debug) {
+    public DLB_Graphics() {
 
         Player player = new Player();
-        //this.walkingSpeed = player.speed();
-        walkingSpeed=.005f;
+
+        if (config.admin() != true) {
+            this.walkingSpeed = player.speed();
+        } else {
+            walkingSpeed = .005f;
+        }
         int resolutionX = 1024, resolutionY = 768;
         try {
-            
+
             Display.setDisplayMode(new DisplayMode(resolutionX, resolutionY)); //these modify the existing window
             glScissor(0, 0, resolutionX, resolutionY);
             glViewport(0, 0, resolutionX, resolutionY);
@@ -54,10 +59,10 @@ public class DLB_Graphics {
         glLoadIdentity();
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
-        glEnable(GL_DEPTH_TEST); //TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
-        //glEnable(GL_CULL_FACE);
+        //glEnable(GL_DEPTH_TEST); //TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
+        glEnable(GL_CULL_FACE);
         //glCullFace(GL_FRONT); // Doesn't draw front faces
-        //glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
+        glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
 
         while (!Display.isCloseRequested()) {
 
@@ -72,7 +77,7 @@ public class DLB_Graphics {
             //updates camera
             updateCamera();
             //runs debug code that outputs camera position to console when a change occurs
-            debugCamera(debug);
+            debugCamera(config.admin());
 
             grabMouse();
 
@@ -240,24 +245,25 @@ public class DLB_Graphics {
         //shape1 = new Shapes.renderCube();
         //shapeTriangle1 = new Shapes.renderTriangle();    
         //working but wrong
-        
+
         float[] testCenter = {2f, 5f, 3f};
         float[] testCenter2 = {-2f, 7f, -3f};
-        
-        Cube cube1=new Cube();
+
+        Cube cube1 = new Cube(); //style 1: initilize and then set up
         cube1.setX(30);
         cube1.setY(15);
         cube1.setZ(30);
-        cube1.setWidth(30);
         cube1.setOrientation(45);
-        Cube cube2=new Cube(testCenter,0,10);
-        Cube cube3=new Cube(testCenter2,0,14);
-        
+        cube1.setWidth(30);
+
+        Cube cube2 = new Cube(testCenter, 0, 1); //center position, orientation, width.
+        Cube cube3 = new Cube(testCenter2, 0, 2); //center position, orientation, width.
+
         Shapes.floorTest();
-        
+
         cube1.render();
         cube2.render();
-        cube3.render();
+        cube3.render(); //having to list each object that needs to render is a pain, and won't work when we are generating things randomly.
 
     }
 

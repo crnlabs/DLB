@@ -10,10 +10,10 @@ public class Window {
 
     public Window() {
         setUpDisplay();
-            Display.sync(60);
-            Display.update();
+        Display.sync(60);
+        Display.update();
             //programming in the main menu here would probably be conveniant.
-        
+
         //Display.destroy();
         //System.exit(0);
     }
