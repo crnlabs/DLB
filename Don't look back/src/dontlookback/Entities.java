@@ -27,5 +27,9 @@ public interface Entities {
     public void setRGB(float[] rgb);
 
     public void render();
+    
+    public void setUpVBO();
+    
+    public void delete();
 
 }

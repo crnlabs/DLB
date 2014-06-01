@@ -4,6 +4,7 @@ public abstract class Objects implements Entities {
 
     protected float x, y, z;
     protected float orientation;
+    protected int handle;
 
     protected float[] rgb = {0.5f, 0.5f, 0.5f};
 
@@ -81,5 +82,9 @@ public abstract class Objects implements Entities {
     }
 
     public abstract void render();
+    
+    public abstract void setUpVBO();
+    
+    public abstract void delete();
 
 }

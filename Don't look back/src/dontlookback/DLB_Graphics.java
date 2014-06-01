@@ -23,6 +23,7 @@ public class DLB_Graphics {
     private float velocityY = 0; //curent velocity in Y direction. starts as 0 or rest state.
     private float velocityZ = 0; //curent velocity in Z direction. starts at 0 or rest state.
     private float sprintSpeed = 0; // temporary. will be moved into player class as a max speed mulitplier.
+    private Cube cube1,cube2,cube3;
 
     public DLB_Graphics() {
 
@@ -54,7 +55,7 @@ public class DLB_Graphics {
         rotX = 0;
         rotY = 0;
         rotZ = 0;
-
+        
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
@@ -62,7 +63,24 @@ public class DLB_Graphics {
         //glEnable(GL_DEPTH_TEST); //TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
         glEnable(GL_CULL_FACE);
         //glCullFace(GL_FRONT); // Doesn't draw front faces
-        glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
+        //glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
+        
+        float[] testCenter = {2f, 5f, 3f};
+        float[] testCenter2 = {-2f, 7f, -3f};
+
+        cube1 = new Cube(); //style 1: initilize and then set up
+        cube1.setX(30);
+        cube1.setY(15);
+        cube1.setZ(30);
+        cube1.setOrientation(45);
+        cube1.setWidth(30);
+
+        cube2 = new Cube(testCenter, 0, 1); //center position, orientation, width.
+        cube3 = new Cube(testCenter2, 0, 2); //center position, orientation, width.
+        
+        cube1.setUpVBO();
+        cube2.setUpVBO();
+        cube3.setUpVBO();
 
         while (!Display.isCloseRequested()) {
 
@@ -108,6 +126,9 @@ public class DLB_Graphics {
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
                     if (!Mouse.isGrabbed() || Display.isFullscreen()) {
+                        cube1.delete();
+                        cube2.delete();
+                        cube3.delete();
                         Display.destroy();
                         System.exit(0);
                     } else {
@@ -121,6 +142,10 @@ public class DLB_Graphics {
             Display.update();
             Display.sync(60);
         }
+        
+        cube1.delete();
+        cube2.delete();
+        cube3.delete();
 
         Display.destroy();
         System.exit(0);
@@ -245,20 +270,7 @@ public class DLB_Graphics {
         //shape1 = new Shapes.renderCube();
         //shapeTriangle1 = new Shapes.renderTriangle();    
         //working but wrong
-
-        float[] testCenter = {2f, 5f, 3f};
-        float[] testCenter2 = {-2f, 7f, -3f};
-
-        Cube cube1 = new Cube(); //style 1: initilize and then set up
-        cube1.setX(30);
-        cube1.setY(15);
-        cube1.setZ(30);
-        cube1.setOrientation(45);
-        cube1.setWidth(30);
-
-        Cube cube2 = new Cube(testCenter, 0, 1); //center position, orientation, width.
-        Cube cube3 = new Cube(testCenter2, 0, 2); //center position, orientation, width.
-
+        
         Shapes.floorTest();
 
         cube1.render();

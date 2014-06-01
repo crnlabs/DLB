@@ -2,6 +2,8 @@ package dontlookback;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 
 public class Cube extends Objects {
 
@@ -31,70 +33,97 @@ public class Cube extends Objects {
     }
 
     public void render() {
-        Settings config = new Settings();
         float cX = x, cY = y, cZ = z;
         glPushMatrix();
-
-        debug(config.debug(), cX, cY, cZ);
 
         glTranslatef(x, y, z);
         glRotatef(orientation, 0, 1, 0);
         glTranslatef(-1 * x, -1 * y, -1 * z);
 
-        glBegin(GL_QUADS);
-
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glVertex3f(x + (width / 2), y + (width / 2), z - (width / 2));
-        glVertex3f(x - (width / 2), y + (width / 2), z - (width / 2));
-        glVertex3f(x - (width / 2), y + (width / 2), z + (width / 2));
-        glVertex3f(x + (width / 2), y + (width / 2), z + (width / 2));
-
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glVertex3f(x + (width / 2), y - (width / 2), z + (width / 2));
-        glVertex3f(x - (width / 2), y - (width / 2), z + (width / 2));
-        glVertex3f(x - (width / 2), y - (width / 2), z - (width / 2));
-        glVertex3f(x + (width / 2), y - (width / 2), z - (width / 2));
-
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glVertex3f(x + (width / 2), y + (width / 2), z + (width / 2));
-        glVertex3f(x - (width / 2), y + (width / 2), z + (width / 2));
-        glVertex3f(x - (width / 2), y - (width / 2), z + (width / 2));
-        glVertex3f(x + (width / 2), y - (width / 2), z + (width / 2));
-
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glVertex3f(x + (width / 2), y - (width / 2), z - (width / 2));
-        glVertex3f(x - (width / 2), y - (width / 2), z - (width / 2));
-        glVertex3f(x - (width / 2), y + (width / 2), z - (width / 2));
-        glVertex3f(x + (width / 2), y + (width / 2), z - (width / 2));
-
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glVertex3f(x - (width / 2), y + (width / 2), z + (width / 2));
-        glVertex3f(x - (width / 2), y + (width / 2), z - (width / 2));
-        glVertex3f(x - (width / 2), y - (width / 2), z - (width / 2));
-        glVertex3f(x - (width / 2), y - (width / 2), z + (width / 2));
-
-        glColor3f(rgb[0], rgb[1], rgb[2]);
-        glVertex3f(x + (width / 2), y + (width / 2), z - (width / 2));
-        glVertex3f(x + (width / 2), y + (width / 2), z + (width / 2));
-        glVertex3f(x + (width / 2), y - (width / 2), z + (width / 2));
-        glVertex3f(x + (width / 2), y - (width / 2), z - (width / 2));
-
-        glEnd();
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glBindBuffer(GL_ARRAY_BUFFER,handle);
+        glVertexPointer(3, GL_FLOAT, 24, 0);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glColorPointer(3, GL_FLOAT, 24, 12);
+        glDrawArrays(GL_TRIANGLES, 0, 24);
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 
         glPopMatrix();
 
     }
-
-    private void debug(int debug, float cX, float cY, float cZ) {
-        if (debug == 1) {
-            //outputs x y z coordinates if cube moves
-            if (x != cX || y != cY || z != cZ) {
-                System.out.println("X: " + x + ",  Y: " + y + ", Z: " + z); //this is all sort of test code but it works well enough to stop the console spam.
-            }
-            //outputs cube orientation if orientation changes
-//            if (rotX != rX || rotY != rY) {
-//                System.out.println("RotX: " + rotX + ", RotY: " + rotY);
-//            }
-        }
+    
+    public void setUpVBO(){
+        
+        FloatBuffer vertexData = BufferUtils.createFloatBuffer(144);
+        
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        
+        vertexData.flip();
+        
+        handle=glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER,handle);
+        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+        
     }
+    
+    public void delete(){
+        
+        glDeleteBuffers(handle);
+        
+    }
+    
 }
