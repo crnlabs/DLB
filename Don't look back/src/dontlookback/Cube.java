@@ -55,60 +55,95 @@ public class Cube extends Objects {
     
     public void setUpVBO(){
         
-        FloatBuffer vertexData = BufferUtils.createFloatBuffer(144);
+        FloatBuffer vertexData = BufferUtils.createFloatBuffer(216);
         
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Z
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
         
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)), //+Z
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)), 
+            (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+	
+        
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+X
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        
+	vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
+
+
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Y
+            (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
+	
+	vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
         
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
+        
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)), //-X
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+	    (rgb[0]),(rgb[1]),(rgb[2])});
+
+	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+	    (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+
+
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Y
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
+
+	vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
+
+
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Z
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+
+	vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         
         vertexData.flip();
