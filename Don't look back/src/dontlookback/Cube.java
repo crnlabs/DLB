@@ -57,22 +57,21 @@ public class Cube extends Objects {
         
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(216);
         
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Z
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Z THIS IS A SIDE????  (flipped to -z? what) 
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
         
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)), //+Z
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)), //BECAUSE Z IS A SIDE AND Y IS vertical I GET IT NOW
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)), 
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-	
         
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+X
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+X (flipped to -X)
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
@@ -86,22 +85,6 @@ public class Cube extends Objects {
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
 
-
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Y
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-	
-	vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        
-        
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)), //-X
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
@@ -116,8 +99,21 @@ public class Cube extends Objects {
         vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
 
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Y  (TOP)
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+	
+	vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
 
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Y
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Y (error)
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
@@ -131,22 +127,21 @@ public class Cube extends Objects {
 	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
 
-
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Z
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
+        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Z (flipped to be positive Z?) (error)
             (rgb[0]),(rgb[1]),(rgb[2])});
         vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
 
 	vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
 	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
             (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
+            (rgb[0]),(rgb[1]),(rgb[2])});
         
-        vertexData.flip();
+       vertexData.flip();
         
         handle=glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER,handle);
