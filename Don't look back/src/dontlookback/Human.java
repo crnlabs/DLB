@@ -35,6 +35,8 @@ public interface Human extends Biped {
     public boolean isHolding();
 
     public int reactionTime();
+    
+    public int[] deBuffs();
 
     public boolean gender();
 }

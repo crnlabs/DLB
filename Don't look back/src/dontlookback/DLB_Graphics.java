@@ -61,9 +61,9 @@ public class DLB_Graphics {
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
         glMatrixMode(GL_MODELVIEW);
         glEnable(GL_DEPTH_TEST); //TESTS ARE DUMB NO MORE TESTING - G.L.A.D.O.S
-        //glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
         //glCullFace(GL_FRONT); // Doesn't draw front faces
-        //glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
+        glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
         
         float[] testCenter = {2f, 5f, 3f};
         float[] testCenter2 = {-2f, 7f, -3f};

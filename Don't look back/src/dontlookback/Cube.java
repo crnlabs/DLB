@@ -42,10 +42,10 @@ public class Cube extends Objects {
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER,handle);
-        glVertexPointer(3, GL_FLOAT, 24, 0);
+        glVertexPointer(3, GL_FLOAT, 24, 0); //stride is weird.
         glEnableClientState(GL_COLOR_ARRAY);
-        glColorPointer(3, GL_FLOAT, 24, 12);
-        glDrawArrays(GL_TRIANGLES, 0, 24);
+        glColorPointer(3, GL_FLOAT, 24, 12); //should the 12 become 18?
+        glDrawArrays(GL_TRIANGLES, 0, 36); //type, first, count
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
 
