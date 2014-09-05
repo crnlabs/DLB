@@ -28,7 +28,7 @@ public interface Human extends Biped {
 
     public float rotZ();
 
-    public Object[] inverntory();
+    public Object[] inventory();
 
     public Object heldItem();
 
