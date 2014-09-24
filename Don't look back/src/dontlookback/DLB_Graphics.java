@@ -23,7 +23,7 @@ public class DLB_Graphics {
     private float velocityY = 0; //curent velocity in Y direction. starts as 0 or rest state.
     private float velocityZ = 0; //curent velocity in Z direction. starts at 0 or rest state.
     private float sprintSpeed = 0; // temporary. will be moved into player class as a max speed mulitplier.
-    private Cube cube1,cube2,cube3;
+    private Cube cube1, cube2, cube3, cube4, cube5;
 
     public DLB_Graphics() {
 
@@ -55,7 +55,7 @@ public class DLB_Graphics {
         rotX = 0;
         rotY = 0;
         rotZ = 0;
-        
+
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         gluPerspective(68, (float) Display.getWidth() / (float) Display.getHeight(), 0.3f, 4000f); //what is this refering to? still want to know? 0.3f? 4000f? 68?
@@ -64,9 +64,11 @@ public class DLB_Graphics {
         glEnable(GL_CULL_FACE);
         //glCullFace(GL_FRONT); // Doesn't draw front faces
         glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
-        
-        float[] testCenter = {2f, 5f, 3f};
-        float[] testCenter2 = {-2f, 7f, -3f};
+
+        float[] testCenter = {2f, 5f, 3f}; //x,y,z //remember flat plane is x and Z and vertical plane is y
+        float[] testCenter2 = {-2f, 7f, -2f};
+        float[] testCenter3 = {-1f, 10f, 3f};
+        float[] testCenter4 = {-3f, 0f, -2f};
 
         cube1 = new Cube(); //style 1: initilize and then set up
         cube1.setX(30);
@@ -77,10 +79,15 @@ public class DLB_Graphics {
 
         cube2 = new Cube(testCenter, 0, 1); //center position, orientation, width.
         cube3 = new Cube(testCenter2, 0, 2); //center position, orientation, width.
-        
+        cube4 = new Cube(testCenter3, 4, 3); //center position, orientation, width.
+        cube5 = new Cube(testCenter4, 140, 4); //center position, orientation, width.
+
+        //Dyanmically generate these cubes in an array and pull method the whole sequence.        
         cube1.setUpVBO();
         cube2.setUpVBO();
         cube3.setUpVBO();
+        cube4.setUpVBO();
+        cube5.setUpVBO();
 
         while (!Display.isCloseRequested()) {
 
@@ -129,6 +136,8 @@ public class DLB_Graphics {
                         cube1.delete();
                         cube2.delete();
                         cube3.delete();
+                        cube4.delete();
+                        cube5.delete();
                         Display.destroy();
                         System.exit(0);
                     } else {
@@ -142,11 +151,12 @@ public class DLB_Graphics {
             Display.update();
             Display.sync(60);
         }
-        
+
         cube1.delete();
         cube2.delete();
         cube3.delete();
-
+        cube4.delete();
+        cube5.delete();
         Display.destroy();
         System.exit(0);
 
@@ -270,13 +280,22 @@ public class DLB_Graphics {
         //shape1 = new Shapes.renderCube();
         //shapeTriangle1 = new Shapes.renderTriangle();    
         //working but wrong
-        
+
         Shapes.floorTest();
 
         cube1.render();
         cube2.render();
         cube3.render(); //having to list each object that needs to render is a pain, and won't work when we are generating things randomly.
+        cube4.render();
+        cube5.render();
 
+    }
+
+    public static Cube[] createCube(Cube[] cubeArray, int pointer) {
+        Cube cube;
+        cube = new Cube();
+        cubeArray[pointer] = cube;
+        return cubeArray[];
     }
 
     private void updateCamera() {
