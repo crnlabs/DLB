@@ -290,13 +290,13 @@ public class DLB_Graphics {
         cube5.render();
 
     }
-
-    public static Cube[] createCube(Cube[] cubeArray, int pointer) {
-        Cube cube;
-        cube = new Cube();
-        cubeArray[pointer] = cube;
-        return cubeArray[];
-    }
+    
+//    public static Cube[] createCube(Cube[] cubeArray, int pointer) {
+//        Cube cube;
+//        cube = new Cube();
+//        cubeArray[pointer] = cube;
+//        return cubeArray[];
+//    }
 
     private void updateCamera() {
         //used in debug code
