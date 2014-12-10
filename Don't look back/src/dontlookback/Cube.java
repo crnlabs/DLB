@@ -25,8 +25,8 @@ public class Cube extends Objects {
     }
 
     public void setColor(float red, float green, float blue) {
-
-        super.setRGB(rgb);
+        float[] color = {red,green,blue};
+        super.setRGB(color);
     }
 
     public void setColor(float[] rgb) {

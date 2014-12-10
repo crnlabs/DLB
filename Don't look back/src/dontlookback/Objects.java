@@ -9,7 +9,6 @@ public abstract class Objects implements Entities {
     protected float[] rgb = {0.5f, 0.5f, 0.5f};
 
     public Objects() {
-
         setX(0);
         setY(0);
         setZ(0);
@@ -84,7 +83,7 @@ public abstract class Objects implements Entities {
     public float[] getRGB() {
         return rgb;
     }
-
+        
     public abstract void render();
     
     public abstract void setUpVBO();
