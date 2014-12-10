@@ -19,7 +19,7 @@ public class DontLookBack {
     private static void consoleIntro() {
         System.out.println("Don't look back.");
         System.out.println("A Game By:");
-        System.out.println("Carl & James");
+        System.out.println("Game A Day Studios");
         System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~**~*~");
     }
 

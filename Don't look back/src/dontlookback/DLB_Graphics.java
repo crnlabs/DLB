@@ -76,11 +76,15 @@ public class DLB_Graphics {
         cube1.setZ(30);
         cube1.setOrientation(45);
         cube1.setWidth(30);
-
+        cube1.setColor(1, 0, 0);
         cube2 = new Cube(testCenter, 0, 1); //center position, orientation, width.
+        cube2.setColor(0, 1, 0);
         cube3 = new Cube(testCenter2, 0, 2); //center position, orientation, width.
+        cube3.setColor(0, 0, 1);
         cube4 = new Cube(testCenter3, 4, 3); //center position, orientation, width.
+        cube4.setColor(1, 1, 0);
         cube5 = new Cube(testCenter4, 140, 4); //center position, orientation, width.
+        cube5.setColor(0, 1, 1);
 
         //Dyanmically generate these cubes in an array and pull method the whole sequence.        
         cube1.setUpVBO();

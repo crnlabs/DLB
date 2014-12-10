@@ -76,6 +76,10 @@ public abstract class Objects implements Entities {
     public void setRGB(float[] rgb) {
         this.rgb = rgb;
     }
+    
+    public void setRGB(float red, float green, float blue) {
+        this.rgb =  new float[]{red, green, blue};
+    }
 
     public float[] getRGB() {
         return rgb;

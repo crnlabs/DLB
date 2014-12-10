@@ -24,6 +24,16 @@ public class Cube extends Objects {
         setWidth(width);
     }
 
+    public void setColor(float red, float green, float blue) {
+
+        super.setRGB(rgb);
+    }
+
+    public void setColor(float[] rgb) {
+
+        super.setRGB(rgb);
+    }
+
     public void setWidth(float width) {
         this.width = width;
     }
@@ -41,7 +51,7 @@ public class Cube extends Objects {
         glTranslatef(-1 * x, -1 * y, -1 * z);
 
         glEnableClientState(GL_VERTEX_ARRAY);
-        glBindBuffer(GL_ARRAY_BUFFER,handle);
+        glBindBuffer(GL_ARRAY_BUFFER, handle);
         glVertexPointer(3, GL_FLOAT, 24, 0); //stride is weird.
         glEnableClientState(GL_COLOR_ARRAY);
         glColorPointer(3, GL_FLOAT, 24, 12); //should the 12 become 18?
@@ -52,108 +62,108 @@ public class Cube extends Objects {
         glPopMatrix();
 
     }
-    
-    public void setUpVBO(){
-        
+
+    public void setUpVBO() {
+
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(216);
-        
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Z THIS IS A SIDE????  (flipped to -z? what) 
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)), //BECAUSE Z IS A SIDE AND Y IS vertical I GET IT NOW
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)), 
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+X (flipped to -X)
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
 
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-	vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)), //+Z THIS IS A SIDE????  (flipped to -z? what) 
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)), //-X
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
-	    (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)), //BECAUSE Z IS A SIDE AND Y IS vertical I GET IT NOW
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
-	    (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)), //+X (flipped to -X)
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)), //+Y  (TOP)
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-	
-	vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Y (error)
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)), //-X
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-	vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z + (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-        vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)), //-Z (flipped to be positive Z?) (error)
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)), //+Y  (TOP)
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
 
-	vertexData.put(new float[]{(x + (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-	vertexData.put(new float[]{(x - (width / 2)),(y - (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)),(y + (width / 2)),(z - (width / 2)),
-            (rgb[0]),(rgb[1]),(rgb[2])});
-        
-       vertexData.flip();
-        
-        handle=glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER,handle);
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)), //-Y (error)
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)), //-Z (flipped to be positive Z?) (error)
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+
+        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
+            (rgb[0]), (rgb[1]), (rgb[2])});
+
+        vertexData.flip();
+
+        handle = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, handle);
         glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-        
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     }
-    
-    public void delete(){
-        
+
+    public void delete() {
+
         glDeleteBuffers(handle);
-        
+
     }
-    
+
 }
