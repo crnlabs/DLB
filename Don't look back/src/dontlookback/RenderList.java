@@ -1,12 +1,16 @@
 package dontlookback;
 
-/**
- *
- * @author Carl
- */
 public class RenderList {
 
     protected Objects[] renderList;
+
+    public RenderList() {
+        renderList = new Objects[0];
+    }
+
+    public RenderList(RenderList list) {
+        renderList = list.renderList;
+    }
 
     public void add(Objects entry) {
         Objects[] temp;
@@ -17,6 +21,22 @@ public class RenderList {
             i++;
         }
         temp[renderList.length] = entry;
+        renderList = temp;
+    }
+
+    public void add(Objects[] entry) {
+        Objects[] temp;
+        int i = 0;
+        temp = new Objects[renderList.length + entry.length];
+        for (Objects o : renderList) {
+            temp[i] = o;
+            i++;
+        }
+        for (Objects o : entry) {
+            temp[i] = o;
+            i++;
+        }
+        renderList = temp;
     }
 
     public void remove(Objects entry) {
@@ -29,6 +49,7 @@ public class RenderList {
                 i++;
             }
         }
+        renderList = temp;
     }
 
     public void render() {

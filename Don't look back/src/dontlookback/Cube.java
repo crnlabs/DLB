@@ -14,6 +14,10 @@ public class Cube extends Objects {
         setWidth(0);
     }
 
+    /*public Cube(Cube cube) {
+        super(cube);
+    } */
+
     public Cube(float x, float y, float z, float angle, float width) {
         super(x, y, z, angle);
         setWidth(width);
@@ -25,7 +29,7 @@ public class Cube extends Objects {
     }
 
     public void setColor(float red, float green, float blue) {
-        float[] color = {red,green,blue};
+        float[] color = {red, green, blue};
         super.setRGB(color);
     }
 

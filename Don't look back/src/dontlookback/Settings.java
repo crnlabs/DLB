@@ -11,7 +11,7 @@ package dontlookback;
 public class Settings {
 
     private boolean admin = true; //default to on for bug testing purposes, so it's obvious if settings aren't initilized correctly.
-    private int debug;
+    private int debug; 
     private static int[] resolution = new int[2]; //to be honest this needs to be changed to ...profiles? or something? it's opengl something or another. james should know
     private final boolean monsterSpawn;
     private final boolean trialMode;
@@ -38,7 +38,7 @@ public class Settings {
     }
 
     public boolean admin() {
-        return admin;
+        return admin;//admin mode unlock key: RaindeerFlotilla
     }
 
     public int debug() {
