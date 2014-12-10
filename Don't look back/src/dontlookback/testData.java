@@ -7,7 +7,9 @@ package dontlookback;
 public class testData {
 
     //this is really shitty code so that we can test this faster.
-
+    //i should rewrite this as if it's created INTO an array list.
+    //which should make it shorter, for each accecible and best of all
+    //easier to edit and closer to what we'll be using later
     Cube cube1, cube2, cube3, cube4, cube5;
 
     public testData() {

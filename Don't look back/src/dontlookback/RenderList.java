@@ -25,18 +25,9 @@ public class RenderList {
     }
 
     public void add(Objects[] entry) {
-        Objects[] temp;
-        int i = 0;
-        temp = new Objects[renderList.length + entry.length];
-        for (Objects o : renderList) {
-            temp[i] = o;
-            i++;
-        }
         for (Objects o : entry) {
-            temp[i] = o;
-            i++;
+            this.add(o);
         }
-        renderList = temp;
     }
 
     public void remove(Objects entry) {
