@@ -11,7 +11,7 @@ import org.lwjgl.input.*;
 public class DLB_Graphics {
 
     testData test = new testData();
-    StaticList CubeList;
+    StaticList list ;
     Settings config = new Settings();
     private static float cameraX, cameraY, cameraZ; //camera pos x,y,z
     private static float rotX, rotY, rotZ; //rotation of camera around x,y,z axis
@@ -65,10 +65,8 @@ public class DLB_Graphics {
         glEnable(GL_CULL_FACE);
         //glCullFace(GL_FRONT); // Doesn't draw front faces
         glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
-
-        CubeList = new StaticList();
-        CubeList.add(test.allData());
-
+        list = new StaticList();
+        list.add(test.allData());
         while (!Display.isCloseRequested()) {
 
             delta = getDelta();
@@ -246,9 +244,9 @@ public class DLB_Graphics {
     }
 
     private void render() {
-        
+
         Shapes.floorTest();
-        CubeList.render();
+        list.render();
 
     }
 

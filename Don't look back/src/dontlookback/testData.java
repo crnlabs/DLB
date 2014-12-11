@@ -9,22 +9,21 @@ import java.util.Random;
  */
 public class testData extends StaticList {
 
-    protected Cube[] data;
+    //protected Cube[] data;
     //this is really shitty code so that we can test this faster.
     //i should rewrite this as if it's created INTO an array list.
     //which should make it shorter, for each accecible and best of all
     //easier to edit and closer to what we'll be using later
 
     public testData() {
+        super();
         float[][] position = {{30, 15, 30}, {2f, 5f, 3f}, {-2f, 7f, -2f}, {-1f, 10f, 3f}, {-3f, 0f, -2f}, {-5f, 5f, 1f}};
         //x,y,z //remember flat plane is x and Z and vertical plane is y
         for (int i = 0; i < 6; i++) {
-            data[i]=new Cube(position[i],0,i+1);
             this.add(new Cube(position[i], 0, i+1));
-            System.out.println(data[i]);
         }
-        for (Cube c : data) {
-            c.setColor(randomColor());
+        for (Objects c : renderList) {
+            c.setColor();
             c.setUpVBO();
         }
 //
@@ -55,25 +54,8 @@ public class testData extends StaticList {
 //        jess.setUpVBO();
         }
 
-    public float[] randomColor() {
-        
-        float R = (int) (Math.random() * 256);
-        float G = (int) (Math.random() * 256);
-        float B = (int) (Math.random() * 256);
-             
-        float[] color = {R, G, B}; //random color, but can be bright or dull
-        
-        //to get rainbow, pastel colors
-        /*
-        Random random = new Random();
-        final float hue = random.nextFloat();
-        final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
-        final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
-        color = Color.getHSBColor(hue, saturation, luminance); */
-        return color;
-    }
 
-    public Cube[] allData() {
-        return data;
+    public  Objects[] allData() {
+        return this.renderList;
     }
 }

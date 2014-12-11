@@ -43,7 +43,7 @@ public class RenderList {
         renderList = temp;
     }
 
-    public void render() {
+    public  void render() {
         for (Objects o : renderList) {
             o.render();
         }

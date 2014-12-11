@@ -14,9 +14,14 @@ public class Cube extends Objects {
         setWidth(0);
     }
 
-    /*public Cube(Cube cube) {
-        super(cube);
-    } */
+    public Cube(Cube cube) {
+        super();
+        rgb = cube.rgb;
+        width = cube.width;
+        x = cube.x;
+        y = cube.y;
+        z = cube.z;
+    }
 
     public Cube(float x, float y, float z, float angle, float width) {
         super(x, y, z, angle);
@@ -30,12 +35,12 @@ public class Cube extends Objects {
 
     public void setColor(float red, float green, float blue) {
         float[] color = {red, green, blue};
-        super.setRGB(color);
+        this.setRGB(color);
     }
 
     public void setColor(float[] rgb) {
 
-        super.setRGB(rgb);
+        this.setRGB(rgb);
     }
 
     public void setWidth(float width) {
@@ -46,6 +51,7 @@ public class Cube extends Objects {
         return width;
     }
 
+    @Override
     public void render() {
         float cX = x, cY = y, cZ = z;
         glPushMatrix();
@@ -168,6 +174,12 @@ public class Cube extends Objects {
 
         glDeleteBuffers(handle);
 
+    }
+
+    @Override
+    public void setColor() {
+        float[] color = Objects.randomColor();
+        this.setRGB(color);
     }
 
 }

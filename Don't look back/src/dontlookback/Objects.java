@@ -72,22 +72,45 @@ public abstract class Objects implements Entities {
         return new float[]{x, y, z};
     }
 
+    @Override
     public void setRGB(float[] rgb) {
         this.rgb = rgb;
     }
-    
+
     public void setRGB(float red, float green, float blue) {
-        this.rgb =  new float[]{red, green, blue};
+        this.rgb = new float[]{red, green, blue};
     }
 
     public float[] getRGB() {
         return rgb;
     }
-        
+
+    public static float[] randomColor() {
+
+        float R = (float) (Math.random()); // * 256 removed for testing
+        float G = (float) (Math.random()); // * 256 removed for testing
+        float B = (float) (Math.random()); // * 256 removed for testing
+
+        float[] color = {R, G, B}; //random color, but can be bright or dull
+
+        //to get rainbow, pastel colors
+        /*
+         Random random = new Random();
+         final float hue = random.nextFloat();
+         final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
+         final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
+         color = Color.getHSBColor(hue, saturation, luminance); */
+        return color;
+    }
+
     public abstract void render();
-    
+
+    public abstract void setColor();
+
+    public abstract void setColor(float[] Color);
+
     public abstract void setUpVBO();
-    
+
     public abstract void delete();
 
 }
