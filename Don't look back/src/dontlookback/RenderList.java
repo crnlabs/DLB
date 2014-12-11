@@ -20,7 +20,7 @@ public class RenderList {
             temp[i] = o;
             i++;
         }
-        temp[renderList.length] = entry;
+        temp[i] = entry;
         renderList = temp;
     }
 
