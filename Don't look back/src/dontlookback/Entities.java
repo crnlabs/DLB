@@ -9,7 +9,7 @@ public interface Entities {
     public float getZ();
 
     public float getOrientation();
-
+            
     public void setX(float x);
 
     public void setY(float y);

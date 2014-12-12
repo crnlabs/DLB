@@ -11,7 +11,9 @@ public class Cube extends Objects {
 
     public Cube() {
         super();
-        setWidth(0);
+        randomXYZ();
+        randomSize();
+        //setWidth(0);
     }
 
     public Cube(Cube cube) {
@@ -180,6 +182,18 @@ public class Cube extends Objects {
     public void setColor() {
         float[] color = Objects.randomColor();
         this.setRGB(color);
+    }
+
+    public void randomXYZ() {
+        x = (float) (Math.random() * 30); // * 256 removed for testing
+        y = (float) (Math.random() * 15); // * 256 removed for testing
+        z = (float) (Math.random() * 30); // * 256 removed for testing
+        //return new float[] {x,y,z};
+    }
+
+    private void randomSize() {
+        width = (float) (Math.random() * 5); // * 256 removed for testing
+
     }
 
 }

@@ -85,6 +85,13 @@ public abstract class Objects implements Entities {
         return rgb;
     }
 
+    public void randomXYZ(){
+        x = (float) (Math.random() * 30); // * 256 removed for testing
+        y = (float) (Math.random() * -15); // * 256 removed for testing
+        z = (float) (Math.random() * 30); // * 256 removed for testing
+        //return new float[] {x,y,z};
+    }
+    
     public static float[] randomColor() {
 
         float R = (float) (Math.random()); // * 256 removed for testing
