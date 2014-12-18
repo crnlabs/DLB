@@ -10,7 +10,7 @@ import org.lwjgl.input.*;
 
 public class DLB_Graphics {
 
-    testData test = new testData();
+    testData test = new testData(75); //how many cubes to generate
     StaticList list ;
     Settings config = new Settings();
     private static float cameraX, cameraY, cameraZ; //camera pos x,y,z

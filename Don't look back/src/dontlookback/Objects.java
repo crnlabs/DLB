@@ -17,7 +17,6 @@ public abstract class Objects implements Entities {
     }
 
     public Objects(float x, float y, float z, float angle) {
-
         setX(x);
         setY(y);
         setZ(z);

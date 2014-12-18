@@ -184,10 +184,11 @@ public class Cube extends Objects {
         this.setRGB(color);
     }
 
+    @Override
     public void randomXYZ() {
-        x = (float) (Math.random() * 30); // * 256 removed for testing
-        y = (float) (Math.random() * 15); // * 256 removed for testing
-        z = (float) (Math.random() * 30); // * 256 removed for testing
+        x = (float) (Math.random() * -50); // * 256 removed for testing
+        y = (float) (Math.random() * 25); // * 256 removed for testing
+        z = (float) (Math.random() * -50); // * 256 removed for testing
         //return new float[] {x,y,z};
     }
 

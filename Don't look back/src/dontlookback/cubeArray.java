@@ -4,14 +4,15 @@ package dontlookback;
  *
  * @author Carl
  */
-public class cubeArray {
+public class cubeArray extends StaticList{
 
     int position;
     int end;
+    Cube[] cubeArr;
 
     public cubeArray() {
         //using cube arrays to insert cubes into as we generate and plop them a sort of master list of cubes to delete and create.
-        Cube[] cubeArr;
+        cubeArr = new Cube[0];
     }
 
     //maybe use the poker deck code, which shrinks the list over and over again as it occurs 
