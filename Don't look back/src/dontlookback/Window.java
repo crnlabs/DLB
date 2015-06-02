@@ -12,16 +12,20 @@ public class Window {
         setUpDisplay();
         Display.sync(60);
         Display.update();
-            //programming in the main menu here would probably be conveniant.
-
+        
+        //programming in the main menu here would probably be conveniant.
+        
         //Display.destroy();
         //System.exit(0);
     }
 
     private static void setUpDisplay() {
-        Display.setTitle("Custom Icon Test");
+        
+       Splash splash = new Splash();  //Splash
+        
+        Display.setTitle("Splash Test"); //this isn't a splash this is a program icon for the menus.
         try {
-            Display.setDisplayMode(new DisplayMode(128, 128));
+            Display.setDisplayMode(new DisplayMode(640, 480));
             PNGDecoder imageDecoder = new PNGDecoder(new FileInputStream("res/images/logo128.png"));
             if (!imageDecoder.hasAlpha() && imageDecoder.getHeight() != 128 && imageDecoder.getWidth() != 128) {
                 System.err.println("Icon does not have transparency info and cannot serve as an icon for the application.");
@@ -30,10 +34,10 @@ public class Window {
             ByteBuffer imageData = BufferUtils.createByteBuffer(4 * imageDecoder.getWidth() * imageDecoder.getHeight());
             imageDecoder.decode(imageData, imageDecoder.getWidth() * 4, PNGDecoder.Format.RGBA);
             imageData.flip();
-            System.out.println(Display.setIcon(new ByteBuffer[]{imageData})); //this is where the 0 is coming from right now
+            //System.out.println(Display.setIcon(new ByteBuffer[]{imageData})); //this is where the 0 is coming from right now
 
             try {
-                Thread.sleep(1500);                 //1000 milliseconds is one second.
+                Thread.sleep(750);                 //1000 milliseconds is one second.
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
