@@ -29,7 +29,7 @@ public class Splash extends Frame implements ActionListener {
         mb.add(m1);
         final SplashScreen splash = SplashScreen.getSplashScreen();
         if (splash == null) {
-            System.out.println("SplashScreen.getSplashScreen() returned null");
+            //System.out.println("SplashScreen.getSplashScreen() returned null"); this is going to complain because the splash screen isn't in the library yet
             return;
         }
         Graphics2D g = splash.createGraphics();

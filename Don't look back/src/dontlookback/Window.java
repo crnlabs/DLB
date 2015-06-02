@@ -23,7 +23,7 @@ public class Window {
     private static void setUpDisplay() {
         
         Splash splash = new Splash();  //Splash
-        Settings config = new Settings();  //why does the image flicker a moment.
+        Settings config = new Settings();  //the logo should work, it finds it correctly?
         Display.setTitle("Loading"); //this isn't a splash this is a program icon for the menus and bar.
         try {
             int resolution[] = config.resolution();

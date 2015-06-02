@@ -38,6 +38,7 @@ public class DLB_Graphics {
         rotX = 0;
         rotY = 0;
         rotZ = 0;
+        updateCamera();
 
         if (config.admin() != true) {
             this.walkingSpeed = player.speed();
@@ -50,7 +51,7 @@ public class DLB_Graphics {
         //Display.setDisplayMode(new DisplayMode(resolution[0], resolution[1])); //these modify the existing window
         glScissor(0, 0, resolution[0], resolution[1]);
         glViewport(0, 0, resolution[0], resolution[1]);
-        Display.setTitle("Don't Look Back");   //for some reason it's shifting the objects after view creation, guessing i should splash, create screen content, then activate screen.
+        Display.setTitle("Don't Look Back");   //the window itself is moving a smidge, should fix that
         Display.setResizable(true);
         Display.sync(60);
         Display.update();
