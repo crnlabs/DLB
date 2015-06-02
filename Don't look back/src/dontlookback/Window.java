@@ -21,7 +21,7 @@ public class Window {
     private static void setUpDisplay() {
         Display.setTitle("Custom Icon Test");
         try {
-            Display.setDisplayMode(new DisplayMode(640, 480));
+            Display.setDisplayMode(new DisplayMode(128, 128));
             PNGDecoder imageDecoder = new PNGDecoder(new FileInputStream("res/images/logo128.png"));
             if (!imageDecoder.hasAlpha() && imageDecoder.getHeight() != 128 && imageDecoder.getWidth() != 128) {
                 System.err.println("Icon does not have transparency info and cannot serve as an icon for the application.");
@@ -31,6 +31,13 @@ public class Window {
             imageDecoder.decode(imageData, imageDecoder.getWidth() * 4, PNGDecoder.Format.RGBA);
             imageData.flip();
             System.out.println(Display.setIcon(new ByteBuffer[]{imageData})); //this is where the 0 is coming from right now
+
+            try {
+                Thread.sleep(1500);                 //1000 milliseconds is one second.
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            
         } catch (LWJGLException e) {
             e.printStackTrace();
         } catch (IOException e) {
