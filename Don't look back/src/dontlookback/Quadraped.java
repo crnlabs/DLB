@@ -1,5 +1,9 @@
 package dontlookback;
 
-public interface Quadraped {
+public interface Quadraped extends NPC{
 
+    public boolean Friendly();
+    
+    
+    
 }
