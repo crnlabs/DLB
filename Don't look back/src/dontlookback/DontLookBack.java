@@ -10,8 +10,8 @@ public class DontLookBack {
         //splash screen/intro?
         consoleIntro(); //output Into text to console
         consoleDebug(); //output debug code to console
-        //loadSettings(); //loads up settings
-        mainSequence(loadSettings()); //this is the current "game" location
+        //loadSettings(); //loads up settings, settings are mutable but do not need to be RUN as a seperate process, simply pulled open whenever needed.
+        mainSequence(); //this is the current "game" location
         //begin game
         //etc
     }
@@ -32,7 +32,7 @@ public class DontLookBack {
 
     }
 
-    private static void mainSequence(Settings debug) {
+    private static void mainSequence() {
         System.out.println("The following is movement tracking:");
         DLB_Graphics Graphics = new DLB_Graphics();
     }

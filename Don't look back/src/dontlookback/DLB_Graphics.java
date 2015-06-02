@@ -11,8 +11,9 @@ import org.lwjgl.input.*;
 public class DLB_Graphics {
 
     testData test = new testData(75); //how many cubes to generate
-    StaticList list ;
+    StaticList list;
     Settings config = new Settings();
+    int resolution[] = config.resolution();
     private static float cameraX, cameraY, cameraZ; //camera pos x,y,z
     private static float rotX, rotY, rotZ; //rotation of camera around x,y,z axis
     private static float cX, cY, cZ; //last camera pos x,y,z
@@ -29,26 +30,7 @@ public class DLB_Graphics {
     public DLB_Graphics() {
 
         Player player = new Player();
-
-        if (config.admin() != true) {
-            this.walkingSpeed = player.speed();
-        } else {
-            walkingSpeed = .005f;
-        }
-        int resolutionX = 1024, resolutionY = 768;
-        try {
-
-            Display.setDisplayMode(new DisplayMode(resolutionX, resolutionY)); //these modify the existing window
-            glScissor(0, 0, resolutionX, resolutionY);
-            glViewport(0, 0, resolutionX, resolutionY);
-            Display.setTitle("Don't Look Back");
-            Display.setResizable(true);
-            Display.sync(60);
-            Display.update();
-        } catch (LWJGLException ex) {
-            Logger.getLogger(DLB_Graphics.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        
         cameraX = 0f;
         cameraZ = 0f;
         cameraY = -1.75f; //I bet there is a setting to reverse what Y is, that would make things conveniant going forward.
@@ -56,6 +38,22 @@ public class DLB_Graphics {
         rotX = 0;
         rotY = 0;
         rotZ = 0;
+
+        if (config.admin() != true) {
+            this.walkingSpeed = player.speed();
+        } else {
+            walkingSpeed = .005f;
+        }
+        //int resolutionX = 1024, resolutionY = 768;
+        //removed TRY CATCH, since it shouldn't be recreating anything anyway. 
+        //it should only adjust window size if the user initiates a change. ideally a settings ini file can be used for pre-start settings.
+        //Display.setDisplayMode(new DisplayMode(resolution[0], resolution[1])); //these modify the existing window
+        glScissor(0, 0, resolution[0], resolution[1]);
+        glViewport(0, 0, resolution[0], resolution[1]);
+        Display.setTitle("Don't Look Back");   //for some reason it's shifting the objects after view creation, guessing i should splash, create screen content, then activate screen.
+        Display.setResizable(true);
+        Display.sync(60);
+        Display.update();
 
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();

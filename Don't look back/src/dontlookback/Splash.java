@@ -15,7 +15,7 @@ public class Splash extends Frame implements ActionListener {
     }
 //this should work except i need to compile for it to actually run, on compile relook up this information on instructions on how to designate the splash image, as it is kept independednt.
     public Splash() {
-        super("Splash");
+        super("Loading");
         setSize(300, 200);
         setLayout(new BorderLayout());
         Menu m1 = new Menu("File");
