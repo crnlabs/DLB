@@ -20,4 +20,5 @@ public interface Enemy extends NPC {
 
     public int jumpHeight();
 
+    public int[] dimensions();
 }

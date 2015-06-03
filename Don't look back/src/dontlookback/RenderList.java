@@ -43,9 +43,21 @@ public class RenderList {
         renderList = temp;
     }
 
-    public  void render() {
+    public void render() {
         for (Objects o : renderList) {
             o.render();
+        }
+    }
+
+    public void move() {
+        for (Objects o : renderList) {
+            o.behavior();
+        }
+    }
+
+    public void update() {
+        for (Objects o : renderList) {
+            o.update();
         }
     }
 

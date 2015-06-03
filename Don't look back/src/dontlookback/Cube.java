@@ -184,6 +184,26 @@ public class Cube extends Objects {
         this.setRGB(color);
     }
 
+    public void randomBehavior() {  //no y movement to be clean
+        //System.out.print(x + "," + z + "   ");
+
+        x = x + ((float) (Math.random() * 0.2)); // * 256 removed for testing random amount forward
+        //System.out.print(x + "," + z + "   ");
+
+        x = x - ((float) (Math.random() * 0.2)); // * 256 removed for testing random amount backward, it will move the average.
+        //y = (float) (Math.random() * -15); // * 256 removed for testing
+        z = z + ((float) (Math.random() * 0.1)); // * 256 removed for testing
+        z = z - ((float) (Math.random() * 0.1)); // * 256 removed for testing
+        //System.out.println(x + "," + z);
+    }
+
+    public void rotate() {
+        orientation = orientation + .1f;
+        if (orientation >= 360f) {
+            orientation = orientation - 360f;
+        }
+    }
+
     @Override
     public void randomXYZ() {
         x = (float) (Math.random() * -50); // * 256 removed for testing
@@ -195,6 +215,24 @@ public class Cube extends Objects {
     private void randomSize() {
         width = (float) (Math.random() * 5); // * 256 removed for testing
 
+    }
+
+    @Override
+    public void behavior() {
+        if (Settings.testMode() == true) {
+            randomBehavior();
+        }
+        randomBehavior();
+
+    }
+
+    @Override
+    public void update() {
+
+        if (Settings.pausedState() == false) {
+            behavior();
+        }
+        render();
     }
 
 }

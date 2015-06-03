@@ -60,7 +60,14 @@ public abstract class Objects implements Entities {
     public float getOrientation() {
         return orientation;
     }
-
+    
+    public void setOrientation(){
+        orientation = orientation + .1f;
+        if(orientation >= 360f){
+            orientation = orientation - 360f;
+        } 
+    }
+    
     public void setCenter(float[] coords) {
         setX(coords[0]);
         setY(coords[1]);
@@ -84,13 +91,21 @@ public abstract class Objects implements Entities {
         return rgb;
     }
 
-    public void randomXYZ(){
+    public void randomXYZ() {
         x = (float) (Math.random() * 30); // * 256 removed for testing
         y = (float) (Math.random() * -15); // * 256 removed for testing
         z = (float) (Math.random() * 30); // * 256 removed for testing
         //return new float[] {x,y,z};
     }
-    
+
+    public void xyGitter() {  //no y movement to be clean
+        x = x + ((float) (Math.random() * 2.0)); // * 256 removed for testing random amount forward
+        x = x - ((float) (Math.random() * 2.0)); // * 256 removed for testing random amount backward, it will move the average.
+        //y = (float) (Math.random() * -15); // * 256 removed for testing
+        z = z + ((float) (Math.random() * 1.0)); // * 256 removed for testing
+        z = z - ((float) (Math.random() * 1.0)); // * 256 removed for testing
+    }
+
     public static float[] randomColor() {
 
         float R = (float) (Math.random()); // * 256 removed for testing
@@ -118,5 +133,9 @@ public abstract class Objects implements Entities {
     public abstract void setUpVBO();
 
     public abstract void delete();
+
+    public abstract void behavior();
+    
+    public abstract void update();
 
 }

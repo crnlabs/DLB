@@ -12,13 +12,15 @@ public class Settings {
 
     private boolean admin = true; //default to on for bug testing purposes, so it's obvious if settings aren't initilized correctly.
     private int debug; 
-    static int[] resolution = new int[2]; //to be honest this needs to be changed to ...profiles? or something? it's opengl something or another. james should know
+    private static int[] resolution = new int[2]; //to be honest this needs to be changed to ...profiles? or something? it's opengl something or another. james should know
     private final boolean monsterSpawn;
     private final boolean trialMode;
     private final boolean grue;
     private final boolean lightsFlicker;
     private final boolean achievements;
     private final boolean feedback;
+    private static boolean paused;
+    private static boolean test;
 
     public Settings() {
         this.resolution[0] = 1024; //set horizonal resolutoin
@@ -31,8 +33,26 @@ public class Settings {
         this.achievements = true;
         this.feedback = true; //before we even test beta we need to have these games send back stats to a server that records times, deaths, by what, as much data as we can.
         this.debug = 1; //0 off, 1 all info, 2 errors and critical info only.
+        this.paused = false;
+        this.test = false;
     }
 
+    public static boolean pausedState(){
+        return paused;
+    }
+    
+    public static void setPaused(boolean state){
+        paused = state;
+    }
+    
+    public static boolean testMode(){
+        return test;
+    }
+    
+    public static void setTest(boolean state){
+        test = state;
+    }
+    
     public static int[] resolution() {
         return resolution;
     }

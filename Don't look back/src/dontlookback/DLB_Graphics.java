@@ -30,7 +30,7 @@ public class DLB_Graphics {
     public DLB_Graphics() {
 
         Player player = new Player();
-        
+
         cameraX = 0f;
         cameraZ = 0f;
         cameraY = -1.75f; //I bet there is a setting to reverse what Y is, that would make things conveniant going forward.
@@ -71,52 +71,13 @@ public class DLB_Graphics {
             delta = getDelta();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            preRender();
+            grabMouse();
+            detectInput(player);
+            update();
             render();
 
             glLoadIdentity();
-
-            //updates camera
-            updateCamera();
-            //runs debug code that outputs camera position to console when a change occurs
-            debugCamera(config.admin());
-
-            grabMouse();
-
-            while (Keyboard.next()) { //this is event driven actions, not polled
-                if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
-                    player.moveToLeft();
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
-                    player.moveToRight();
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
-                    player.moveToFront();
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
-                    player.moveToBack();
-                }
-
-                //below are the ACTUAL event driven actions, above is practice
-                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-                    player.jump();
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
-                    player.pickUpItem();
-                }
-
-                if (Keyboard.isKeyDown(Keyboard.KEY_F11)) {
-                    toggleFullscreen();
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-                    if (!Mouse.isGrabbed() || Display.isFullscreen()) {
-                        Display.destroy();
-                        System.exit(0);
-                    } else {
-                        Mouse.setGrabbed(false);
-                    }
-                }
-            }
 
             displayResize();
 
@@ -242,11 +203,70 @@ public class DLB_Graphics {
 
     }
 
-    private void render() {
+    private void update() {
+        //things that need to happen before the frame is Re-rendered should happen here
+        //Such as collision detection and movement
+        list.update();
+    }
 
+    private void render() {
         Shapes.floorTest();
         list.render();
+    }
 
+    private void detectInput(Player player) {
+        while (Keyboard.next()) { //this is event driven actions, not polled
+            if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                player.moveToLeft();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
+                player.moveToRight();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                player.moveToFront();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                player.moveToBack();
+            }
+
+            //below are the ACTUAL event driven actions, above is practice
+            if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+                player.jump();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
+                player.pickUpItem();
+            }
+
+            //pause enemies
+            if (Keyboard.isKeyDown(Keyboard.KEY_P)) {
+                Settings.setPaused(!Settings.pausedState());
+            }
+
+            //
+            if (Keyboard.isKeyDown(Keyboard.KEY_O)) {
+                Settings.setTest(!Settings.testMode());
+            }
+
+            if (Keyboard.isKeyDown(Keyboard.KEY_F11)) {
+                toggleFullscreen();
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+                if (!Mouse.isGrabbed() || Display.isFullscreen()) {
+                    Display.destroy();
+                    System.exit(0);
+                } else {
+                    Mouse.setGrabbed(false);
+                }
+            }
+
+        }
+    }
+
+    private void preRender() {
+        //updates camera
+        updateCamera();
+        //runs debug code that outputs camera position to console when a change occurs
+        debugCamera(config.admin());
     }
 
     private void updateCamera() {
@@ -303,7 +323,7 @@ public class DLB_Graphics {
             } else {
                 Display.setFullscreen(false);
                 Display.setResizable(true);
-                Display.setDisplayMode(new DisplayMode(1024, 768));
+                Display.setDisplayMode(new DisplayMode(Settings.resolution()[0], Settings.resolution()[1]));
                 glViewport(0, 0, Display.getWidth(), Display.getHeight());
                 glMatrixMode(GL_PROJECTION);
                 glLoadIdentity();
