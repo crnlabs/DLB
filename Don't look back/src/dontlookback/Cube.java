@@ -50,6 +50,7 @@ public class Cube extends Objects {
         this.setRGB(color);
     }
 
+    @Override
     public void setColor(float[] rgb) {
 
         this.setRGB(rgb);
@@ -65,12 +66,13 @@ public class Cube extends Objects {
 
     @Override
     public void render() {
-        float cX = x, cY = y, cZ = z;
         glPushMatrix();
 
-        glTranslatef(x, y, z);              //then put it back, or move it to it's new spot if x,y,z has changed
-        glRotatef(orientation++, 1, 1, 0);     //then do the rotation
+        //then put it back, or move it to it's new spot if x,y,z has changed
+        glTranslatef(cX, cY, cZ);   //put it at 0,0,0
+        glRotatef(orientation, 0, 1, 0);     //then do the rotation
         glTranslatef(-cX, -cY, -cZ);   //put it at 0,0,0
+        //System.out.println(x + ", " + y + ", " + z + ".   " + cX + ", " + cY + ", " + cZ);
         setCurrent();
         glEnableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, handle);
@@ -85,6 +87,7 @@ public class Cube extends Objects {
 
     }
 
+    @Override
     public void setUpVBO() {
 
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(216);
@@ -182,6 +185,7 @@ public class Cube extends Objects {
 
     }
 
+    @Override
     public void delete() {
 
         glDeleteBuffers(handle);
@@ -195,18 +199,15 @@ public class Cube extends Objects {
     }
 
     public void randomBehavior() {  //no y movement to be clean
-        x = x + (((float) (Math.random() * 0.2)) - ((float) (Math.random() * 0.2))); // random amount
+       // x = x + (((float) (Math.random() * 2.2)) - ((float) (Math.random() * 0.2))); // random amount
         //y = (float) (Math.random() * -15); //
-        z = z + (((float) (Math.random() * 0.1)) - ((float) (Math.random() * 0.1))); // 
+        //z = z + (((float) (Math.random() * 0.1)) - ((float) (Math.random() * 0.1))); // 
         rotate();
-        rgb[0] = rgb[0]++;
-        rgb[1] = rgb[1]++;
-        rgb[2] = rgb[2]++;
-
     }
 
+    @Override
     public void rotate() {
-        orientation = orientation + .1f;
+        orientation = orientation + 7f;
         if (orientation >= 360f) {
             orientation = orientation - 360f;
         }
