@@ -2,7 +2,7 @@ package dontlookback;
 
 public abstract class Objects implements Entities {
 
-    protected float x, y, z;
+    protected float x, y, z, cX, cY, cZ;
     protected float orientation;
     protected int handle;
 
@@ -61,7 +61,7 @@ public abstract class Objects implements Entities {
         return orientation;
     }
     
-    public void setOrientation(){
+    public void rotate(){
         orientation = orientation + .1f;
         if(orientation >= 360f){
             orientation = orientation - 360f;

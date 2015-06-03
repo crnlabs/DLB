@@ -211,7 +211,7 @@ public class DLB_Graphics {
 
     private void render() {
         Shapes.floorTest();
-        list.render();
+        //list.render();
     }
 
     private void detectInput(Player player) {

@@ -13,7 +13,8 @@ public class Cube extends Objects {
         super();
         randomXYZ();
         randomSize();
-        //setWidth(0);
+        orientation = 0;
+        setCurrent();
     }
 
     public Cube(Cube cube) {
@@ -23,16 +24,25 @@ public class Cube extends Objects {
         x = cube.x;
         y = cube.y;
         z = cube.z;
+        setCurrent();
     }
 
     public Cube(float x, float y, float z, float angle, float width) {
         super(x, y, z, angle);
         setWidth(width);
+        setCurrent();
     }
 
     public Cube(float[] coords, float angle, float width) {
         super(coords, angle);
         setWidth(width);
+        setCurrent();
+    }
+
+    private void setCurrent() {
+        cX = x;
+        cY = y;
+        cZ = z;
     }
 
     public void setColor(float red, float green, float blue) {
@@ -58,10 +68,10 @@ public class Cube extends Objects {
         float cX = x, cY = y, cZ = z;
         glPushMatrix();
 
-        glTranslatef(x, y, z);
-        glRotatef(orientation, 0, 1, 0);
-        glTranslatef(-1 * x, -1 * y, -1 * z);
-
+        glTranslatef(x, y, z);              //then put it back, or move it to it's new spot if x,y,z has changed
+        glRotatef(orientation++, 1, 1, 0);     //then do the rotation
+        glTranslatef(-cX, -cY, -cZ);   //put it at 0,0,0
+        setCurrent();
         glEnableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, handle);
         glVertexPointer(3, GL_FLOAT, 24, 0); //stride is weird.
@@ -185,16 +195,14 @@ public class Cube extends Objects {
     }
 
     public void randomBehavior() {  //no y movement to be clean
-        //System.out.print(x + "," + z + "   ");
+        x = x + (((float) (Math.random() * 0.2)) - ((float) (Math.random() * 0.2))); // random amount
+        //y = (float) (Math.random() * -15); //
+        z = z + (((float) (Math.random() * 0.1)) - ((float) (Math.random() * 0.1))); // 
+        rotate();
+        rgb[0] = rgb[0]++;
+        rgb[1] = rgb[1]++;
+        rgb[2] = rgb[2]++;
 
-        x = x + ((float) (Math.random() * 0.2)); // * 256 removed for testing random amount forward
-        //System.out.print(x + "," + z + "   ");
-
-        x = x - ((float) (Math.random() * 0.2)); // * 256 removed for testing random amount backward, it will move the average.
-        //y = (float) (Math.random() * -15); // * 256 removed for testing
-        z = z + ((float) (Math.random() * 0.1)); // * 256 removed for testing
-        z = z - ((float) (Math.random() * 0.1)); // * 256 removed for testing
-        //System.out.println(x + "," + z);
     }
 
     public void rotate() {
@@ -222,8 +230,6 @@ public class Cube extends Objects {
         if (Settings.testMode() == true) {
             randomBehavior();
         }
-        randomBehavior();
-
     }
 
     @Override
@@ -233,6 +239,10 @@ public class Cube extends Objects {
             behavior();
         }
         render();
+    }
+
+    private void move(float[] input) {
+
     }
 
 }
