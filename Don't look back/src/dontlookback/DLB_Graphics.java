@@ -240,11 +240,14 @@ public class DLB_Graphics {
             //pause enemies
             if (Keyboard.isKeyDown(Keyboard.KEY_P)) {
                 Settings.setPaused(!Settings.pausedState());
+                System.out.println("Paused: " + Settings.pausedState());
+
             }
 
             //
             if (Keyboard.isKeyDown(Keyboard.KEY_O)) {
                 Settings.setTest(!Settings.testMode());
+                System.out.println("Test Mode: " + Settings.testMode());
             }
 
             if (Keyboard.isKeyDown(Keyboard.KEY_F11)) {

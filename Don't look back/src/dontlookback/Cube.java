@@ -8,6 +8,7 @@ import org.lwjgl.BufferUtils;
 public class Cube extends Objects {
 
     private float width;
+    final float rotation = (float) (Math.random() * 3);
 
     public Cube() {
         super();
@@ -67,13 +68,13 @@ public class Cube extends Objects {
     @Override
     public void render() {
         glPushMatrix();
-
+        //"Of course you can change your matrix midway of drawing" Ofcourse? I didn't knew when I asked, and exactly that is what would had helping me out of my dilemma I guess. So jsut that I got you right, it is possible to do something like glMatrixMode(GL_PROJECTION); /*some stuff*/ glMatrixMode(GL_MODELVIEW); /*some stuff*/ glMatrixMode(GL_PROJECTION); /*some stuff*/ glMatrixMode(GL_MODELVIEW); /*some stuff*/
+        //glMatrixMode(); use GL MATRIX MODE TO MANIPULATE OBJECTS IN SCENE
         //then put it back, or move it to it's new spot if x,y,z has changed
         glTranslatef(cX, cY, cZ);   //put it at 0,0,0
-        glRotatef(orientation, 0, 1, 0);     //then do the rotation
+        glRotatef(orientation, 0.f, 1.f, 0.f);     //then do the rotation
         glTranslatef(-cX, -cY, -cZ);   //put it at 0,0,0
         //System.out.println(x + ", " + y + ", " + z + ".   " + cX + ", " + cY + ", " + cZ);
-        setCurrent();
         glEnableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, handle);
         glVertexPointer(3, GL_FLOAT, 24, 0); //stride is weird.
@@ -84,7 +85,7 @@ public class Cube extends Objects {
         glDisableClientState(GL_VERTEX_ARRAY);
 
         glPopMatrix();
-
+        setCurrent();
     }
 
     @Override
@@ -199,7 +200,7 @@ public class Cube extends Objects {
     }
 
     public void randomBehavior() {  //no y movement to be clean
-       // x = x + (((float) (Math.random() * 2.2)) - ((float) (Math.random() * 0.2))); // random amount
+        //x = x + ((float) (Math.random() * 2.2)); // random amount
         //y = (float) (Math.random() * -15); //
         //z = z + (((float) (Math.random() * 0.1)) - ((float) (Math.random() * 0.1))); // 
         rotate();
@@ -207,7 +208,7 @@ public class Cube extends Objects {
 
     @Override
     public void rotate() {
-        orientation = orientation + 7f;
+        orientation = orientation + rotation;
         if (orientation >= 360f) {
             orientation = orientation - 360f;
         }
