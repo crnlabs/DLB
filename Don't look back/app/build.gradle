@@ -159,11 +159,26 @@ task runDemo(type: JavaExec) {
     description = 'Run headless demo to verify modern dependencies'
     
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'dontlookback.modern.HeadlessDemo'
+    mainClass = 'dontlookback.HeadlessGameDemo'
     
     // Headless mode settings for CI/CD
     jvmArgs = [
         '-Djava.awt.headless=true'
+    ]
+}
+
+// Task to run complete graphical demo
+task runCompleteDemo(type: JavaExec) {
+    group = 'application'
+    description = 'Run complete graphical demo (auto-detects headless environment)'
+    
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'dontlookback.CompleteGraphicalDemo'
+    
+    // Allow graphics detection - will auto-fallback to headless
+    jvmArgs = [
+        '-Xms512m',
+        '-Xmx1024m'
     ]
 }
 
