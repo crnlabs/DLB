@@ -117,37 +117,40 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
         
-    - name: Build project
+    - name: Build project with native packages
       run: |
         cd "Don't look back"
-        # Use core Gradle tasks that work correctly
-        gradle app:build app:fatJar --no-daemon
+        # Build everything including native packages
+        gradle buildAll --no-daemon
         
-    - name: Generate Javadoc
+    - name: Create platform-specific distributions
       run: |
         cd "Don't look back"
-        gradle javadoc --no-daemon || echo "Javadoc generation completed with warnings"
+        # Create native packages for Linux (current CI platform)
+        gradle createNativePackage --no-daemon
         
-    - name: Create distribution package
+        # Create installer packages for Linux
+        gradle buildInstallers --no-daemon || echo "Some installer types may not be available on this platform"
+        
+    - name: Organize release packages
       run: |
         cd "Don't look back"
-        # Build the fat JAR first
-        gradle app:fatJar --no-daemon
-        
-        # Create release-style packages (consistent with release pipeline)
         mkdir -p release
         
-        # Copy main JAR (fat JAR from Gradle build)
-        cp app/build/libs/DontLookBack-1.0-fat.jar release/
+        # Copy cross-platform distributions
+        cp -r app/build/distributions/cross-platform/* release/ 2>/dev/null || echo "Cross-platform dist not available"
         
-        # Copy regular JAR as backup
-        cp app/build/libs/app.jar release/ 2>/dev/null || echo "Regular JAR not available"
+        # Copy native packages
+        cp app/build/distributions/native/*.deb release/ 2>/dev/null || echo "DEB package not available"
+        cp app/build/distributions/installers/*.deb release/ 2>/dev/null || echo "DEB installer not available"
+        cp app/build/distributions/installers/*.rpm release/ 2>/dev/null || echo "RPM installer not available"
         
-        # Copy resources
-        cp -r res release/ 2>/dev/null || echo "Resources not available"
+        # Copy documentation
+        cp -r app/build/docs/javadoc release/documentation/ 2>/dev/null || echo "Javadoc not available"
         
-        # Copy documentation (from Gradle build)
-        cp -r app/build/docs/javadoc release/ 2>/dev/null || echo "Javadoc not available"
+        # List created packages
+        echo "Created packages:"
+        find release/ -type f -name "*.deb" -o -name "*.rpm" -o -name "*.jar" -o -name "*.bat" -o -name "*.sh" | sort
         
         # Create startup scripts (same as release pipeline)
         cat > release/run.sh << 'EOF'
@@ -254,40 +257,23 @@ jobs:
         Build Number: ${{ github.run_number }}
         EOF
         
-        # Create ZIP archive for legacy compatibility
-        cd dist-package
-        zip -r ../DontLookBack-${{ github.run_number }}-${{ github.sha }}.zip .
-        cd ..
-        =====================================
+    - name: Upload Native Packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-packages-${{ github.run_number }}
+        path: |
+          "Don't look back/app/build/distributions/native/*.deb"
+          "Don't look back/app/build/distributions/installers/*.deb"
+          "Don't look back/app/build/distributions/installers/*.rpm"
+        retention-days: 90
         
-        Build Information:
-        - Build Date: $(date)
-        - Git Commit: ${{ github.sha }}
-        - Branch: ${{ github.ref_name }}
-        
-        Contents:
-        - Don_t_look_back.jar - Main game JAR file
-        - lwjgl/ - LWJGL libraries and natives
-        - res/ - Game resources and assets
-        - javadoc/ - API documentation
-        
-        To run the game:
-        java -Djava.library.path=lwjgl/lwjgl-2.9.1/native/[your-platform] -jar Don_t_look_back.jar
-        EOF
-        
-        # Create version info file
-        cat > dist-package/VERSION.txt << EOF
-        Version: ${{ github.run_number }}
-        Commit: ${{ github.sha }}
-        Branch: ${{ github.ref_name }}
-        Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        Build Number: ${{ github.run_number }}
-        EOF
-        
-        # Create ZIP archive
-        cd dist-package
-        zip -r ../DontLookBack-${{ github.run_number }}-${{ github.sha }}.zip .
-        cd ..
+    - name: Upload Cross-Platform Distribution
+      uses: actions/upload-artifact@v4
+      with:
+        name: cross-platform-distribution-${{ github.run_number }}
+        path: |
+          "Don't look back/app/build/distributions/cross-platform/"
+        retention-days: 30
         
     - name: Upload JAR artifact
       uses: actions/upload-artifact@v4

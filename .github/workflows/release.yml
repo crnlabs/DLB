@@ -35,13 +35,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
         
-    - name: Build release
+    - name: Build release with native packages
       run: |
         cd "Don't look back"
-        # Use core Gradle tasks that work correctly
-        gradle app:build app:fatJar app:javadoc --no-daemon
+        # Build everything including native packages and documentation
+        gradle buildAll --no-daemon
         
-    - name: Create release package
+        # Build platform-specific installers  
+        gradle buildInstallers --no-daemon || echo "Some installer types may not be available"
+        
+    - name: Create comprehensive release packages
       run: |
         cd "Don't look back"
         VERSION="${{ github.event.inputs.version || github.event.release.tag_name }}"
