@@ -67,8 +67,8 @@ public class Settings {
      */
     public Settings() {
         // Set default resolution
-        this.resolution[0] = 1024; // Horizontal resolution
-        this.resolution[1] = 768;  // Vertical resolution
+        Settings.resolution[0] = 1024; // Horizontal resolution
+        Settings.resolution[1] = 768;  // Vertical resolution
         
         // Configure gameplay settings
         this.monsterSpawn = true;
@@ -79,8 +79,8 @@ public class Settings {
         this.achievements = true;
         this.feedback = true; // Enable telemetry for analytics
         this.debug = 1; // Full debug information
-        this.paused = false;
-        this.test = false;
+        Settings.paused = false;
+        Settings.test = false;
     }
 
     // === Pause State Management ===

@@ -4,7 +4,7 @@ This project has been completely modernized with a Gradle-based build system usi
 
 ## Build Requirements
 
-- Java 11 or higher  
+- Java 17 or higher (LTS)  
 - Gradle 9.0+ (included via wrapper)
 - **No external dependencies** - everything is downloaded from Maven Central
 
@@ -76,7 +76,7 @@ DontLookBack.bat
 3. Configure launch4j to wrap the JAR in a native .EXE
 
 ### Advanced: jpackage (Java 17+)
-If you have Java 17+ with jpackage:
+Since the project now targets Java 17+, you can use jpackage:
 ```bash
 jpackage --input app/build/distributions \
          --name DontLookBack \

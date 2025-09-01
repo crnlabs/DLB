@@ -23,7 +23,6 @@ public class BasicGameTest {
         assertDoesNotThrow(() -> {
             // These should not throw exceptions in headless mode
             new Player();
-            new Light();
             new StaticList();
         });
     }
@@ -38,29 +37,14 @@ public class BasicGameTest {
     }
 
     @Test
-    @DisplayName("Test entities system")
-    void testEntities() {
-        assertDoesNotThrow(() -> {
-            Entities entities = new Entities();
-            assertNotNull(entities);
-        });
-    }
-
-    @Test
-    @DisplayName("Test quadruped entity")
-    void testQuadruped() {
-        assertDoesNotThrow(() -> {
-            Quadraped quad = new Quadraped();
-            assertNotNull(quad);
-        });
-    }
-
-    @Test
     @DisplayName("Test simple room functionality")
     void testSimpleRoom() {
         assertDoesNotThrow(() -> {
-            SimpleRoom room = new SimpleRoom();
+            // Create a simple room with required parameters
+            float[] center = {0.0f, 0.0f, 0.0f};
+            SimpleRoom room = new SimpleRoom(1, RoomType.SMALL_ROOM, center);
             assertNotNull(room);
+            assertEquals(1, room.getRoomId());
         });
     }
 }

@@ -57,6 +57,8 @@ public class StateManagementTest {
     @Test
     @DisplayName("Secondary states work correctly")
     void testSecondaryStates() {
+        // Follow proper state transitions: LOADING -> MAIN_MENU -> PLAYING
+        stateManager.changeState(GameState.MAIN_MENU);
         stateManager.changeState(GameState.PLAYING);
         
         // Add secondary state
