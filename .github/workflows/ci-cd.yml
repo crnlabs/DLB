@@ -16,10 +16,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Set up JDK 8
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '8'
+        java-version: '17'
         distribution: 'temurin'
         
     - name: Cache dependencies
@@ -57,9 +57,8 @@ jobs:
     - name: Compile test code
       run: |
         cd "Don't look back"
-        # Compile test sources manually since they're in custom location
-        mkdir -p build/test/classes
-        javac -cp "build/classes:$CLASSPATH" -d build/test/classes test/dontlookback/*.java
+        # Use ant to compile test sources properly
+        ant compile-custom-tests
         
     - name: Run comprehensive test suite
       run: |
@@ -72,8 +71,8 @@ jobs:
         # Run the headless test suite (no OpenGL dependencies)
         ant test-headless
         
-        # Optionally run comprehensive test suite with OpenGL (may fail in CI)
-        ant test-comprehensive || echo "Full comprehensive test suite failed (expected in headless environment)"
+        # Run comprehensive test suite (now supports headless mode)
+        ant test-comprehensive
              
     - name: Run individual test files
       run: |
@@ -104,10 +103,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Set up JDK 8
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '8'
+        java-version: '17'
         distribution: 'temurin'
         
     - name: Cache dependencies

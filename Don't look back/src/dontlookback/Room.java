@@ -113,19 +113,28 @@ public class Room {
         int furnitureCount = (int) (Math.random() * maxFurniture);
         
         for (int i = 0; i < furnitureCount; i++) {
-            // Create furniture as colored cubes for now
-            Cube furnitureItem = new Cube();
-            
-            // Position randomly within room bounds
-            float[] pos = getRandomPositionInRoom();
-            furnitureItem.setCenter(pos);
-            
-            // Set color to indicate it's furniture
-            furnitureItem.setRGB(new float[]{0.6f, 0.4f, 0.2f}); // Brown-ish
-            furnitureItem.setUpVBO();
-            
-            furniture.add(furnitureItem);
-            roomContents.add(furnitureItem);
+            try {
+                // Create furniture as colored cubes for now
+                Cube furnitureItem = new Cube();
+                
+                // Position randomly within room bounds
+                float[] pos = getRandomPositionInRoom();
+                furnitureItem.setCenter(pos);
+                
+                // Set color to indicate it's furniture
+                furnitureItem.setRGB(new float[]{0.6f, 0.4f, 0.2f}); // Brown-ish
+                
+                // Only set up VBO if not in headless mode
+                if (!isHeadlessMode()) {
+                    furnitureItem.setUpVBO();
+                }
+                
+                furniture.add(furnitureItem);
+                roomContents.add(furnitureItem);
+            } catch (Exception e) {
+                // Handle headless mode gracefully - skip VBO setup but keep furniture data
+                System.out.println("Warning: Skipping furniture VBO setup (headless mode): " + e.getMessage());
+            }
         }
     }
     
@@ -136,19 +145,28 @@ public class Room {
         int monsterCount = (int) (Math.random() * maxMonsters) + 1;
         
         for (int i = 0; i < monsterCount; i++) {
-            // Create monsters as dark cubes for now
-            Cube monster = new Cube();
-            
-            // Position randomly within room bounds
-            float[] pos = getRandomPositionInRoom();
-            monster.setCenter(pos);
-            
-            // Set color to indicate it's a monster
-            monster.setRGB(new float[]{0.1f, 0.1f, 0.1f}); // Dark
-            monster.setUpVBO();
-            
-            monsters.add(monster);
-            roomContents.add(monster);
+            try {
+                // Create monsters as dark cubes for now
+                Cube monster = new Cube();
+                
+                // Position randomly within room bounds
+                float[] pos = getRandomPositionInRoom();
+                monster.setCenter(pos);
+                
+                // Set color to indicate it's a monster
+                monster.setRGB(new float[]{0.1f, 0.1f, 0.1f}); // Dark
+                
+                // Only set up VBO if not in headless mode
+                if (!isHeadlessMode()) {
+                    monster.setUpVBO();
+                }
+                
+                monsters.add(monster);
+                roomContents.add(monster);
+            } catch (Exception e) {
+                // Handle headless mode gracefully - skip VBO setup but keep monster data
+                System.out.println("Warning: Skipping monster VBO setup (headless mode): " + e.getMessage());
+            }
         }
     }
     
@@ -170,12 +188,22 @@ public class Room {
      * Clears all room content
      */
     public void clearContent() {
-        // Delete VBOs for proper cleanup
-        for (Objects obj : furniture) {
-            obj.delete();
-        }
-        for (Objects obj : monsters) {
-            obj.delete();
+        // Delete VBOs for proper cleanup (only if not in headless mode)
+        if (!isHeadlessMode()) {
+            for (Objects obj : furniture) {
+                try {
+                    obj.delete();
+                } catch (Exception e) {
+                    System.out.println("Warning: Skipping VBO deletion (headless mode): " + e.getMessage());
+                }
+            }
+            for (Objects obj : monsters) {
+                try {
+                    obj.delete();
+                } catch (Exception e) {
+                    System.out.println("Warning: Skipping VBO deletion (headless mode): " + e.getMessage());
+                }
+            }
         }
         
         furniture.clear();
@@ -208,6 +236,11 @@ public class Room {
             return;
         }
         
+        // Skip rendering in headless mode
+        if (isHeadlessMode()) {
+            return;
+        }
+        
         // Render room structure (walls, floor, ceiling)
         renderRoomStructure();
         
@@ -231,7 +264,10 @@ public class Room {
             return;
         }
         
-        roomContents.update();
+        // Skip updating room contents in headless mode to avoid OpenGL calls
+        if (!isHeadlessMode()) {
+            roomContents.update();
+        }
     }
     
     // Getters
@@ -246,4 +282,23 @@ public class Room {
     
     // State management
     public void setActive(boolean active) { this.isActive = active; }
+    
+    /**
+     * Checks if running in headless mode (without graphics support)
+     */
+    private boolean isHeadlessMode() {
+        // Check if headless system property is set
+        boolean headlessProperty = Boolean.getBoolean("java.awt.headless");
+        
+        // Check if DISPLAY environment variable is available (Linux/Unix)
+        String display = System.getenv("DISPLAY");
+        boolean noDisplay = (display == null || display.trim().isEmpty());
+        
+        // Check if we're in a typical CI environment
+        boolean ciMode = System.getenv("CI") != null || 
+                        System.getenv("GITHUB_ACTIONS") != null ||
+                        System.getenv("JENKINS_URL") != null;
+        
+        return headlessProperty || (noDisplay && ciMode);
+    }
 }
