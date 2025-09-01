@@ -55,8 +55,11 @@ public class Settings {
     
     // === Runtime State ===
     
-    /** Game pause state */
+    /** Game pause state (legacy compatibility) */
     private static boolean paused = false;
+    
+    /** Reference to modern state manager (set by Graphics system) */
+    private static StateManager stateManager = null;
 
     /**
      * Initialize settings with default values
@@ -64,8 +67,8 @@ public class Settings {
      */
     public Settings() {
         // Set default resolution
-        this.resolution[0] = 1024; // Horizontal resolution
-        this.resolution[1] = 768;  // Vertical resolution
+        Settings.resolution[0] = 1024; // Horizontal resolution
+        Settings.resolution[1] = 768;  // Vertical resolution
         
         // Configure gameplay settings
         this.monsterSpawn = true;
@@ -76,26 +79,55 @@ public class Settings {
         this.achievements = true;
         this.feedback = true; // Enable telemetry for analytics
         this.debug = 1; // Full debug information
-        this.paused = false;
-        this.test = false;
+        Settings.paused = false;
+        Settings.test = false;
     }
 
     // === Pause State Management ===
     
     /**
      * Check if the game is currently paused
+     * Uses modern state manager if available, falls back to legacy flag
      * @return true if game is paused, false otherwise
      */
     public static boolean pausedState() {
+        if (stateManager != null) {
+            return stateManager.getCurrentState() == GameState.PAUSED;
+        }
         return paused;
     }
     
     /**
      * Set the game pause state
+     * Uses modern state manager if available, falls back to legacy flag
      * @param state true to pause, false to resume
      */
     public static void setPaused(boolean state) {
-        paused = state;
+        if (stateManager != null) {
+            if (state) {
+                stateManager.pauseGame();
+            } else {
+                stateManager.resumeGame();
+            }
+        } else {
+            paused = state;
+        }
+    }
+    
+    /**
+     * Set the state manager reference (called by Graphics system)
+     * @param manager State manager instance
+     */
+    public static void setStateManager(StateManager manager) {
+        stateManager = manager;
+    }
+    
+    /**
+     * Get the current state manager
+     * @return State manager instance or null if not initialized
+     */
+    public static StateManager getStateManager() {
+        return stateManager;
     }
     
     // === Test Mode Management ===

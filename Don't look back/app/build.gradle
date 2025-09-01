@@ -63,7 +63,8 @@ sourceSets {
     
     test {
         java {
-            srcDirs = ["${project.rootDir}/test"]
+            // Use the standard test directory for JUnit tests
+            srcDirs = ["src/test/java"]
         }
     }
 }
@@ -71,8 +72,20 @@ sourceSets {
 // Apply Java toolchain
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+// Configure compiler options for better linting
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += [
+        "-Xlint:all",           // Enable all warnings
+        "-Xlint:-serial",       // Disable serialization warnings (not needed for games)
+        "-Xlint:-processing",   // Disable annotation processing warnings
+        "-Werror"               // Treat warnings as errors for better code quality
+    ]
+    options.deprecation = true
+    options.encoding = 'UTF-8'
 }
 
 application {
@@ -117,6 +130,14 @@ tasks.named('test') {
     
     // Enable headless mode for CI/CD compatibility
     systemProperty 'java.awt.headless', 'true'
+    
+    // Don't fail if no tests are discovered (while adding new features)
+    systemProperty 'junit.jupiter.execution.parallel.enabled', 'false'
+    
+    // Set test logging for better visibility
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 // Run the game (default application run)

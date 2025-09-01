@@ -257,7 +257,7 @@ java -Djava.library.path="../lwjgl/lwjgl-2.9.1/native/linux" \
    - Verify LWJGL natives exist for your platform
 
 2. **Compilation Warnings**
-   - "system modules path not set" warning is expected with Java 11
+   - Modern Java 17 LTS provides optimal performance and compatibility
    - Does not affect functionality
 
 3. **OpenGL/Graphics Issues**
