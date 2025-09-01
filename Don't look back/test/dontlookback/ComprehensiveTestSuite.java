@@ -359,9 +359,17 @@ public class ComprehensiveTestSuite {
             System.out.print("Testing entity movement... ");
             
             Player player = new Player();
+            float initialX = player.positionX();
             
             // Test basic movement functionality
-            // (Implementation depends on Player class interface)
+            player.moveToRight();
+            assert player.positionX() > initialX : "Player X position should increase after moving right";
+            
+            // Test monster movement
+            BasicMonster monster = new BasicMonster(0, 0, 0);
+            float monsterInitialX = monster.positionX();
+            monster.moveTowards(5, 0, 0);
+            assert monster.positionX() > monsterInitialX : "Monster should move towards target";
             
             reportTestPass("Entity movement");
             
@@ -374,8 +382,20 @@ public class ComprehensiveTestSuite {
         try {
             System.out.print("Testing entity collision... ");
             
-            // Test collision detection logic
-            // (Implementation depends on collision system)
+            // Test collision detection logic using our new system
+            Player player = new Player();
+            player.setPosition(0, 0, 0);
+            
+            BasicMonster monster = new BasicMonster(0, 0, 0);
+            
+            // Test collision detection
+            boolean collision = CollisionDetector.checkPlayerMonsterCollision(player, monster);
+            assert collision : "Should detect collision when entities overlap";
+            
+            // Test no collision when separated
+            monster.setPosition(10, 0, 10);
+            boolean noCollision = CollisionDetector.checkPlayerMonsterCollision(player, monster);
+            assert !noCollision : "Should not detect collision when entities are far apart";
             
             reportTestPass("Entity collision");
             

@@ -177,13 +177,14 @@ public class CollisionDetector {
     
     /**
      * Create room boundary walls for collision detection
-     * 
-     * @param room The room to create boundaries for
-     * @return Array of wall bounding boxes for the room perimeter
+     * This method would integrate with the Room class but is commented out
+     * until Room integration is fully analyzed
      */
+    /*
     public static float[][] createRoomWalls(Room room) {
         // This would integrate with the Room class to create wall boundaries
         // For now, return empty array as Room integration requires more analysis
         return new float[0][];
     }
+    */
 }
