@@ -1,0 +1,220 @@
+/*
+ * Modern Gradle build for Don't Look Back game
+ * Supports fat JAR creation and executable generation
+ */
+
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs '../lwjgl/lwjgl-2.9.1/jar', '../lwjgl'
+    }
+}
+
+dependencies {
+    // JUnit Jupiter for testing
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    // LWJGL dependencies (from local files)
+    implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar")
+    implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar")
+    implementation files("${project.rootDir}/../lwjgl/jbullet.jar")
+    implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows/PNGDecoder.jar")
+}
+
+// Configure source sets to use existing source structure
+sourceSets {
+    main {
+        java {
+            srcDirs = ["${project.rootDir}/../src"]
+        }
+        resources {
+            srcDirs = ["${project.rootDir}/../res"]
+        }
+    }
+    test {
+        java {
+            srcDirs = ["${project.rootDir}/../test"]
+        }
+    }
+}
+
+// Apply Java toolchain
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+application {
+    // Define the main class for the application
+    mainClass = 'dontlookback.DontLookBack'
+}
+
+// Create fat JAR task
+task fatJar(type: Jar) {
+    group = 'build'
+    description = 'Create a runnable JAR with all dependencies included'
+    
+    archiveBaseName = 'DontLookBack'
+    archiveClassifier = 'fat'
+    archiveVersion = '1.0'
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes(
+            'Main-Class': 'dontlookback.DontLookBack',
+            'Implementation-Title': 'Don\'t Look Back',
+            'Implementation-Version': '1.0'
+        )
+    }
+    
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    
+    with jar
+    
+    // Include native libraries
+    from("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows") {
+        into 'natives/windows'
+    }
+    from("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/linux") {
+        into 'natives/linux'
+    }
+    from("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/macosx") {
+        into 'natives/macosx'
+    }
+}
+
+// Make fatJar depend on compileJava
+fatJar.dependsOn compileJava
+
+// Configure test framework
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// Custom task to run with proper native library path
+task runGame(type: JavaExec) {
+    group = 'application'
+    description = 'Run the game with proper native libraries'
+    
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'dontlookback.DontLookBack'
+    
+    // Set native library path based on OS
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows"
+    } else if (System.getProperty('os.name').toLowerCase().contains('linux')) {
+        systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/linux"
+    } else if (System.getProperty('os.name').toLowerCase().contains('mac')) {
+        systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/macosx"
+    }
+}
+
+// Comprehensive testing task
+task testComprehensive(type: Test) {
+    group = 'verification'
+    description = 'Run comprehensive test suite'
+    
+    useJUnitPlatform()
+    
+    systemProperty 'java.awt.headless', 'true'
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+// Task to create executable wrapper scripts
+task createExecutable {
+    group = 'distribution'
+    description = 'Create native executable wrapper scripts'
+    dependsOn fatJar
+    
+    doLast {
+        def distDir = project.layout.buildDirectory.dir('distributions').get().asFile
+        distDir.mkdirs()
+        
+        // Create batch file for Windows
+        def batFile = new File(distDir, 'DontLookBack.bat')
+        batFile.text = '''@echo off
+java -Djava.library.path=natives/windows -jar DontLookBack-1.0-fat.jar
+pause
+'''
+        
+        // Create shell script for Unix
+        def shFile = new File(distDir, 'DontLookBack.sh')
+        shFile.text = '''#!/bin/bash
+java -Djava.library.path=natives/linux -jar DontLookBack-1.0-fat.jar
+'''
+        shFile.setExecutable(true)
+        
+        // Copy the fat JAR
+        copy {
+            from fatJar.archiveFile
+            into distDir
+        }
+        
+        println "Executable scripts created in build/distributions/"
+        println "- DontLookBack.bat (Windows)"
+        println "- DontLookBack.sh (Linux/Mac)"
+        println "- DontLookBack-1.0-fat.jar"
+    }
+}
+
+// Task to create Windows .EXE using launch4j-style approach
+task createWindowsEXE {
+    group = 'distribution'
+    description = 'Create Windows .EXE launcher'
+    dependsOn fatJar
+    
+    doLast {
+        def distDir = project.layout.buildDirectory.dir('distributions').get().asFile
+        distDir.mkdirs()
+        
+        // Copy the fat JAR to dist directory
+        copy {
+            from fatJar.archiveFile
+            into distDir
+        }
+        
+        // Create a simple wrapper EXE launcher script
+        def exeScript = new File(distDir, 'create_exe.bat')
+        exeScript.text = '''@echo off
+echo Creating Windows executable launcher...
+echo.
+echo This script demonstrates how to create a Windows .EXE:
+echo 1. Use launch4j to wrap the JAR in an EXE
+echo 2. Install launch4j from http://launch4j.sourceforge.net/
+echo 3. Create a config XML file pointing to the fat JAR
+echo 4. Use launch4j to generate the EXE
+echo.
+echo For now, you can run the game directly with:
+echo java -Djava.library.path=natives/windows -jar DontLookBack-1.0-fat.jar
+echo.
+echo Fat JAR is available: DontLookBack-1.0-fat.jar
+pause
+'''
+        
+        println "Windows EXE creation script created in build/distributions/"
+        println "- create_exe.bat (instructions for .EXE creation)"
+        println "- DontLookBack-1.0-fat.jar (runnable fat JAR)"
+    }
+}
+
+// Build everything
+task buildAll {
+    group = 'build'
+    description = 'Build fat JAR, create executable scripts, and Windows EXE launcher'
+    dependsOn fatJar, createExecutable, createWindowsEXE
+}
