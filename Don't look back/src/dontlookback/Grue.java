@@ -22,7 +22,7 @@ public class Grue extends BasicMonster {
     // === Grue Constants ===
     
     /** Time in darkness before grue becomes active (seconds) */
-    private static final float DARKNESS_ACTIVATION_TIME = 3.0f;
+    private static final float DARKNESS_ACTIVATION_TIME = 5.0f;
     
     /** Maximum distance grue can be from player when spawning */
     private static final float MAX_SPAWN_DISTANCE = 15.0f;
