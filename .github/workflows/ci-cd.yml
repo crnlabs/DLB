@@ -68,8 +68,10 @@ jobs:
         cd "Don't look back"
         echo "Testing enhanced gameplay features..."
         
-        # Test new gameplay features using Gradle classpath
-        gradle test --tests "*GameplayFeaturesTest"
+        # Run the main GameplayFeaturesTest (not a JUnit test)
+        java -cp "src/test/java:app/build/classes/java/main" \
+             -Djava.awt.headless=true \
+             dontlookback.GameplayFeaturesTest
              
     - name: Performance and integration testing
       run: |
