@@ -182,98 +182,397 @@ task testComprehensive(type: Test) {
     }
 }
 
-// Task to create executable wrapper scripts
-task createExecutable {
+// Platform-native packaging using jpackage
+task createNativePackage {
     group = 'distribution'
-    description = 'Create cross-platform executable wrapper scripts'
+    description = 'Create platform-native self-contained application package'
     dependsOn fatJar
     
-    def distDir = layout.buildDirectory.dir('distributions')
-    outputs.dir distDir
+    def buildDirPath = layout.buildDirectory.dir('distributions')
+    def jarFilePath = fatJar.archiveFile
     
     doLast {
-        def dir = distDir.get().asFile
-        dir.mkdirs()
+        def buildDir = buildDirPath.get().asFile
+        buildDir.mkdirs()
         
-        // Create batch file for Windows
-        def batFile = new File(dir, 'DontLookBack.bat')
+        def jarFile = jarFilePath.get().asFile
+        def appName = 'DontLookBack'
+        def mainClass = 'dontlookback.DontLookBack'
+        def version = '1.0.0'
+        
+        // Create temporary input directory for jpackage
+        def inputDir = new File(buildDir, 'input')
+        inputDir.mkdirs()
+        
+        // Copy the fat JAR to input directory
+        def copiedJar = new File(inputDir, jarFile.name)
+        copiedJar.bytes = jarFile.bytes
+        
+        // Platform-specific packaging
+        def os = System.getProperty('os.name').toLowerCase()
+        def platformDir = new File(buildDir, 'native')
+        platformDir.mkdirs()
+        
+        def jpackageCmd = ['jpackage',
+            '--input', inputDir.absolutePath,
+            '--name', appName,
+            '--main-class', mainClass,
+            '--main-jar', jarFile.name,
+            '--dest', platformDir.absolutePath,
+            '--app-version', version,
+            '--description', 'Don\'t Look Back - Horror Survival Game',
+            '--copyright', 'CRN Labs',
+            '--vendor', 'CRN Labs'
+        ]
+        
+        // Add platform-specific options
+        if (os.contains('linux')) {
+            jpackageCmd.addAll(['--linux-app-category', 'Game'])
+            jpackageCmd.addAll(['--linux-shortcut'])
+        } else if (os.contains('windows')) {
+            jpackageCmd.addAll(['--win-console'])
+            jpackageCmd.addAll(['--win-shortcut'])
+            jpackageCmd.addAll(['--win-menu'])
+        } else if (os.contains('mac')) {
+            jpackageCmd.addAll(['--mac-package-identifier', 'com.crnlabs.dontlookback'])
+        }
+        
+        println "Creating native package for ${os}..."
+        println "Command: ${jpackageCmd.join(' ')}"
+        
+        def process = jpackageCmd.execute()
+        process.waitFor()
+        
+        if (process.exitValue() == 0) {
+            println "✓ Native package created successfully in build/distributions/native/"
+            
+            // List created files
+            platformDir.eachFile { file ->
+                println "  - ${file.name}"
+            }
+        } else {
+            println "✗ Error creating native package:"
+            println process.err.text
+            throw new GradleException("Failed to create native package")
+        }
+        
+        // Clean up temporary input directory
+        inputDir.deleteDir()
+    }
+}
+
+// Create platform-specific installer packages
+task createInstallerPackages {
+    group = 'distribution'
+    description = 'Create platform-specific installer packages (DEB, RPM, MSI, DMG)'
+    dependsOn fatJar
+    
+    def buildDirPath = layout.buildDirectory.dir('distributions')
+    def jarFilePath = fatJar.archiveFile
+    
+    doLast {
+        def buildDir = buildDirPath.get().asFile
+        buildDir.mkdirs()
+        
+        def jarFile = jarFilePath.get().asFile
+        def appName = 'DontLookBack'
+        def mainClass = 'dontlookback.DontLookBack'
+        def version = '1.0.0'
+        
+        // Create temporary input directory
+        def inputDir = new File(buildDir, 'input')
+        inputDir.mkdirs()
+        
+        def copiedJar = new File(inputDir, jarFile.name)
+        copiedJar.bytes = jarFile.bytes
+        
+        def os = System.getProperty('os.name').toLowerCase()
+        def installersDir = new File(buildDir, 'installers')
+        installersDir.mkdirs()
+        
+        def baseCmd = ['jpackage',
+            '--input', inputDir.absolutePath,
+            '--name', appName,
+            '--main-class', mainClass,
+            '--main-jar', jarFile.name,
+            '--dest', installersDir.absolutePath,
+            '--app-version', version,
+            '--description', 'Don\'t Look Back - Horror Survival Game',
+            '--copyright', 'CRN Labs',
+            '--vendor', 'CRN Labs'
+        ]
+        
+        // Create different installer types based on platform
+        def installerTypes = []
+        if (os.contains('linux')) {
+            installerTypes = ['deb', 'rpm']
+        } else if (os.contains('windows')) {
+            installerTypes = ['msi', 'exe']
+        } else if (os.contains('mac')) {
+            installerTypes = ['dmg', 'pkg']
+        }
+        
+        installerTypes.each { type ->
+            println "Creating ${type.toUpperCase()} installer..."
+            
+            def cmd = new ArrayList(baseCmd)
+            cmd.addAll(['--type', type])
+            
+            if (type == 'deb' || type == 'rpm') {
+                cmd.addAll(['--linux-app-category', 'Game'])
+                cmd.addAll(['--linux-shortcut'])
+            } else if (type == 'msi' || type == 'exe') {
+                cmd.addAll(['--win-console'])
+                cmd.addAll(['--win-shortcut'])
+                cmd.addAll(['--win-menu'])
+            } else if (type == 'dmg' || type == 'pkg') {
+                cmd.addAll(['--mac-package-identifier', 'com.crnlabs.dontlookback'])
+            }
+            
+            def process = cmd.execute()
+            process.waitFor()
+            
+            if (process.exitValue() == 0) {
+                println "✓ ${type.toUpperCase()} installer created successfully"
+            } else {
+                println "✗ Error creating ${type.toUpperCase()} installer:"
+                println process.err.text
+            }
+        }
+        
+        // List all created installers
+        println "\nCreated installers:"
+        installersDir.eachFile { file ->
+            println "  - ${file.name} (${file.length() / 1024 / 1024} MB)"
+        }
+        
+        // Clean up
+        inputDir.deleteDir()
+    }
+}
+
+// Cross-platform distribution task
+task createCrossPlatformDistribution {
+    group = 'distribution'
+    description = 'Create organized cross-platform distribution with native packages'
+    dependsOn fatJar
+    
+    def buildDirPath = layout.buildDirectory.dir('distributions')
+    def jarFilePath = fatJar.archiveFile
+    
+    doLast {
+        def buildDir = buildDirPath.get().asFile
+        def distDir = new File(buildDir, 'cross-platform')
+        distDir.mkdirs()
+        
+        // Create platform directories
+        def platforms = ['windows', 'linux', 'macos']
+        platforms.each { platform ->
+            new File(distDir, platform).mkdirs()
+        }
+        
+        // Copy fat JAR to each platform directory
+        def jarFile = jarFilePath.get().asFile
+        platforms.each { platform ->
+            def destFile = new File(distDir, "${platform}/${jarFile.name}")
+            destFile.bytes = jarFile.bytes
+        }
+        
+        // Create platform-specific launchers
+        // Windows launcher
+        def winDir = new File(distDir, 'windows')
+        def batFile = new File(winDir, 'DontLookBack.bat')
         batFile.text = '''@echo off
-echo Don't Look Back - Modern Edition
+title Don't Look Back - Horror Survival Game
+echo ================================================
+echo Don't Look Back - Horror Survival Game
+echo ================================================
+echo.
 echo Starting game...
-java -jar DontLookBack-1.0-fat.jar
-pause
+echo.
+if not exist "%JAVA_HOME%\\bin\\java.exe" (
+    echo Java not found in JAVA_HOME. Trying system PATH...
+    java -Xmx2048m -jar DontLookBack-1.0-fat.jar
+) else (
+    "%JAVA_HOME%\\bin\\java.exe" -Xmx2048m -jar DontLookBack-1.0-fat.jar
+)
+echo.
+echo Game closed. Press any key to exit.
+pause >nul
 '''
         
-        // Create shell script for Unix-like systems
-        def shFile = new File(dir, 'DontLookBack.sh')
+        // Linux launcher
+        def linuxDir = new File(distDir, 'linux')
+        def shFile = new File(linuxDir, 'DontLookBack.sh')
         shFile.text = '''#!/bin/bash
-echo "Don't Look Back - Modern Edition"
+echo "================================================"
+echo "Don't Look Back - Horror Survival Game"
+echo "================================================"
+echo
 echo "Starting game..."
-java -jar DontLookBack-1.0-fat.jar
+echo
+
+# Check for Java
+if command -v java >/dev/null 2>&1; then
+    java -Xmx2048m -jar DontLookBack-1.0-fat.jar
+else
+    echo "Error: Java is not installed or not in PATH."
+    echo "Please install Java 17 or later to run this game."
+    exit 1
+fi
+
+echo
+echo "Game closed."
 '''
         shFile.setExecutable(true)
         
-        // Copy the fat JAR to distribution directory
-        copy {
-            from fatJar.archiveFile
-            into dir
+        // macOS launcher
+        def macDir = new File(distDir, 'macos')
+        def macFile = new File(macDir, 'DontLookBack.command')
+        macFile.text = '''#!/bin/bash
+echo "================================================"
+echo "Don't Look Back - Horror Survival Game"
+echo "================================================"
+echo
+echo "Starting game..."
+echo
+
+# Change to script directory
+cd "$(dirname "$0")"
+
+# Check for Java
+if command -v java >/dev/null 2>&1; then
+    java -Xmx2048m -jar DontLookBack-1.0-fat.jar
+else
+    echo "Error: Java is not installed or not in PATH."
+    echo "Please install Java 17 or later to run this game."
+    exit 1
+fi
+
+echo
+echo "Game closed."
+'''
+        macFile.setExecutable(true)
+        
+        // Create README files for each platform
+        platforms.each { platform ->
+            def readmeFile = new File(distDir, "${platform}/README.txt")
+            readmeFile.text = """Don't Look Back - Horror Survival Game
+=====================================
+
+Platform: ${platform.capitalize()}
+Version: 1.0.0
+Java Version Required: 17 or later
+
+INSTALLATION:
+=============
+1. Ensure Java 17 or later is installed on your system
+2. Run the launcher script for your platform:
+   - Windows: Double-click DontLookBack.bat
+   - Linux: Run ./DontLookBack.sh in terminal
+   - macOS: Double-click DontLookBack.command
+
+SYSTEM REQUIREMENTS:
+==================
+- Java 17 or later
+- OpenGL 3.3+ compatible graphics card
+- 2GB RAM minimum
+- 100MB disk space
+
+TROUBLESHOOTING:
+===============
+- If the game doesn't start, check Java installation
+- For graphics issues, update your graphics drivers
+- For performance issues, ensure you have sufficient RAM
+
+Contact: https://github.com/crnlabs/DLB/issues
+"""
         }
         
-        println "Cross-platform executable scripts created in build/distributions/"
-        println "- DontLookBack.bat (Windows)"
-        println "- DontLookBack.sh (Linux/Mac)"
-        println "- DontLookBack-1.0-fat.jar"
+        println "✓ Cross-platform distribution created in build/distributions/cross-platform/"
+        println "  - windows/ (with .bat launcher)"
+        println "  - linux/ (with .sh launcher)" 
+        println "  - macos/ (with .command launcher)"
+        println "  - Each includes the fat JAR and platform-specific launcher"
     }
 }
 
-// Task to create Windows .EXE using launch4j-style approach
-task createWindowsEXE {
-    group = 'distribution'
-    description = 'Create Windows .EXE launcher instructions'
-    dependsOn fatJar
+// Enhanced Javadoc configuration for comprehensive API documentation
+javadoc {
+    options {
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        author = true
+        version = true
+        use = true
+        windowTitle = "Don't Look Back API Documentation"
+        docTitle = "Don't Look Back Game Engine API"
+        header = "<b>Don't Look Back v1.0</b>"
+        bottom = """
+            <div style='text-align: center; padding: 10px; background: #f8f9fa; border-top: 1px solid #ddd; margin-top: 20px;'>
+                <p><strong>Don't Look Back</strong> - Horror Survival Game Engine</p>
+                <p>Built with Java 17, LWJGL 3.3.4, JBox2D | 
+                <a href='https://github.com/crnlabs/DLB' target='_blank'>GitHub Repository</a> | 
+                <a href='https://github.com/crnlabs/DLB/issues' target='_blank'>Report Issues</a></p>
+            </div>
+        """
+        
+        // Enhanced documentation options
+        addStringOption('Xdoclint:all,-missing', '-quiet')
+        addStringOption('tag', 'apiNote:a:API Note:')
+        addStringOption('tag', 'implSpec:a:Implementation Requirements:')
+        addStringOption('tag', 'implNote:a:Implementation Note:')
+        
+        // Add links to external dependencies
+        links(
+            'https://docs.oracle.com/en/java/javase/17/docs/api/',
+            'https://javadoc.lwjgl.org/'
+        )
+    }
     
-    def distDir = layout.buildDirectory.dir('distributions')
-    outputs.dir distDir
+    // Include all source files
+    include '**/*.java'
+    
+    // Fail gracefully on documentation warnings
+    failOnError = false
     
     doLast {
-        def dir = distDir.get().asFile
-        dir.mkdirs()
-        
-        // Copy the fat JAR to distribution directory
-        copy {
-            from fatJar.archiveFile
-            into dir
-        }
-        
-        // Create instructions for EXE creation
-        def exeScript = new File(dir, 'create_exe.bat')
-        exeScript.text = '''@echo off
-echo Creating Windows executable launcher...
-echo.
-echo Don't Look Back - Modern Edition
-echo.
-echo This script demonstrates how to create a Windows .EXE:
-echo 1. Use launch4j to wrap the JAR in an EXE
-echo 2. Install launch4j from http://launch4j.sourceforge.net/
-echo 3. Create a config XML file pointing to the fat JAR
-echo 4. Use launch4j to generate the EXE
-echo.
-echo For immediate use, run the game directly with:
-echo java -jar DontLookBack-1.0-fat.jar
-echo.
-echo Fat JAR available: DontLookBack-1.0-fat.jar
-pause
-'''
-        
-        println "Windows EXE creation instructions created in build/distributions/"
-        println "- create_exe.bat (instructions for .EXE creation)"
-        println "- DontLookBack-1.0-fat.jar (self-contained runnable JAR)"
+        println "Javadoc generated successfully!"
+        println "Documentation available at: ${destinationDir}/index.html"
     }
 }
 
-// Build everything
+// Task to copy Javadoc to docs directory for GitHub Pages
+task copyDocsToGitHubPages(type: Copy) {
+    group = 'documentation'
+    description = 'Copy generated Javadoc to docs directory for GitHub Pages deployment'
+    dependsOn javadoc
+    
+    from javadoc.destinationDir
+    into "${project.rootDir}/../docs/javadoc"
+    
+    doLast {
+        println "Documentation copied to docs/javadoc for GitHub Pages"
+    }
+}
+
+// Build everything - now with native packaging
 task buildAll {
     group = 'build'
-    description = 'Build fat JAR, create executable scripts, and Windows EXE launcher'
-    dependsOn fatJar, createExecutable, createWindowsEXE
+    description = 'Build complete distribution with native packages, cross-platform support, and documentation'
+    dependsOn fatJar, createNativePackage, createCrossPlatformDistribution, javadoc, copyDocsToGitHubPages
+}
+
+// Build installers for distribution
+task buildInstallers {
+    group = 'build'
+    description = 'Build platform-specific installer packages (DEB, RPM, MSI, DMG)'
+    dependsOn createInstallerPackages
+}
+
+// Quick build for development
+task buildQuick {
+    group = 'build'
+    description = 'Quick build with fat JAR and cross-platform distribution'
+    dependsOn fatJar, createCrossPlatformDistribution
 }

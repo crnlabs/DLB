@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don't Look Back - API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .header .description {
+            font-size: 1rem;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .api-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .api-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #3498db;
+        }
+
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .api-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .api-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .api-card a {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .api-card a:hover {
+            background: #2980b9;
+        }
+
+        .quick-links {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .quick-links h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .quick-links ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-links li {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+
+        .quick-links a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .quick-links a:hover {
+            color: #3498db;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            color: #666;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .version-info {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .version-info strong {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Don't Look Back</h1>
+            <div class="subtitle">API Documentation</div>
+            <div class="description">
+                Comprehensive API documentation for the Don't Look Back horror survival game. 
+                Built with Java 17, LWJGL 3.3.4, and JBox2D for modern cross-platform gaming.
+            </div>
+            <div class="version-info">
+                <strong>Current Version:</strong> 1.0 | 
+                <strong>Java:</strong> 17+ | 
+                <strong>OpenGL:</strong> 3.2+ | 
+                <strong>Build System:</strong> Gradle 9.0+
+            </div>
+        </header>
+
+        <div class="api-nav">
+            <div class="api-card">
+                <h3>📚 Complete API Reference</h3>
+                <p>Full Javadoc documentation covering all classes, interfaces, and methods in the game engine.</p>
+                <a href="javadoc/index.html">Browse Javadoc</a>
+            </div>
+
+            <div class="api-card">
+                <h3>🎮 Core Game Systems</h3>
+                <p>Essential classes for game logic, state management, and player interactions.</p>
+                <a href="javadoc/dontlookback/package-summary.html">Core Systems</a>
+            </div>
+
+            <div class="api-card">
+                <h3>🏠 Room & World Generation</h3>
+                <p>Procedural room generation system with configurable room types and content generation.</p>
+                <a href="javadoc/dontlookback/RoomGenerator.html">Room System</a>
+            </div>
+
+            <div class="api-card">
+                <h3>👾 Entity & Monster System</h3>
+                <p>AI entities, monsters, NPCs, and collision detection for dynamic game world interactions.</p>
+                <a href="javadoc/dontlookback/Monster.html">Entity System</a>
+            </div>
+
+            <div class="api-card">
+                <h3>🎨 Graphics & Rendering</h3>
+                <p>Modern OpenGL-based rendering system with LWJGL 3.x for cross-platform graphics.</p>
+                <a href="javadoc/dontlookback/Graphics.html">Graphics API</a>
+            </div>
+
+            <div class="api-card">
+                <h3>⚙️ Settings & Configuration</h3>
+                <p>Game configuration, settings management, and player profile persistence.</p>
+                <a href="javadoc/dontlookback/Settings.html">Configuration</a>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <h3>Quick Navigation</h3>
+            <ul>
+                <li><a href="javadoc/dontlookback/DontLookBack.html">DontLookBack</a> - Main Game Class</li>
+                <li><a href="javadoc/dontlookback/Player.html">Player</a> - Player Character System</li>
+                <li><a href="javadoc/dontlookback/StateManager.html">StateManager</a> - Game State Management</li>
+                <li><a href="javadoc/dontlookback/RoomType.html">RoomType</a> - Room Type Definitions</li>
+                <li><a href="javadoc/dontlookback/BasicMonster.html">BasicMonster</a> - Monster Implementation</li>
+                <li><a href="javadoc/dontlookback/CollisionDetector.html">CollisionDetector</a> - Collision System</li>
+                <li><a href="javadoc/dontlookback/InputManager.html">InputManager</a> - Input Handling</li>
+                <li><a href="javadoc/dontlookback/PlayerProfile.html">PlayerProfile</a> - Player Data</li>
+            </ul>
+        </div>
+
+        <div class="quick-links">
+            <h3>Key Interfaces</h3>
+            <ul>
+                <li><a href="javadoc/dontlookback/Entities.html">Entities</a> - Base Entity Interface</li>
+                <li><a href="javadoc/dontlookback/Monster.html">Monster</a> - Monster Behavior</li>
+                <li><a href="javadoc/dontlookback/Enemy.html">Enemy</a> - Enemy AI Interface</li>
+                <li><a href="javadoc/dontlookback/NPC.html">NPC</a> - Non-Player Character</li>
+                <li><a href="javadoc/dontlookback/Furnature.html">Furnature</a> - Furniture Objects</li>
+                <li><a href="javadoc/dontlookback/Movable.html">Movable</a> - Movable Entities</li>
+            </ul>
+        </div>
+
+        <div class="quick-links">
+            <h3>Development Resources</h3>
+            <ul>
+                <li><a href="../README.md">Project README</a> - Getting Started Guide</li>
+                <li><a href="https://github.com/crnlabs/DLB">Source Code</a> - GitHub Repository</li>
+                <li><a href="https://github.com/crnlabs/DLB/issues">Bug Reports</a> - Issue Tracker</li>
+                <li><a href="https://github.com/crnlabs/DLB/actions">CI/CD Pipeline</a> - Build Status</li>
+                <li><a href="https://github.com/crnlabs/DLB/security">Security</a> - Vulnerability Reports</li>
+                <li><a href="https://github.com/crnlabs/DLB/releases">Releases</a> - Download Latest</li>
+            </ul>
+        </div>
+
+        <footer class="footer">
+            <p>
+                <strong>Don't Look Back</strong> - Horror Survival Game API Documentation<br>
+                Built with Java 17, LWJGL 3.3.4, JBox2D, and modern development practices<br>
+                <small>Generated automatically by CI/CD pipeline | Last updated: <span id="build-date"></span></small>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Set the current date as build date
+        document.getElementById('build-date').textContent = new Date().toLocaleDateString();
+        
+        // Add some subtle animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.api-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

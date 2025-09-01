@@ -117,37 +117,40 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
         
-    - name: Build project
+    - name: Build project with native packages
       run: |
         cd "Don't look back"
-        # Use core Gradle tasks that work correctly
-        gradle app:build app:fatJar --no-daemon
+        # Build everything including native packages
+        gradle buildAll --no-daemon
         
-    - name: Generate Javadoc
+    - name: Create platform-specific distributions
       run: |
         cd "Don't look back"
-        gradle javadoc --no-daemon || echo "Javadoc generation completed with warnings"
+        # Create native packages for Linux (current CI platform)
+        gradle createNativePackage --no-daemon
         
-    - name: Create distribution package
+        # Create installer packages for Linux
+        gradle buildInstallers --no-daemon || echo "Some installer types may not be available on this platform"
+        
+    - name: Organize release packages
       run: |
         cd "Don't look back"
-        # Build the fat JAR first
-        gradle app:fatJar --no-daemon
-        
-        # Create release-style packages (consistent with release pipeline)
         mkdir -p release
         
-        # Copy main JAR (fat JAR from Gradle build)
-        cp app/build/libs/DontLookBack-1.0-fat.jar release/
+        # Copy cross-platform distributions
+        cp -r app/build/distributions/cross-platform/* release/ 2>/dev/null || echo "Cross-platform dist not available"
         
-        # Copy regular JAR as backup
-        cp app/build/libs/app.jar release/ 2>/dev/null || echo "Regular JAR not available"
+        # Copy native packages
+        cp app/build/distributions/native/*.deb release/ 2>/dev/null || echo "DEB package not available"
+        cp app/build/distributions/installers/*.deb release/ 2>/dev/null || echo "DEB installer not available"
+        cp app/build/distributions/installers/*.rpm release/ 2>/dev/null || echo "RPM installer not available"
         
-        # Copy resources
-        cp -r res release/ 2>/dev/null || echo "Resources not available"
+        # Copy documentation
+        cp -r app/build/docs/javadoc release/documentation/ 2>/dev/null || echo "Javadoc not available"
         
-        # Copy documentation (from Gradle build)
-        cp -r app/build/docs/javadoc release/ 2>/dev/null || echo "Javadoc not available"
+        # List created packages
+        echo "Created packages:"
+        find release/ -type f -name "*.deb" -o -name "*.rpm" -o -name "*.jar" -o -name "*.bat" -o -name "*.sh" | sort
         
         # Create startup scripts (same as release pipeline)
         cat > release/run.sh << 'EOF'
@@ -254,40 +257,23 @@ jobs:
         Build Number: ${{ github.run_number }}
         EOF
         
-        # Create ZIP archive for legacy compatibility
-        cd dist-package
-        zip -r ../DontLookBack-${{ github.run_number }}-${{ github.sha }}.zip .
-        cd ..
-        =====================================
+    - name: Upload Native Packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-packages-${{ github.run_number }}
+        path: |
+          "Don't look back/app/build/distributions/native/*.deb"
+          "Don't look back/app/build/distributions/installers/*.deb"
+          "Don't look back/app/build/distributions/installers/*.rpm"
+        retention-days: 90
         
-        Build Information:
-        - Build Date: $(date)
-        - Git Commit: ${{ github.sha }}
-        - Branch: ${{ github.ref_name }}
-        
-        Contents:
-        - Don_t_look_back.jar - Main game JAR file
-        - lwjgl/ - LWJGL libraries and natives
-        - res/ - Game resources and assets
-        - javadoc/ - API documentation
-        
-        To run the game:
-        java -Djava.library.path=lwjgl/lwjgl-2.9.1/native/[your-platform] -jar Don_t_look_back.jar
-        EOF
-        
-        # Create version info file
-        cat > dist-package/VERSION.txt << EOF
-        Version: ${{ github.run_number }}
-        Commit: ${{ github.sha }}
-        Branch: ${{ github.ref_name }}
-        Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        Build Number: ${{ github.run_number }}
-        EOF
-        
-        # Create ZIP archive
-        cd dist-package
-        zip -r ../DontLookBack-${{ github.run_number }}-${{ github.sha }}.zip .
-        cd ..
+    - name: Upload Cross-Platform Distribution
+      uses: actions/upload-artifact@v4
+      with:
+        name: cross-platform-distribution-${{ github.run_number }}
+        path: |
+          "Don't look back/app/build/distributions/cross-platform/"
+        retention-days: 30
         
     - name: Upload JAR artifact
       uses: actions/upload-artifact@v4
@@ -369,11 +355,60 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Download Javadoc artifact
-      uses: actions/download-artifact@v5
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
       with:
-        name: dont-look-back-javadoc-${{ github.run_number }}
-        path: docs/
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Generate fresh Javadoc
+      run: |
+        cd "Don't look back"
+        gradle javadoc --no-daemon
+        
+    - name: Prepare GitHub Pages content
+      run: |
+        # Create docs directory if it doesn't exist
+        mkdir -p docs/javadoc
+        
+        # Copy the generated Javadoc
+        cp -r "Don't look back/app/build/docs/javadoc"/* docs/javadoc/
+        
+        # Ensure we have the API landing page
+        if [ ! -f docs/index.html ]; then
+          echo "Creating API documentation landing page..."
+          # The index.html should already be in the repository
+        fi
+        
+        # Create a simple redirect for the root if needed
+        if [ ! -f docs/index.html ]; then
+          cat > docs/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta http-equiv="refresh" content="0; url=javadoc/index.html">
+            <title>Don't Look Back API Documentation</title>
+        </head>
+        <body>
+            <p>Redirecting to <a href="javadoc/index.html">API Documentation</a>...</p>
+        </body>
+        </html>
+        EOF
+        fi
+        
+        # List contents for debugging
+        echo "Documentation structure:"
+        find docs -type f -name "*.html" | head -10
         
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
@@ -381,6 +416,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
+        cname: # Add custom domain if needed
         
   notification:
     runs-on: ubuntu-latest
