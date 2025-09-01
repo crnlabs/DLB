@@ -15,38 +15,81 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 /**
- * Modern graphics system using LWJGL 3.x
- * Replaces the legacy DLB_Graphics class with modern OpenGL 3.3+ support
+ * Modern Graphics System for Don't Look Back
+ * 
+ * This class implements a modern OpenGL 3.3+ rendering pipeline using LWJGL 3.x,
+ * replacing the legacy OpenGL 1.1 fixed-function pipeline from the original implementation.
+ * 
+ * Key Features:
+ * - LWJGL 3.x with GLFW window management
+ * - OpenGL 3.3+ core profile support
+ * - Modern shader-based rendering pipeline
+ * - Cross-platform native library support
+ * - Hardware-accelerated graphics
+ * 
+ * Architecture:
+ * - Uses GLFW for window and input management (vs legacy Display)
+ * - Implements modern OpenGL context creation
+ * - Supports modern graphics features (shaders, VBOs, VAOs)
+ * - Provides foundation for future rendering enhancements
+ * 
+ * This completely replaces the legacy DLB_Graphics class while maintaining
+ * game functionality and providing a path for future graphical improvements.
+ * 
+ * @author DLB Modernization Team
+ * @version 1.0 (LWJGL 3.3.4)
+ * @since 2024
  */
 public class ModernGraphics {
     
+    // === Window and Context Management ===
+    
+    /** GLFW window handle */
     private long window;
+    
+    /** Window dimensions */
     private int width = 1024;
     private int height = 768;
     
-    // Camera variables
-    private float cameraX = 0.0f;
-    private float cameraY = -1.75f;
-    private float cameraZ = 0.0f;
-    private float rotX = 0.0f;
-    private float rotY = 0.0f;
-    private float rotZ = 0.0f;
+    // === Camera System ===
     
-    // Timing
+    /** Camera position in world space */
+    private float cameraX = 0.0f;
+    private float cameraY = -1.75f; // Slightly below ground level for FPS view
+    private float cameraZ = 0.0f;
+    
+    /** Camera rotation angles (Euler angles) */
+    private float rotX = 0.0f; // Pitch
+    private float rotY = 0.0f; // Yaw  
+    private float rotZ = 0.0f; // Roll
+    
+    // === Timing System ===
+    
+    /** Last frame timestamp for delta time calculation */
     private double lastTime = 0.0;
+    
+    /** Time elapsed since last frame (for frame-rate independent movement) */
     private float deltaTime = 0.0f;
     
+    /**
+     * Initialize the modern graphics system
+     * Sets up GLFW window, OpenGL context, and starts the main game loop
+     */
     public ModernGraphics() {
         initializeGraphics();
         gameLoop();
         cleanup();
     }
     
+    /**
+     * Initialize GLFW, create window, and set up OpenGL context
+     * This replaces the legacy Display.create() functionality
+     */
     private void initializeGraphics() {
         System.out.println("Don't Look Back - Modern Graphics System");
         System.out.println("Initializing LWJGL " + Version.getVersion());
         
-        // Setup error callback
+        // Setup error callback for GLFW debugging
         GLFWErrorCallback.createPrint(System.err).set();
         
         // Initialize GLFW

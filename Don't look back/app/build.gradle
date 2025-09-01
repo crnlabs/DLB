@@ -173,7 +173,7 @@ task createExecutable {
     dependsOn fatJar
     
     doLast {
-        def distDir = project.layout.buildDirectory.dir('distributions').get().asFile
+        def distDir = layout.buildDirectory.dir('distributions').get().asFile
         distDir.mkdirs()
         
         // Create batch file for Windows
@@ -214,7 +214,7 @@ task createWindowsEXE {
     dependsOn fatJar
     
     doLast {
-        def distDir = project.layout.buildDirectory.dir('distributions').get().asFile
+        def distDir = layout.buildDirectory.dir('distributions').get().asFile
         distDir.mkdirs()
         
         // Copy the fat JAR to distribution directory
