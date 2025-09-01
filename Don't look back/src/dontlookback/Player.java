@@ -34,6 +34,23 @@ public class Player implements Human {
     /** Movement speed in units/frame (calibrated for game balance) */
     private float speed = .001666f; // Default walking speed
     
+    // === Position and Dimensions ===
+    
+    /** Player position coordinates in world space */
+    private float posX = 0.0f;
+    private float posY = 0.0f; 
+    private float posZ = 0.0f;
+    
+    /** Player rotation values in degrees */
+    private float rotationX = 0.0f;
+    private float rotationY = 0.0f;
+    private float rotationZ = 0.0f;
+    
+    /** Player physical dimensions for collision detection */
+    private static final int DEFAULT_HEIGHT = 175; // 1.75m in cm
+    private static final int DEFAULT_WIDTH = 40;   // 40cm width
+    private static final int DEFAULT_DEPTH = 30;   // 30cm depth
+    
     // === Movement System ===
 
     /**
@@ -103,15 +120,15 @@ public class Player implements Human {
     }
 
     public int height() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return DEFAULT_HEIGHT;
     }
 
     public int width() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return DEFAULT_WIDTH;
     }
 
     public int depth() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return DEFAULT_DEPTH;
     }
 
     /**
@@ -165,90 +182,206 @@ public class Player implements Human {
     
     /**
      * Get player's X position in world space
-     * @return X coordinate (to be implemented with positioning system)
-     * @throws UnsupportedOperationException positioning system not yet implemented
+     * @return X coordinate
      */
     public float positionX() {
-        throw new UnsupportedOperationException("Positioning system not yet implemented");
+        return posX;
     }
 
     /**
      * Get player's Y position in world space
-     * @return Y coordinate (to be implemented with positioning system)
-     * @throws UnsupportedOperationException positioning system not yet implemented
+     * @return Y coordinate
      */
     public float positionY() {
-        throw new UnsupportedOperationException("Positioning system not yet implemented");
+        return posY;
     }
 
     /**
      * Get player's Z position in world space
-     * @return Z coordinate (to be implemented with positioning system)
-     * @throws UnsupportedOperationException positioning system not yet implemented
+     * @return Z coordinate
      */
     public float positionZ() {
-        throw new UnsupportedOperationException("Positioning system not yet implemented");
+        return posZ;
+    }
+    
+    /**
+     * Set player position in world space
+     * @param x X coordinate
+     * @param y Y coordinate  
+     * @param z Z coordinate
+     */
+    public void setPosition(float x, float y, float z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
     }
 
     /**
      * Get player's rotation around X axis (pitch)
-     * @return X rotation in degrees (to be implemented)
-     * @throws UnsupportedOperationException rotation system not yet implemented
+     * @return X rotation in degrees
      */
     public float rotX() {
-        throw new UnsupportedOperationException("Rotation system not yet implemented");
+        return rotationX;
     }
 
     /**
      * Get player's rotation around Y axis (yaw) 
-     * @return Y rotation in degrees (to be implemented)
-     * @throws UnsupportedOperationException rotation system not yet implemented
+     * @return Y rotation in degrees
      */
     public float rotY() {
-        throw new UnsupportedOperationException("Rotation system not yet implemented");
+        return rotationY;
     }
 
     /**
      * Get player's rotation around Z axis (roll)
-     * @return Z rotation in degrees (to be implemented)
-     * @throws UnsupportedOperationException rotation system not yet implemented
+     * @return Z rotation in degrees
      */
     public float rotZ() {
-        throw new UnsupportedOperationException("Rotation system not yet implemented");
+        return rotationZ;
+    }
+    
+    /**
+     * Set player rotation
+     * @param rotX X rotation in degrees
+     * @param rotY Y rotation in degrees
+     * @param rotZ Z rotation in degrees
+     */
+    public void setRotation(float rotX, float rotY, float rotZ) {
+        this.rotationX = rotX;
+        this.rotationY = rotY;
+        this.rotationZ = rotZ;
     }
 
     // === Movement Controls ===
     
     /**
      * Move player character to the left
-     * Provides console feedback for debugging movement
+     * Updates position and provides console feedback for debugging
      */
     public void moveToLeft() {
-        System.out.println("moving left");
+        posX -= speed;
+        System.out.println("moving left to (" + posX + ", " + posY + ", " + posZ + ")");
     }
 
     /**
      * Move player character to the right  
-     * Provides console feedback for debugging movement
+     * Updates position and provides console feedback for debugging
      */
     public void moveToRight() {
-        System.out.println("moving right");
+        posX += speed;
+        System.out.println("moving right to (" + posX + ", " + posY + ", " + posZ + ")");
     }
 
     /**
      * Move player character forward
-     * Provides console feedback for debugging movement
+     * Updates position and provides console feedback for debugging
      */
     public void moveToFront() {
-        System.out.println("moving forward");
+        posZ -= speed;
+        System.out.println("moving forward to (" + posX + ", " + posY + ", " + posZ + ")");
     }
 
     /**
      * Move player character backward
-     * Provides console feedback for debugging movement  
+     * Updates position and provides console feedback for debugging
      */
     public void moveToBack() {
-        System.out.println("moving backward");
+        posZ += speed;
+        System.out.println("moving backward to (" + posX + ", " + posY + ", " + posZ + ")");
+    }
+    
+    // === Collision-Aware Movement ===
+    
+    /**
+     * Attempt to move left with collision detection
+     * @param obstacles Array of obstacle bounding boxes to check against
+     * @return true if movement succeeded, false if blocked by collision
+     */
+    public boolean moveLeftSafe(float[][] obstacles) {
+        float newX = posX - speed;
+        float[] safePos = CollisionDetector.getSafeMovementPosition(this, newX, posY, posZ, obstacles);
+        
+        if (safePos == null) {
+            // Movement is safe
+            posX = newX;
+            System.out.println("moving left to (" + posX + ", " + posY + ", " + posZ + ")");
+            return true;
+        } else {
+            // Collision detected, movement blocked
+            System.out.println("movement left blocked by collision");
+            return false;
+        }
+    }
+    
+    /**
+     * Attempt to move right with collision detection
+     * @param obstacles Array of obstacle bounding boxes to check against
+     * @return true if movement succeeded, false if blocked by collision
+     */
+    public boolean moveRightSafe(float[][] obstacles) {
+        float newX = posX + speed;
+        float[] safePos = CollisionDetector.getSafeMovementPosition(this, newX, posY, posZ, obstacles);
+        
+        if (safePos == null) {
+            // Movement is safe
+            posX = newX;
+            System.out.println("moving right to (" + posX + ", " + posY + ", " + posZ + ")");
+            return true;
+        } else {
+            // Collision detected, movement blocked
+            System.out.println("movement right blocked by collision");
+            return false;
+        }
+    }
+    
+    /**
+     * Attempt to move forward with collision detection
+     * @param obstacles Array of obstacle bounding boxes to check against
+     * @return true if movement succeeded, false if blocked by collision
+     */
+    public boolean moveForwardSafe(float[][] obstacles) {
+        float newZ = posZ - speed;
+        float[] safePos = CollisionDetector.getSafeMovementPosition(this, posX, posY, newZ, obstacles);
+        
+        if (safePos == null) {
+            // Movement is safe
+            posZ = newZ;
+            System.out.println("moving forward to (" + posX + ", " + posY + ", " + posZ + ")");
+            return true;
+        } else {
+            // Collision detected, movement blocked
+            System.out.println("movement forward blocked by collision");
+            return false;
+        }
+    }
+    
+    /**
+     * Attempt to move backward with collision detection
+     * @param obstacles Array of obstacle bounding boxes to check against
+     * @return true if movement succeeded, false if blocked by collision
+     */
+    public boolean moveBackSafe(float[][] obstacles) {
+        float newZ = posZ + speed;
+        float[] safePos = CollisionDetector.getSafeMovementPosition(this, posX, posY, newZ, obstacles);
+        
+        if (safePos == null) {
+            // Movement is safe
+            posZ = newZ;
+            System.out.println("moving backward to (" + posX + ", " + posY + ", " + posZ + ")");
+            return true;
+        } else {
+            // Collision detected, movement blocked
+            System.out.println("movement backward blocked by collision");
+            return false;
+        }
+    }
+    
+    /**
+     * Get the player's bounding box for collision detection
+     * @return Bounding box {minX, minY, minZ, maxX, maxY, maxZ}
+     */
+    public float[] getBoundingBox() {
+        return CollisionDetector.getPlayerBoundingBox(this);
     }
 
 }
