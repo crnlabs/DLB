@@ -12,6 +12,7 @@ public class DLB_Graphics {
 
     testData test = new testData(75); //how many cubes to generate
     StaticList list;
+    RoomGenerator roomGenerator; // Room generation system
     Settings config = new Settings();
     int resolution[] = config.resolution();
     private static float cameraX, cameraY, cameraZ; //camera pos x,y,z
@@ -66,6 +67,10 @@ public class DLB_Graphics {
         glCullFace(GL_BACK); // Doesn't draw back faces //when we are working correctly we don't need to draw the stuff not being seen. 
         list = new StaticList();
         list.add(test.allData());
+        
+        // Initialize room generator
+        roomGenerator = new RoomGenerator();
+        
         while (!Display.isCloseRequested()) {
 
             delta = getDelta();
@@ -202,16 +207,47 @@ public class DLB_Graphics {
         }
 
     }
+    
+    /**
+     * Calculates the look direction vector based on camera rotation
+     */
+    private float[] calculateLookDirection() {
+        // Convert rotation angles to direction vector
+        float yawRad = (float) Math.toRadians(rotY);
+        float pitchRad = (float) Math.toRadians(rotX);
+        
+        float x = (float) (Math.cos(pitchRad) * Math.sin(yawRad));
+        float y = (float) -Math.sin(pitchRad);
+        float z = (float) (Math.cos(pitchRad) * Math.cos(yawRad));
+        
+        // Normalize the vector
+        float length = (float) Math.sqrt(x * x + y * y + z * z);
+        if (length > 0) {
+            x /= length;
+            y /= length;
+            z /= length;
+        }
+        
+        return new float[]{x, y, z};
+    }
 
     private void update() {
         //things that need to happen before the frame is Re-rendered should happen here
         //Such as collision detection and movement
         list.update();
+        
+        // Update room generator with current camera position and look direction
+        float[] playerPos = {cameraX, cameraY, cameraZ};
+        float[] lookDir = calculateLookDirection();
+        roomGenerator.update(playerPos, lookDir);
     }
 
     private void render() {
         Shapes.floorTest();
         //list.render();
+        
+        // Render generated rooms
+        roomGenerator.renderRooms();
     }
 
     private void detectInput(Player player) {

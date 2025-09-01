@@ -249,20 +249,106 @@ public class Shapes{
 
     //these are tests, they will NOT be how rooms are in anyway rendered, but are nessessary for early play testing.
     public static void renderRoom() {
-
+        // Default room at origin with medium size
+        float[] center = {0f, 0f, 0f};
+        float[] dimensions = {12f, 12f, 3f};
+        renderRoom(center, dimensions);
     }
 
     public static void renderRoom(float[] center) {
-
+        // Default medium room dimensions
+        float[] dimensions = {12f, 12f, 3f};
+        renderRoom(center, dimensions);
     }
 
     public static void renderRoom(float[] center, float[] dimensions) {
-
+        // Render room as walls, floor, and ceiling
+        float halfWidth = dimensions[0] / 2f;
+        float halfLength = dimensions[1] / 2f;
+        float height = dimensions[2];
+        
+        glBegin(GL_QUADS);
+        
+        // Floor (gray)
+        glColor3f(0.3f, 0.3f, 0.3f);
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(center[0] - halfWidth, center[1], center[2] - halfLength);
+        glVertex3f(center[0] + halfWidth, center[1], center[2] - halfLength);
+        glVertex3f(center[0] + halfWidth, center[1], center[2] + halfLength);
+        glVertex3f(center[0] - halfWidth, center[1], center[2] + halfLength);
+        
+        // Ceiling (darker gray)
+        glColor3f(0.2f, 0.2f, 0.2f);
+        glNormal3f(0.0f, -1.0f, 0.0f);
+        glVertex3f(center[0] - halfWidth, center[1] + height, center[2] + halfLength);
+        glVertex3f(center[0] + halfWidth, center[1] + height, center[2] + halfLength);
+        glVertex3f(center[0] + halfWidth, center[1] + height, center[2] - halfLength);
+        glVertex3f(center[0] - halfWidth, center[1] + height, center[2] - halfLength);
+        
+        // Front wall (light brown)
+        glColor3f(0.5f, 0.4f, 0.3f);
+        glNormal3f(0.0f, 0.0f, -1.0f);
+        glVertex3f(center[0] - halfWidth, center[1], center[2] - halfLength);
+        glVertex3f(center[0] - halfWidth, center[1] + height, center[2] - halfLength);
+        glVertex3f(center[0] + halfWidth, center[1] + height, center[2] - halfLength);
+        glVertex3f(center[0] + halfWidth, center[1], center[2] - halfLength);
+        
+        // Back wall (light brown)
+        glColor3f(0.5f, 0.4f, 0.3f);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(center[0] + halfWidth, center[1], center[2] + halfLength);
+        glVertex3f(center[0] + halfWidth, center[1] + height, center[2] + halfLength);
+        glVertex3f(center[0] - halfWidth, center[1] + height, center[2] + halfLength);
+        glVertex3f(center[0] - halfWidth, center[1], center[2] + halfLength);
+        
+        // Left wall (light brown)
+        glColor3f(0.5f, 0.4f, 0.3f);
+        glNormal3f(-1.0f, 0.0f, 0.0f);
+        glVertex3f(center[0] - halfWidth, center[1], center[2] + halfLength);
+        glVertex3f(center[0] - halfWidth, center[1] + height, center[2] + halfLength);
+        glVertex3f(center[0] - halfWidth, center[1] + height, center[2] - halfLength);
+        glVertex3f(center[0] - halfWidth, center[1], center[2] - halfLength);
+        
+        // Right wall (light brown)
+        glColor3f(0.5f, 0.4f, 0.3f);
+        glNormal3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(center[0] + halfWidth, center[1], center[2] - halfLength);
+        glVertex3f(center[0] + halfWidth, center[1] + height, center[2] - halfLength);
+        glVertex3f(center[0] + halfWidth, center[1] + height, center[2] + halfLength);
+        glVertex3f(center[0] + halfWidth, center[1], center[2] + halfLength);
+        
+        glEnd();
     }
 
     //below is a test method for rooms with preset dimensions. such as hallway, narrow room, living room, idk room. but preseting and using those is probably better than setting manual dimensions each time.
     public static void renderRoom(float[] center, int type) { //alternatively, for rooms, we can derive the center by the dimensions and use the point of entry as the forming factor
-
+        // Use RoomType enum to get dimensions
+        float[] dimensions;
+        
+        switch (type) {
+            case 1: // HALLWAY
+                dimensions = new float[]{10f, 3f, 2f};
+                break;
+            case 2: // SMALL_ROOM
+                dimensions = new float[]{8f, 8f, 3f};
+                break;
+            case 3: // MEDIUM_ROOM
+                dimensions = new float[]{12f, 12f, 3f};
+                break;
+            case 4: // LARGE_ROOM
+                dimensions = new float[]{20f, 15f, 4f};
+                break;
+            case 5: // CLOSET
+                dimensions = new float[]{3f, 3f, 2.5f};
+                break;
+            case 6: // BASEMENT
+                dimensions = new float[]{15f, 10f, 2f};
+                break;
+            default:
+                dimensions = new float[]{12f, 12f, 3f}; // Default medium room
+        }
+        
+        renderRoom(center, dimensions);
     }
 
     public static void floorTest() {

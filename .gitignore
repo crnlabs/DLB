@@ -4,13 +4,55 @@
 .mtj.tmp/
 
 # Package Files #
-
+*.jar
 *.war
 *.ear
+*.zip
+*.tar.gz
 
+# Build directories
 /Don't look back/dist/
 /Don't look back/nbproject/private/
 /Don't look back/build/
+build/
+dist/
+target/
+
+# Test results
+test-results/
+test-output/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# CI/CD artifacts
+*.sarif
+trivy-results.*
+
+# Native libraries (platform specific)
+lib/native/
