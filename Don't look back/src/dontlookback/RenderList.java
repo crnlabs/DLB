@@ -61,4 +61,8 @@ public class RenderList {
         }
     }
 
+    public int size() {
+        return renderList.length;
+    }
+
 }
