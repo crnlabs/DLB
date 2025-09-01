@@ -6,10 +6,11 @@
 
 ### Key Information
 - **Project Name**: Don't Look Back
-- **Main Language**: Java 11
+- **Main Language**: Java 17 (LTS)
 - **Graphics Library**: LWJGL 2.9.1 with OpenGL
 - **Physics Engine**: JBullet
 - **Build System**: Apache Ant with custom targets
+- **Dependency Management**: GitHub Dependabot
 - **Main Class**: `dontlookback.DontLookBack`
 - **Working Directory**: `"Don't look back"` (note the space and apostrophe)
 
@@ -21,6 +22,7 @@ DLB/
 │   ├── workflows/           # CI/CD pipeline definitions
 │   │   ├── ci-cd.yml       # Main CI/CD workflow (test/build/package)
 │   │   └── release.yml     # Release pipeline workflow
+│   ├── dependabot.yml      # GitHub Dependabot configuration
 │   └── copilot-instructions.md  # This file
 ├── Don't look back/         # Main project directory (note space/apostrophe)
 │   ├── src/dontlookback/   # Java source code
@@ -40,7 +42,27 @@ DLB/
 ### Build Tool: Apache Ant
 The project uses Apache Ant with a custom `build.xml` containing 74+ custom targets.
 
-### Dependencies
+### Java Configuration
+- **Source/Target**: Java 17 (LTS)
+- **Main Class**: `dontlookback.DontLookBack`
+- **Native Library Path**: Platform-specific LWJGL natives
+
+## Dependency Management
+
+### GitHub Dependabot
+The project uses GitHub Dependabot for automated dependency updates:
+
+- **Configuration**: `.github/dependabot.yml`
+- **Update Schedule**: Weekly on Mondays
+- **Supported Ecosystems**:
+  - GitHub Actions (for workflow dependencies)
+  - Gradle (for future migration from Ant)
+  - Maven (for future migration from Ant)
+- **Auto-assignment**: Updates are automatically assigned to @Gameaday
+- **Labels**: Dependencies are labeled for easy tracking
+- **Commit Message Format**: Uses ⬆️ prefix for dependency updates
+
+### Current Dependencies (Manual Management)
 - **LWJGL 2.9.1**: OpenGL bindings for Java
   - Location: `../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar`
   - Utilities: `../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar`
@@ -48,10 +70,12 @@ The project uses Apache Ant with a custom `build.xml` containing 74+ custom targ
 - **JBullet**: Physics engine (`../lwjgl/jbullet.jar`)
 - **PNGDecoder**: Image loading (`../lwjgl/lwjgl-2.9.1/native/windows/PNGDecoder.jar`)
 
-### Java Configuration
-- **Source/Target**: Java 11
-- **Main Class**: `dontlookback.DontLookBack`
-- **Native Library Path**: Platform-specific LWJGL natives
+### Migration Path
+To fully leverage automated dependency management, consider migrating from Apache Ant to:
+- **Gradle**: Modern build tool with excellent dependency management
+- **Maven**: Traditional but robust build and dependency management
+
+Both build tools are pre-configured in Dependabot for when migration occurs.
 
 ## Essential Build Commands
 
@@ -178,7 +202,7 @@ java -Djava.library.path="../lwjgl/lwjgl-2.9.1/native/linux" \
 
 #### Release Pipeline (`.github/workflows/release.yml`)
 - **Triggers**: Release creation, manual dispatch
-- **Java Version**: OpenJDK 8 (for compatibility)
+- **Java Version**: OpenJDK 17 (Temurin distribution)
 - **Outputs**: Platform-specific packages (Windows ZIP, Linux tar.gz, Cross-platform ZIP)
 
 ### Artifact Management
@@ -280,6 +304,10 @@ ant jar && ls -la dist/
 - **Trivy vulnerability scanner**: Integrated in CI/CD pipeline
 - **SARIF format reports**: Uploaded to GitHub Security tab
 - **Dependency scanning**: Automated for JAR dependencies
+- **GitHub Dependabot**: Automated security updates for dependencies
+  - Weekly vulnerability scans for GitHub Actions
+  - Prepared for Gradle/Maven dependency scanning
+  - Automatic assignment and labeling of security updates
 
 ### Safe Development Practices
 - All dependencies are checked into version control
