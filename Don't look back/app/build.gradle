@@ -188,12 +188,15 @@ task createExecutable {
     description = 'Create cross-platform executable wrapper scripts'
     dependsOn fatJar
     
+    def distDir = layout.buildDirectory.dir('distributions')
+    outputs.dir distDir
+    
     doLast {
-        def distDir = layout.buildDirectory.dir('distributions').get().asFile
-        distDir.mkdirs()
+        def dir = distDir.get().asFile
+        dir.mkdirs()
         
         // Create batch file for Windows
-        def batFile = new File(distDir, 'DontLookBack.bat')
+        def batFile = new File(dir, 'DontLookBack.bat')
         batFile.text = '''@echo off
 echo Don't Look Back - Modern Edition
 echo Starting game...
@@ -202,7 +205,7 @@ pause
 '''
         
         // Create shell script for Unix-like systems
-        def shFile = new File(distDir, 'DontLookBack.sh')
+        def shFile = new File(dir, 'DontLookBack.sh')
         shFile.text = '''#!/bin/bash
 echo "Don't Look Back - Modern Edition"
 echo "Starting game..."
@@ -213,7 +216,7 @@ java -jar DontLookBack-1.0-fat.jar
         // Copy the fat JAR to distribution directory
         copy {
             from fatJar.archiveFile
-            into distDir
+            into dir
         }
         
         println "Cross-platform executable scripts created in build/distributions/"
@@ -229,18 +232,21 @@ task createWindowsEXE {
     description = 'Create Windows .EXE launcher instructions'
     dependsOn fatJar
     
+    def distDir = layout.buildDirectory.dir('distributions')
+    outputs.dir distDir
+    
     doLast {
-        def distDir = layout.buildDirectory.dir('distributions').get().asFile
-        distDir.mkdirs()
+        def dir = distDir.get().asFile
+        dir.mkdirs()
         
         // Copy the fat JAR to distribution directory
         copy {
             from fatJar.archiveFile
-            into distDir
+            into dir
         }
         
         // Create instructions for EXE creation
-        def exeScript = new File(distDir, 'create_exe.bat')
+        def exeScript = new File(dir, 'create_exe.bat')
         exeScript.text = '''@echo off
 echo Creating Windows executable launcher...
 echo.
