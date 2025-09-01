@@ -25,15 +25,20 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Install Ant
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ant
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
         
     - name: Build release
       run: |
         cd "Don't look back"
-        ant clean compile jar javadoc
+        gradle app:build app:fatJar app:javadoc --no-daemon
         
     - name: Create release package
       run: |
@@ -43,48 +48,38 @@ jobs:
         # Create release directory
         mkdir -p release
         
-        # Copy main JAR
-        cp dist/*.jar release/
+        # Copy main JAR (fat JAR from Gradle build)
+        cp app/build/libs/DontLookBack-1.0-fat.jar release/
         
-        # Copy dependencies
-        mkdir -p release/lib
-        cp -r ../lwjgl release/lib/ 2>/dev/null || echo "LWJGL not available"
+        # Copy regular JAR as backup
+        cp app/build/libs/app.jar release/ 2>/dev/null || echo "Regular JAR not available"
+        
+        # Copy dependencies (LWJGL natives are now embedded in fat JAR)
+        echo "Modern build includes all dependencies in fat JAR"
         
         # Copy resources
         cp -r res release/ 2>/dev/null || echo "Resources not available"
         
-        # Copy documentation
-        cp -r dist/javadoc release/ 2>/dev/null || echo "Javadoc not available"
+        # Copy documentation (from Gradle build)
+        cp -r app/build/docs/javadoc release/ 2>/dev/null || echo "Javadoc not available"
         
         # Create startup scripts
         cat > release/run.sh << 'EOF'
         #!/bin/bash
         # Don't Look Back - Linux/Mac startup script
+        # Modern version with self-contained JAR
         
-        # Detect platform
-        PLATFORM=""
-        case "$(uname -s)" in
-            Linux*)     PLATFORM="linux";;
-            Darwin*)    PLATFORM="macosx";;
-            *)          echo "Unsupported platform"; exit 1;;
-        esac
-        
-        # Set library path
-        NATIVE_PATH="lib/lwjgl/lwjgl-2.9.1/native/$PLATFORM"
-        
-        # Run the game
-        java -Djava.library.path="$NATIVE_PATH" -jar Don_t_look_back.jar
+        # Run the game (fat JAR includes all dependencies)
+        java -jar DontLookBack-1.0-fat.jar
         EOF
         
         cat > release/run.bat << 'EOF'
         @echo off
         REM Don't Look Back - Windows startup script
+        REM Modern version with self-contained JAR
         
-        REM Set library path for Windows
-        set NATIVE_PATH=lib\lwjgl\lwjgl-2.9.1\native\windows
-        
-        REM Run the game
-        java -Djava.library.path=%NATIVE_PATH% -jar Don_t_look_back.jar
+        REM Run the game (fat JAR includes all dependencies)
+        java -jar DontLookBack-1.0-fat.jar
         
         pause
         EOF
@@ -102,6 +97,7 @@ jobs:
         - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
         - Git Commit: ${{ github.sha }}
         - Build Number: ${{ github.run_number }}
+        - Build System: Gradle with modern dependencies
         
         System Requirements:
         - Java 17 or higher
@@ -114,12 +110,17 @@ jobs:
         2. Run run.sh (Linux/Mac) or run.bat (Windows)
         
         Files:
-        - Don_t_look_back.jar - Main game executable
-        - lib/ - Required libraries and native files
+        - DontLookBack-1.0-fat.jar - Main game executable (self-contained)
+        - app.jar - Regular JAR file (backup)
         - res/ - Game resources and assets
         - javadoc/ - API documentation
         - run.sh - Linux/Mac startup script
         - run.bat - Windows startup script
+        
+        Technical Notes:
+        - Uses modern LWJGL 3.3.4 with embedded native libraries
+        - JBox2D 2.2.1.1 physics engine included
+        - All dependencies bundled in fat JAR
         
         For more information, visit: https://github.com/crnlabs/DLB
         EOF
