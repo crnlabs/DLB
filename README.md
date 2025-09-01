@@ -38,12 +38,25 @@
 ### Automated Build Pipeline
 Our comprehensive CI/CD system ensures quality and reliability:
 
-- **🔧 Build Process**: Automated compilation and packaging
+- **🔧 Build Validation**: Comprehensive build integrity checks for all PRs
 - **🧪 Testing**: Comprehensive test suites (98% code coverage)
 - **🔍 Security**: Vulnerability scanning with Trivy
 - **📚 Documentation**: Auto-generated API docs
 - **📦 Artifacts**: Cross-platform distribution packages
 - **🚀 Releases**: Automated release management
+
+### Build Validation ✅
+Every pull request undergoes rigorous build validation:
+
+- **Code Compilation**: Both main and test code must compile without errors
+- **JAR Integrity**: Validates artifact creation, size, and structure
+- **Runtime Validation**: Tests application startup and error handling
+- **Native Dependencies**: Ensures LWJGL libraries are properly bundled
+- **Manifest Validation**: Verifies correct main class and metadata
+
+**Quick validation**: Run `./validate-build.sh` before pushing changes.
+
+For detailed build validation information, see [BUILD_VALIDATION.md](BUILD_VALIDATION.md).
 
 ### Build Artifacts
 Every successful build generates:

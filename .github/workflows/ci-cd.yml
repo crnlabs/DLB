@@ -92,10 +92,131 @@ jobs:
         gradle test --tests "*SimpleRoomTest" --no-daemon || echo "SimpleRoomTest completed"
         gradle test --tests "*RoomGeneratorTest" --no-daemon || echo "RoomGeneratorTest completed"
 
+  build-validation:
+    runs-on: ubuntu-latest
+    name: Build Validation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Validate test compilation
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating test compilation..."
+        gradle compileTestJava --no-daemon
+        echo "✅ Test code compilation successful"
+        
+    - name: Validate compilation
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating Java compilation..."
+        gradle compileJava --no-daemon
+        echo "✅ Java compilation successful"
+        
+    - name: Validate JAR creation
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating JAR creation..."
+        gradle fatJar --no-daemon
+        
+        # Check that JAR file was created
+        if [ ! -f "app/build/libs/DontLookBack-1.0-fat.jar" ]; then
+          echo "❌ Fat JAR not created"
+          exit 1
+        fi
+        
+        # Check JAR size is reasonable (should be ~5MB with dependencies)
+        JAR_SIZE=$(stat -c%s "app/build/libs/DontLookBack-1.0-fat.jar")
+        if [ $JAR_SIZE -lt 3000000 ]; then
+          echo "❌ JAR file too small: $JAR_SIZE bytes (expected >3MB)"
+          exit 1
+        fi
+        
+        if [ $JAR_SIZE -gt 20000000 ]; then
+          echo "❌ JAR file too large: $JAR_SIZE bytes (expected <20MB)"
+          exit 1
+        fi
+        
+        echo "✅ JAR created successfully (${JAR_SIZE} bytes)"
+        
+    - name: Validate JAR manifest and structure
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating JAR manifest and structure..."
+        
+        # Check JAR manifest contains main class
+        MAIN_CLASS=$(unzip -p app/build/libs/DontLookBack-1.0-fat.jar META-INF/MANIFEST.MF | grep "Main-Class" | cut -d' ' -f2 | tr -d '\r')
+        if [ "$MAIN_CLASS" != "dontlookback.DontLookBack" ]; then
+          echo "❌ Invalid main class in manifest: '$MAIN_CLASS'"
+          exit 1
+        fi
+        
+        # Check that main class exists in JAR
+        if ! unzip -l app/build/libs/DontLookBack-1.0-fat.jar | grep -q "dontlookback/DontLookBack.class"; then
+          echo "❌ Main class not found in JAR"
+          exit 1
+        fi
+        
+        # Check that LWJGL natives are included
+        if ! unzip -l app/build/libs/DontLookBack-1.0-fat.jar | grep -q "META-INF/linux"; then
+          echo "❌ LWJGL native libraries not found in JAR"
+          exit 1
+        fi
+        
+        echo "✅ JAR manifest and structure validation passed"
+        
+    - name: Validate application startup
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating application startup in headless mode..."
+        
+        # Test application startup (should fail gracefully with graphics error)
+        OUTPUT=$(timeout 30s java -Djava.awt.headless=true -jar app/build/libs/DontLookBack-1.0-fat.jar 2>&1 || true)
+        
+        # Check that the application shows expected startup messages
+        if ! echo "$OUTPUT" | grep -q "Don't Look Back"; then
+          echo "❌ Application startup validation failed - no game banner found"
+          echo "Output was: $OUTPUT"
+          exit 1
+        fi
+        
+        if ! echo "$OUTPUT" | grep -q "A Game By: Game A Day Studios"; then
+          echo "❌ Application startup validation failed - no studio banner found"
+          echo "Output was: $OUTPUT"
+          exit 1
+        fi
+        
+        # Check that it attempts to initialize graphics (expected to fail in headless)
+        if ! echo "$OUTPUT" | grep -q "LWJGL\|Graphics\|OpenGL"; then
+          echo "❌ Application startup validation failed - no graphics initialization attempt"
+          echo "Output was: $OUTPUT"
+          exit 1
+        fi
+        
+        echo "✅ Application startup validation passed"
+        echo "✅ All build validation checks completed successfully"
+
   build:
     runs-on: ubuntu-latest
     name: Build and Package
-    needs: test
+    needs: [test, build-validation]
     
     steps:
     - name: Checkout code
@@ -325,7 +446,7 @@ jobs:
   security-scan:
     runs-on: ubuntu-latest
     name: Security Scan
-    needs: build
+    needs: [build, build-validation]
     
     steps:
     - name: Checkout code
@@ -348,7 +469,7 @@ jobs:
   deploy-docs:
     runs-on: ubuntu-latest
     name: Deploy Documentation
-    needs: build
+    needs: [build, build-validation]
     if: github.ref == 'refs/heads/main'
     
     steps:
@@ -421,7 +542,7 @@ jobs:
   notification:
     runs-on: ubuntu-latest
     name: Build Notification
-    needs: [test, build, security-scan]
+    needs: [test, build-validation, build, security-scan]
     if: always()
     
     steps:
@@ -429,13 +550,14 @@ jobs:
       run: |
         echo "=== Build Summary ==="
         echo "Test Status: ${{ needs.test.result }}"
+        echo "Build Validation Status: ${{ needs.build-validation.result }}"
         echo "Build Status: ${{ needs.build.result }}"
         echo "Security Scan Status: ${{ needs.security-scan.result }}"
         echo "Commit: ${{ github.sha }}"
         echo "Branch: ${{ github.ref_name }}"
         echo "Build Number: ${{ github.run_number }}"
         
-        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
+        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build-validation.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
           echo "✅ Build completed successfully!"
         else
           echo "❌ Build failed!"
