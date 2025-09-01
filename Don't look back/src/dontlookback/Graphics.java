@@ -1,4 +1,4 @@
-package dontlookback.modern;
+package dontlookback;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -15,32 +15,19 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 /**
- * Modern Graphics System for Don't Look Back
+ * Graphics System for Don't Look Back
  * 
- * This class implements a modern OpenGL 3.3+ rendering pipeline using LWJGL 3.x,
- * replacing the legacy OpenGL 1.1 fixed-function pipeline from the original implementation.
+ * Modern OpenGL 3.3+ rendering pipeline using LWJGL 3.x,
+ * replacing the legacy OpenGL 1.1 fixed-function pipeline.
  * 
- * Key Features:
+ * Features:
  * - LWJGL 3.x with GLFW window management
  * - OpenGL 3.3+ core profile support
  * - Modern shader-based rendering pipeline
  * - Cross-platform native library support
  * - Hardware-accelerated graphics
- * 
- * Architecture:
- * - Uses GLFW for window and input management (vs legacy Display)
- * - Implements modern OpenGL context creation
- * - Supports modern graphics features (shaders, VBOs, VAOs)
- * - Provides foundation for future rendering enhancements
- * 
- * This completely replaces the legacy DLB_Graphics class while maintaining
- * game functionality and providing a path for future graphical improvements.
- * 
- * @author DLB Modernization Team
- * @version 1.0 (LWJGL 3.3.4)
- * @since 2024
  */
-public class ModernGraphics {
+public class Graphics {
     
     // === Window and Context Management ===
     
@@ -72,10 +59,10 @@ public class ModernGraphics {
     private float deltaTime = 0.0f;
     
     /**
-     * Initialize the modern graphics system
+     * Initialize the graphics system
      * Sets up GLFW window, OpenGL context, and starts the main game loop
      */
-    public ModernGraphics() {
+    public Graphics() {
         initializeGraphics();
         gameLoop();
         cleanup();
@@ -83,10 +70,9 @@ public class ModernGraphics {
     
     /**
      * Initialize GLFW, create window, and set up OpenGL context
-     * This replaces the legacy Display.create() functionality
      */
     private void initializeGraphics() {
-        System.out.println("Don't Look Back - Modern Graphics System");
+        System.out.println("Don't Look Back - Graphics System");
         System.out.println("Initializing LWJGL " + Version.getVersion());
         
         // Setup error callback for GLFW debugging
@@ -104,9 +90,8 @@ public class ModernGraphics {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         
-        // Create window
+        // Create the window
         window = glfwCreateWindow(width, height, "Don't Look Back", NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -124,7 +109,7 @@ public class ModernGraphics {
             IntBuffer pWidth = stack.mallocInt(1);
             IntBuffer pHeight = stack.mallocInt(1);
             
-            // Get the window size
+            // Get the window size passed to glfwCreateWindow
             glfwGetWindowSize(window, pWidth, pHeight);
             
             // Get the resolution of the primary monitor
@@ -147,154 +132,112 @@ public class ModernGraphics {
         // Make the window visible
         glfwShowWindow(window);
         
-        // Initialize OpenGL capabilities
+        // Initialize OpenGL bindings
         GL.createCapabilities();
         
-        System.out.println("OpenGL version: " + glGetString(GL_VERSION));
-        System.out.println("OpenGL renderer: " + glGetString(GL_RENDERER));
-        
-        // Enable depth testing
+        // Set up OpenGL
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        
-        // Enable face culling
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-        glFrontFace(GL_CCW);
         
         // Set clear color
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         
-        // Initialize timing
-        lastTime = glfwGetTime();
+        System.out.println("OpenGL version: " + glGetString(GL_VERSION));
+        System.out.println("Graphics initialized successfully");
     }
     
+    /**
+     * Main game loop
+     */
     private void gameLoop() {
+        lastTime = glfwGetTime();
+        
+        // Initialize game objects
+        Player player = new Player();
+        testData test = new testData(75);
+        
         while (!glfwWindowShouldClose(window)) {
             // Calculate delta time
             double currentTime = glfwGetTime();
             deltaTime = (float)(currentTime - lastTime);
             lastTime = currentTime;
             
-            // Poll events
-            glfwPollEvents();
+            // Process input
+            processInput();
             
             // Update game state
-            update();
+            update(deltaTime);
             
-            // Render frame
+            // Render
             render();
             
-            // Swap buffers
+            // Swap buffers and poll events
             glfwSwapBuffers(window);
+            glfwPollEvents();
         }
     }
     
-    private void update() {
-        // Handle input
-        handleInput();
-        
-        // Update camera and game objects
-        updateCamera();
-        
-        // Handle window resize
-        handleResize();
-    }
-    
-    private void handleInput() {
-        final float speed = 5.0f * deltaTime;
-        
+    /**
+     * Process input from keyboard and mouse
+     */
+    private void processInput() {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            cameraZ += speed;
+            // Move forward
+            cameraZ -= 0.1f * deltaTime * 60; // 60 FPS normalized movement
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            cameraZ -= speed;
+            // Move backward
+            cameraZ += 0.1f * deltaTime * 60;
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            cameraX += speed;
+            // Move left
+            cameraX -= 0.1f * deltaTime * 60;
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            cameraX -= speed;
-        }
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            cameraY -= speed;
-        }
-        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            cameraY += speed;
-        }
-        
-        // Mouse look (simplified for now)
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-            rotX += 45.0f * deltaTime;
-        }
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            rotX -= 45.0f * deltaTime;
-        }
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            rotY += 45.0f * deltaTime;
-        }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            rotY -= 45.0f * deltaTime;
+            // Move right
+            cameraX += 0.1f * deltaTime * 60;
         }
     }
     
-    private void updateCamera() {
-        // Setup projection matrix (simplified fixed-function style for compatibility)
+    /**
+     * Update game state
+     */
+    private void update(float deltaTime) {
+        // Update camera and game objects here
+    }
+    
+    /**
+     * Render the scene
+     */
+    private void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        // Set up projection matrix
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
+        float aspectRatio = (float) width / height;
+        // Simple perspective projection
+        glFrustum(-aspectRatio, aspectRatio, -1.0f, 1.0f, 1.0f, 100.0f);
         
-        // Perspective projection
-        float fov = 68.0f;
-        float aspect = (float) width / (float) height;
-        float near = 0.3f;
-        float far = 4000.0f;
-        
-        float fH = (float) Math.tan(Math.toRadians(fov) / 2.0f) * near;
-        float fW = fH * aspect;
-        glFrustum(-fW, fW, -fH, fH, near, far);
-        
-        // Setup modelview matrix
+        // Set up modelview matrix
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         
         // Apply camera transformations
-        glRotatef(rotX, 1, 0, 0);
-        glRotatef(rotY, 0, 1, 0);
-        glRotatef(rotZ, 0, 0, 1);
-        glTranslatef(cameraX, cameraY, cameraZ);
-    }
-    
-    private void handleResize() {
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1);
-            IntBuffer pHeight = stack.mallocInt(1);
-            
-            glfwGetFramebufferSize(window, pWidth, pHeight);
-            
-            int newWidth = pWidth.get(0);
-            int newHeight = pHeight.get(0);
-            
-            if (newWidth != width || newHeight != height) {
-                width = newWidth;
-                height = newHeight;
-                glViewport(0, 0, width, height);
-            }
-        }
-    }
-    
-    private void render() {
-        // Clear buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glRotatef(rotX, 1.0f, 0.0f, 0.0f);
+        glRotatef(rotY, 0.0f, 1.0f, 0.0f);
+        glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
+        glTranslatef(-cameraX, -cameraY, -cameraZ);
         
-        // Render simple test geometry
-        renderTestCube();
-        
-        // Reset matrix for next frame
-        glLoadIdentity();
+        // Render demo cube
+        renderDemoCube();
     }
     
-    private void renderTestCube() {
-        // Simple cube rendering using immediate mode (temporary for testing)
+    /**
+     * Render a simple demo cube
+     */
+    private void renderDemoCube() {
         glBegin(GL_QUADS);
         
         // Front face
@@ -342,6 +285,9 @@ public class ModernGraphics {
         glEnd();
     }
     
+    /**
+     * Cleanup resources
+     */
     private void cleanup() {
         // Free the window callbacks and destroy the window
         Callbacks.glfwFreeCallbacks(window);
@@ -352,7 +298,8 @@ public class ModernGraphics {
         glfwSetErrorCallback(null).free();
     }
     
-    // Getters for compatibility
+    // === Compatibility methods for existing code ===
+    
     public float getCameraX() { return cameraX; }
     public float getCameraY() { return cameraY; }
     public float getCameraZ() { return cameraZ; }
@@ -361,7 +308,6 @@ public class ModernGraphics {
     public float getRotZ() { return rotZ; }
     public float getDeltaTime() { return deltaTime; }
     
-    // Setters for compatibility
     public void setCameraPosition(float x, float y, float z) {
         this.cameraX = x;
         this.cameraY = y;

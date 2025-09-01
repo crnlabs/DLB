@@ -46,20 +46,15 @@ dependencies {
     implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
 }
 
-// Configure source sets to use modern source structure
+// Configure source sets to use simplified structure
 sourceSets {
     main {
         java {
-            srcDirs = [
-                "${project.rootDir}/src/dontlookback/modern",
-                "${project.rootDir}/src"
-            ]
-            // Exclude legacy LWJGL 2.x specific classes only
-            exclude '**/DontLookBack.java'           // Legacy main class
+            srcDirs = ["${project.rootDir}/src"]
+            // Exclude legacy LWJGL 2.x specific classes
             exclude '**/DLB_Graphics.java'           // Legacy graphics system  
             exclude '**/Window.java'                 // Legacy window management
             exclude '**/VersionTest.java'            // Legacy version testing
-            // Note: Cube.java is now modernized compatibility wrapper
         }
         resources {
             srcDirs = ["${project.rootDir}/res"]
@@ -81,8 +76,8 @@ java {
 }
 
 application {
-    // Modern main class using LWJGL 3.x
-    mainClass = 'dontlookback.modern.ModernDontLookBack'
+    // Main class using simplified naming
+    mainClass = 'dontlookback.DontLookBack'
 }
 
 // Create fat JAR task with modern dependencies only
@@ -98,8 +93,8 @@ task fatJar(type: Jar) {
     
     manifest {
         attributes(
-            'Main-Class': 'dontlookback.modern.ModernDontLookBack',
-            'Implementation-Title': 'Don\'t Look Back - Modern Edition',
+            'Main-Class': 'dontlookback.DontLookBack',
+            'Implementation-Title': 'Don\'t Look Back',
             'Implementation-Version': '1.0'
         )
     }
@@ -124,9 +119,9 @@ tasks.named('test') {
     systemProperty 'java.awt.headless', 'true'
 }
 
-// Run the modern game (default application run)
+// Run the game (default application run)
 run {
-    mainClass = 'dontlookback.modern.ModernDontLookBack'
+    mainClass = 'dontlookback.DontLookBack'
     jvmArgs = [
         '-Xms512m',
         '-Xmx1024m',
