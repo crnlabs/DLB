@@ -183,10 +183,13 @@ task testComprehensive(type: Test) {
 }
 
 // Task to create executable wrapper scripts
-task createExecutable {
+task createExecutable(type: Copy) {
     group = 'distribution'
     description = 'Create cross-platform executable wrapper scripts'
     dependsOn fatJar
+    
+    from fatJar.archiveFile
+    into layout.buildDirectory.dir('distributions')
     
     doLast {
         def distDir = layout.buildDirectory.dir('distributions').get().asFile
@@ -210,12 +213,6 @@ java -jar DontLookBack-1.0-fat.jar
 '''
         shFile.setExecutable(true)
         
-        // Copy the fat JAR to distribution directory
-        copy {
-            from fatJar.archiveFile
-            into distDir
-        }
-        
         println "Cross-platform executable scripts created in build/distributions/"
         println "- DontLookBack.bat (Windows)"
         println "- DontLookBack.sh (Linux/Mac)"
@@ -224,20 +221,17 @@ java -jar DontLookBack-1.0-fat.jar
 }
 
 // Task to create Windows .EXE using launch4j-style approach
-task createWindowsEXE {
+task createWindowsEXE(type: Copy) {
     group = 'distribution'
     description = 'Create Windows .EXE launcher instructions'
     dependsOn fatJar
     
+    from fatJar.archiveFile
+    into layout.buildDirectory.dir('distributions')
+    
     doLast {
         def distDir = layout.buildDirectory.dir('distributions').get().asFile
         distDir.mkdirs()
-        
-        // Copy the fat JAR to distribution directory
-        copy {
-            from fatJar.archiveFile
-            into distDir
-        }
         
         // Create instructions for EXE creation
         def exeScript = new File(distDir, 'create_exe.bat')
