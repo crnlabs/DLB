@@ -14,6 +14,11 @@ repositories {
     }
 }
 
+// Create a separate configuration for legacy LWJGL dependencies
+configurations {
+    legacy
+}
+
 dependencies {
     // JUnit Jupiter for testing
     testImplementation libs.junit.jupiter
@@ -48,27 +53,43 @@ dependencies {
     // Modern physics engine (replace JBullet)
     implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
     
-    // Legacy LWJGL dependencies (temporary during transition)
-    implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar")
-    implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar")
-    implementation files("${project.rootDir}/../lwjgl/jbullet.jar")
-    implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows/PNGDecoder.jar")
+    // Legacy LWJGL dependencies (separate configuration to avoid conflicts)
+    legacy files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar")
+    legacy files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar")
+    legacy files("${project.rootDir}/../lwjgl/jbullet.jar")
+    legacy files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows/PNGDecoder.jar")
 }
 
 // Configure source sets to use existing source structure
 sourceSets {
     main {
         java {
-            srcDirs = ["${project.rootDir}/src"]
+            srcDirs = ["${project.rootDir}/src/dontlookback/modern"]
         }
         resources {
             srcDirs = ["${project.rootDir}/res"]
         }
     }
+    
+    // Create a separate source set for legacy code
+    legacy {
+        java {
+            srcDirs = ["${project.rootDir}/src"]
+            exclude 'dontlookback/modern/**'
+        }
+        resources {
+            srcDirs = ["${project.rootDir}/res"]
+        }
+        compileClasspath = configurations.legacy
+        runtimeClasspath = output + configurations.legacy
+    }
+    
     test {
         java {
             srcDirs = ["${project.rootDir}/test"]
         }
+        compileClasspath += configurations.legacy + sourceSets.legacy.output
+        runtimeClasspath += configurations.legacy + sourceSets.legacy.output
     }
 }
 
@@ -150,12 +171,26 @@ task runModern(type: JavaExec) {
     ]
 }
 
+// Custom task to run headless demo
+task runModernDemo(type: JavaExec) {
+    group = 'application'
+    description = 'Run headless demo to verify modern dependencies'
+    
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'dontlookback.modern.HeadlessDemo'
+    
+    // Headless mode settings
+    jvmArgs = [
+        '-Djava.awt.headless=true'
+    ]
+}
+
 // Custom task to run the legacy game (for comparison)
 task runLegacy(type: JavaExec) {
     group = 'application'
     description = 'Run the legacy version of the game using LWJGL 2.x'
     
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.legacy.runtimeClasspath
     mainClass = 'dontlookback.DontLookBack'
     
     // Set native library path based on OS for legacy version
@@ -166,6 +201,8 @@ task runLegacy(type: JavaExec) {
     } else if (System.getProperty('os.name').toLowerCase().contains('mac')) {
         systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/macosx"
     }
+    
+    dependsOn 'legacyClasses'
 }
 
 // Default run task uses modern version
