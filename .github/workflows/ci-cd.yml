@@ -42,13 +42,13 @@ jobs:
         sleep 3
         
         # Build the project (includes compiling source and test code)
-        gradle build
+        gradle build --no-daemon
         
     - name: Run comprehensive test suite
       run: |
         cd "Don't look back"
         # Run the comprehensive test suite
-        gradle testComprehensive
+        gradle testComprehensive --no-daemon
              
     - name: Run individual test files
       run: |
@@ -61,16 +61,17 @@ jobs:
     - name: Run Gradle test target
       run: |
         cd "Don't look back"
-        gradle test || echo "Additional tests may not be fully configured yet"
+        gradle test --no-daemon || echo "Additional tests may not be fully configured yet"
         
     - name: Test new gameplay features
       run: |
         cd "Don't look back"
         echo "Testing enhanced gameplay features..."
         
-        # Run the main GameplayFeaturesTest (not a JUnit test)
+        # Run the main GameplayFeaturesTest (standalone Java application, not a JUnit test)
         java -cp "src/test/java:app/build/classes/java/main" \
              -Djava.awt.headless=true \
+             -ea \
              dontlookback.GameplayFeaturesTest
              
     - name: Performance and integration testing
@@ -81,15 +82,15 @@ jobs:
         # Test game startup performance using Gradle run task
         echo "Testing startup time..."
         START_TIME=$(date +%s%N)
-        timeout 10s gradle run || echo "Startup test completed"
+        timeout 10s gradle run --no-daemon || echo "Startup test completed"
         END_TIME=$(date +%s%N)
         STARTUP_TIME=$(( (END_TIME - START_TIME) / 1000000 ))
         echo "Startup time: ${STARTUP_TIME}ms"
         
         # Test basic functionality
         echo "Testing basic functionality..."
-        gradle test --tests "*SimpleRoomTest" || echo "SimpleRoomTest completed"
-        gradle test --tests "*RoomGeneratorTest" || echo "RoomGeneratorTest completed"
+        gradle test --tests "*SimpleRoomTest" --no-daemon || echo "SimpleRoomTest completed"
+        gradle test --tests "*RoomGeneratorTest" --no-daemon || echo "RoomGeneratorTest completed"
 
   build:
     runs-on: ubuntu-latest
@@ -119,12 +120,12 @@ jobs:
     - name: Build project
       run: |
         cd "Don't look back"
-        gradle build
+        gradle build --no-daemon
         
     - name: Generate Javadoc
       run: |
         cd "Don't look back"
-        gradle javadoc || echo "Javadoc generation completed with warnings"
+        gradle javadoc --no-daemon || echo "Javadoc generation completed with warnings"
         
     - name: Create distribution package
       run: |
