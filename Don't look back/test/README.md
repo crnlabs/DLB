@@ -27,28 +27,31 @@ A lightweight test suite designed for CI/CD pipelines:
 ### Local Development
 ```bash
 # Compile all tests
-ant compile-custom-tests
+gradle compileTestJava
 
-# Run headless tests (recommended for CI)
-ant test-headless
+# Run all tests (headless mode for CI compatibility)
+gradle test
 
-# Run comprehensive tests (requires display)
-ant test-comprehensive
+# Run comprehensive test suite
+gradle testComprehensive
 
-# Run all tests including existing ones
-ant test-all
+# Clean and rebuild with tests
+gradle clean build
 
-# Full CI/CD build with tests
-ant ci-build
+# Build complete distribution
+gradle buildAll
 ```
 
 ### Individual Test Execution
 ```bash
-# Run headless test suite directly
-java -cp "build/classes:build/test/classes:..." dontlookback.HeadlessTestSuite
+# Run specific test class
+gradle test --tests "BasicGameTest"
 
-# Run comprehensive test suite directly
-java -cp "build/classes:build/test/classes:..." dontlookback.ComprehensiveTestSuite
+# Run specific test method
+gradle test --tests "StateManagementTest.testInitialState"
+
+# Run tests with verbose output
+gradle test --info
 ```
 
 ## CI/CD Integration
@@ -100,11 +103,11 @@ The test suites cover:
 
 To add new tests:
 
-1. Add test methods to either `ComprehensiveTestSuite.java` or `HeadlessTestSuite.java`
-2. Follow the existing pattern: try-catch blocks with assertions
-3. Use `reportTestPass()` and `reportTestFail()` for consistent reporting
-4. Update the main method to call your new test methods
-5. Recompile with `ant compile-custom-tests`
+1. Create new test classes in `app/src/test/java/dontlookback/`
+2. Follow JUnit 5 conventions with `@Test` annotations
+3. Use standard JUnit assertions (`assertEquals`, `assertTrue`, etc.)
+4. Test both modern and legacy functionality as needed
+5. Recompile and test with `gradle test`
 
 ## Troubleshooting
 

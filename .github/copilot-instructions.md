@@ -7,10 +7,10 @@
 ### Key Information
 - **Project Name**: Don't Look Back
 - **Main Language**: Java 17 (LTS)
-- **Graphics Library**: LWJGL 2.9.1 with OpenGL
-- **Physics Engine**: JBullet
-- **Build System**: Apache Ant with custom targets
-- **Dependency Management**: GitHub Dependabot
+- **Graphics Library**: LWJGL 3.3.4 with modern OpenGL 3.3+
+- **Physics Engine**: JBox2D 2.2.1.1
+- **Build System**: Gradle 9.0+ with modern dependency management
+- **Dependency Management**: Maven Central + GitHub Dependabot
 - **Main Class**: `dontlookback.DontLookBack`
 - **Working Directory**: `"Don't look back"` (note the space and apostrophe)
 
@@ -25,22 +25,22 @@ DLB/
 │   ├── dependabot.yml      # GitHub Dependabot configuration
 │   └── copilot-instructions.md  # This file
 ├── Don't look back/         # Main project directory (note space/apostrophe)
+│   ├── app/                # Gradle application module
+│   │   ├── build.gradle    # Modern Gradle build configuration
+│   │   └── src/test/java/  # JUnit 5 test suite
 │   ├── src/dontlookback/   # Java source code
-│   ├── test/dontlookback/  # Test source code
+│   ├── test/dontlookback/  # Legacy test source code (preserved)
 │   ├── res/                # Game resources and assets
-│   ├── build.xml           # Apache Ant build configuration
-│   ├── manifest.mf         # JAR manifest file
-│   └── nbproject/          # NetBeans project configuration
-├── lwjgl/                  # LWJGL dependencies
-│   ├── lwjgl-2.9.1/       # LWJGL 2.9.1 library files
-│   └── jbullet.jar        # JBullet physics library
+│   ├── gradle/             # Gradle wrapper and configuration
+│   ├── gradlew             # Gradle wrapper script
+│   └── settings.gradle     # Gradle project settings
 └── README.md
 ```
 
 ## Build System & Dependencies
 
-### Build Tool: Apache Ant
-The project uses Apache Ant with a custom `build.xml` containing 74+ custom targets.
+### Build Tool: Gradle 9.0+
+The project uses modern Gradle build system with dependencies from Maven Central.
 
 ### Java Configuration
 - **Source/Target**: Java 17 (LTS)
@@ -56,26 +56,21 @@ The project uses GitHub Dependabot for automated dependency updates:
 - **Update Schedule**: Weekly on Mondays
 - **Supported Ecosystems**:
   - GitHub Actions (for workflow dependencies)
-  - Gradle (for future migration from Ant)
-  - Maven (for future migration from Ant)
+  - Gradle (for build dependencies)
 - **Auto-assignment**: Updates are automatically assigned to @Gameaday
 - **Labels**: Dependencies are labeled for easy tracking
 - **Commit Message Format**: Uses ⬆️ prefix for dependency updates
 
-### Current Dependencies (Manual Management)
-- **LWJGL 2.9.1**: OpenGL bindings for Java
-  - Location: `../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar`
-  - Utilities: `../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar`
-  - Native libraries: `../lwjgl/lwjgl-2.9.1/native/[platform]/`
-- **JBullet**: Physics engine (`../lwjgl/jbullet.jar`)
-- **PNGDecoder**: Image loading (`../lwjgl/lwjgl-2.9.1/native/windows/PNGDecoder.jar`)
-
-### Migration Path
-To fully leverage automated dependency management, consider migrating from Apache Ant to:
-- **Gradle**: Modern build tool with excellent dependency management
-- **Maven**: Traditional but robust build and dependency management
-
-Both build tools are pre-configured in Dependabot for when migration occurs.
+### Current Dependencies (Automated Management)
+All dependencies are managed through Maven Central:
+- **LWJGL 3.3.4**: Modern OpenGL bindings for Java with cross-platform support
+  - Core: `org.lwjgl:lwjgl:3.3.4`
+  - OpenGL: `org.lwjgl:lwjgl-opengl:3.3.4`
+  - GLFW: `org.lwjgl:lwjgl-glfw:3.3.4`
+  - STB: `org.lwjgl:lwjgl-stb:3.3.4`
+  - Native libraries included for Windows, Linux, macOS
+- **JBox2D**: Modern physics engine (`org.jbox2d:jbox2d-library:2.2.1.1`)
+- **JUnit 5**: Testing framework for comprehensive test coverage
 
 ## Essential Build Commands
 
@@ -86,45 +81,42 @@ Both build tools are pre-configured in Dependabot for when migration occurs.
 cd "Don't look back"
 
 # Compile source code (≈5 seconds)
-ant compile
+gradle compileJava
 
 # Compile test sources (≈2 seconds)  
-ant compile-custom-tests
+gradle compileTestJava
 
-# Build JAR file (≈1 second)
-ant jar
+# Build fat JAR file (≈3 seconds)
+gradle fatJar
 
 # Clean build artifacts (≈1 second)
-ant clean
+gradle clean
 ```
 
 ### Testing Commands
 
 ```bash
-# Run headless test suite - CI/CD friendly (≈2 seconds)
-ant test-headless
+# Run test suite - CI/CD friendly with headless mode (≈3 seconds)
+gradle test
 
-# Run comprehensive test suite with graphics (≈3-5 seconds)
-ant test-comprehensive
+# Run comprehensive test suite (≈3-5 seconds)
+gradle testComprehensive
 
-# Run all existing individual tests (≈3-5 seconds)
-ant test-existing
-
-# Run complete test suite (≈5-10 seconds)
-ant test-all
+# Build and test everything (≈5-10 seconds)
+gradle build
 ```
 
 ### Advanced Build Operations
 
 ```bash
 # Generate Javadoc documentation (≈10-15 seconds)
-ant javadoc
+gradle javadoc
 
-# Create distribution package (≈15-20 seconds)
-ant dist-package
+# Create distribution package with executables (≈15-20 seconds)
+gradle buildAll
 
-# Full CI/CD build pipeline (≈30-45 seconds)
-ant ci-build
+# Run the application (≈5 seconds startup)
+gradle run
 ```
 
 ### Timeout Recommendations
@@ -138,33 +130,33 @@ ant ci-build
 
 ### Test Suites Available
 
-1. **HeadlessTestSuite** (`test/dontlookback/HeadlessTestSuite.java`)
-   - Purpose: CI/CD compatible testing without graphics
-   - Runtime: ~0.01 seconds
-   - Tests: Core logic, settings, room structure
-   - Usage: `ant test-headless`
-
-2. **ComprehensiveTestSuite** (`test/dontlookback/ComprehensiveTestSuite.java`)
-   - Purpose: Full feature testing including graphics
+1. **JUnit 5 Test Suite** (`app/src/test/java/dontlookback/`)
+   - Purpose: Modern, comprehensive testing with JUnit 5
    - Runtime: ~3-5 seconds
-   - Tests: Graphics, physics, game mechanics
-   - Usage: `ant test-comprehensive`
+   - Tests: All game systems, state management, basic functionality
+   - Usage: `gradle test`
 
-3. **Individual Test Files**
-   - `SimpleRoomTest.java`: Basic room functionality
-   - `RoomGeneratorTest.java`: Room generation algorithms
-   - Usage: `ant test-existing`
+2. **Legacy Test Suites** (`test/dontlookback/`) - Preserved for compatibility
+   - `HeadlessTestSuite.java`: CI/CD compatible testing without graphics
+   - `ComprehensiveTestSuite.java`: Full feature testing including graphics
+   - Can be run individually if needed
+
+3. **Comprehensive Testing**
+   - Modern test coverage using JUnit 5 assertions
+   - Headless mode enabled by default for CI/CD compatibility
+   - Usage: `gradle testComprehensive`
 
 ### Running Tests in Different Environments
 
 ```bash
-# Headless environment (CI/CD)
-export DISPLAY=:99.0
-Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-ant test-headless
+# Modern testing (recommended)
+gradle test
 
-# Local development with graphics
-ant test-comprehensive
+# Run with verbose output
+gradle test --info
+
+# Test specific classes
+gradle test --tests "BasicGameTest"
 
 # Manual test execution
 java -cp "build/classes:$CLASSPATH" -Djava.awt.headless=true dontlookback.HeadlessTestSuite
@@ -174,20 +166,23 @@ java -cp "build/classes:$CLASSPATH" -Djava.awt.headless=true dontlookback.Headle
 
 ### Local Development
 ```bash
-# Using Ant (recommended)
+# Using Gradle (recommended)
 cd "Don't look back"
-ant run
+gradle run
 
-# Manual execution
-java -Djava.library.path="../lwjgl/lwjgl-2.9.1/native/linux" \
-     -cp "dist/Don_t_look_back.jar:../lwjgl/lwjgl-2.9.1/jar/*:../lwjgl/jbullet.jar" \
-     dontlookback.DontLookBack
+# Using the fat JAR
+gradle fatJar
+java -jar app/build/libs/DontLookBack-1.0-fat.jar
+
+# Run demo to verify modern dependencies
+gradle runDemo
 ```
 
-### Platform-Specific Native Paths
-- **Linux**: `../lwjgl/lwjgl-2.9.1/native/linux`
-- **Windows**: `../lwjgl/lwjgl-2.9.1/native/windows`
-- **macOS**: `../lwjgl/lwjgl-2.9.1/native/macosx`
+### Distribution
+The modern build system automatically includes all native libraries for cross-platform support:
+- **Windows**: Native LWJGL libraries included
+- **Linux**: Native LWJGL libraries included  
+- **macOS**: Native LWJGL libraries included
 
 ## CI/CD Pipeline
 
@@ -236,52 +231,53 @@ java -Djava.library.path="../lwjgl/lwjgl-2.9.1/native/linux" \
 
 2. **Test changes incrementally**:
    ```bash
-   ant compile && ant test-headless
+   gradle compileJava && gradle test
    ```
 
-3. **Use appropriate test suites**:
-   - HeadlessTestSuite for CI/CD and quick validation
-   - ComprehensiveTestSuite for full feature testing
+3. **Use modern testing approach**:
+   - JUnit 5 tests for comprehensive validation
+   - Gradle test tasks for CI/CD integration
+   - Headless mode enabled automatically for CI
 
 4. **Validate builds before commits**:
    ```bash
-   ant clean compile test-all jar
+   gradle clean build
    ```
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Native Library Path Errors**
-   - Ensure correct platform-specific path in `-Djava.library.path`
-   - Verify LWJGL natives exist for your platform
+1. **Dependency Resolution Issues**
+   - All dependencies are automatically downloaded from Maven Central
+   - No manual LWJGL installation required
 
 2. **Compilation Warnings**
    - Modern Java 17 LTS provides optimal performance and compatibility
    - Does not affect functionality
 
 3. **OpenGL/Graphics Issues**
-   - Use headless test suite for CI environments
-   - Ensure Xvfb is running for headless graphics testing
+   - Tests automatically run in headless mode for CI compatibility
+   - Modern LWJGL 3.x provides better compatibility
 
 4. **Build Path Issues**
    - Always use the full path with quotes: `"Don't look back"`
-   - Relative paths in build.xml assume parent directory context
+   - Gradle handles all dependency paths automatically
 
 ### Debug Commands
 ```bash
-# Check Java version and classpath
+# Check Java version and Gradle
 java -version
-echo $CLASSPATH
-
-# Verify LWJGL natives
-ls -la "../lwjgl/lwjgl-2.9.1/native/"
+gradle --version
 
 # Test basic compilation
-ant clean compile
+gradle clean compileJava
 
 # Verify JAR creation
-ant jar && ls -la dist/
+gradle fatJar && ls -la app/build/libs/
+
+# Check dependencies
+gradle dependencies
 ```
 
 ## Performance Expectations
@@ -317,14 +313,14 @@ ant jar && ls -la dist/
 ## Additional Resources
 
 ### Documentation
-- **Javadoc**: Generated via `ant javadoc`, available in `dist/javadoc/`
+- **Javadoc**: Generated via `gradle javadoc`, available in `app/build/docs/javadoc/`
 - **Build logs**: Available in GitHub Actions workflow runs
-- **API reference**: LWJGL 2.9.1 documentation included
+- **API reference**: LWJGL 3.3.4 and JBox2D documentation
 
 ### External Dependencies
-- [LWJGL 2.9.1 Documentation](https://legacy.lwjgl.org/wiki/index.php)
-- [JBullet Physics Documentation](http://jbullet.advel.cz/)
-- [Apache Ant Manual](https://ant.apache.org/manual/)
+- [LWJGL 3.x Documentation](https://www.lwjgl.org/guide)
+- [JBox2D Physics Documentation](https://github.com/jbox2d/jbox2d)
+- [Gradle User Manual](https://docs.gradle.org/current/userguide/userguide.html)
 
 ---
 
