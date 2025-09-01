@@ -265,9 +265,68 @@ pause
     }
 }
 
+// Enhanced Javadoc configuration for comprehensive API documentation
+javadoc {
+    options {
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        author = true
+        version = true
+        use = true
+        windowTitle = "Don't Look Back API Documentation"
+        docTitle = "Don't Look Back Game Engine API"
+        header = "<b>Don't Look Back v1.0</b>"
+        bottom = """
+            <div style='text-align: center; padding: 10px; background: #f8f9fa; border-top: 1px solid #ddd; margin-top: 20px;'>
+                <p><strong>Don't Look Back</strong> - Horror Survival Game Engine</p>
+                <p>Built with Java 17, LWJGL 3.3.4, JBox2D | 
+                <a href='https://github.com/crnlabs/DLB' target='_blank'>GitHub Repository</a> | 
+                <a href='https://github.com/crnlabs/DLB/issues' target='_blank'>Report Issues</a></p>
+            </div>
+        """
+        
+        // Enhanced documentation options
+        addStringOption('Xdoclint:all,-missing', '-quiet')
+        addStringOption('tag', 'apiNote:a:API Note:')
+        addStringOption('tag', 'implSpec:a:Implementation Requirements:')
+        addStringOption('tag', 'implNote:a:Implementation Note:')
+        
+        // Add links to external dependencies
+        links(
+            'https://docs.oracle.com/en/java/javase/17/docs/api/',
+            'https://javadoc.lwjgl.org/'
+        )
+    }
+    
+    // Include all source files
+    include '**/*.java'
+    
+    // Fail gracefully on documentation warnings
+    failOnError = false
+    
+    doLast {
+        println "Javadoc generated successfully!"
+        println "Documentation available at: ${destinationDir}/index.html"
+    }
+}
+
+// Task to copy Javadoc to docs directory for GitHub Pages
+task copyDocsToGitHubPages(type: Copy) {
+    group = 'documentation'
+    description = 'Copy generated Javadoc to docs directory for GitHub Pages deployment'
+    dependsOn javadoc
+    
+    from javadoc.destinationDir
+    into "${project.rootDir}/../docs/javadoc"
+    
+    doLast {
+        println "Documentation copied to docs/javadoc for GitHub Pages"
+    }
+}
+
 // Build everything
 task buildAll {
     group = 'build'
-    description = 'Build fat JAR, create executable scripts, and Windows EXE launcher'
-    dependsOn fatJar, createExecutable, createWindowsEXE
+    description = 'Build fat JAR, create executable scripts, Windows EXE launcher, and documentation'
+    dependsOn fatJar, createExecutable, createWindowsEXE, javadoc, copyDocsToGitHubPages
 }

@@ -250,11 +250,60 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Download Javadoc artifact
-      uses: actions/download-artifact@v5
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
       with:
-        name: dont-look-back-javadoc-${{ github.run_number }}
-        path: docs/
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Generate fresh Javadoc
+      run: |
+        cd "Don't look back"
+        gradle javadoc --no-daemon
+        
+    - name: Prepare GitHub Pages content
+      run: |
+        # Create docs directory if it doesn't exist
+        mkdir -p docs/javadoc
+        
+        # Copy the generated Javadoc
+        cp -r "Don't look back/app/build/docs/javadoc"/* docs/javadoc/
+        
+        # Ensure we have the API landing page
+        if [ ! -f docs/index.html ]; then
+          echo "Creating API documentation landing page..."
+          # The index.html should already be in the repository
+        fi
+        
+        # Create a simple redirect for the root if needed
+        if [ ! -f docs/index.html ]; then
+          cat > docs/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta http-equiv="refresh" content="0; url=javadoc/index.html">
+            <title>Don't Look Back API Documentation</title>
+        </head>
+        <body>
+            <p>Redirecting to <a href="javadoc/index.html">API Documentation</a>...</p>
+        </body>
+        </html>
+        EOF
+        fi
+        
+        # List contents for debugging
+        echo "Documentation structure:"
+        find docs -type f -name "*.html" | head -10
         
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
@@ -262,6 +311,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
+        cname: # Add custom domain if needed
         
   notification:
     runs-on: ubuntu-latest
