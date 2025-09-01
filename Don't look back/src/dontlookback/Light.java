@@ -6,7 +6,7 @@ public interface Light extends Intangibles {
 
     public int getIntensity();
 
-    public double[] getOrientation();
+    public double[] getLightOrientation();
 
     public float spread();
 

@@ -34,6 +34,15 @@ public class BasicMonster implements Monster {
     private boolean hostile = true;
     private double lastSeenTime = -1.0; // Negative means waiting
     private float orientation = 0.0f;
+    private boolean visible = true;
+    
+    // === Monster Properties (mutable) ===
+    private int threatLevel = DEFAULT_THREAT_LEVEL;
+    private int intelligence = DEFAULT_INTELLIGENCE;
+    private int reactionTime = DEFAULT_REACTION_TIME;
+    
+    // === Visual Properties ===
+    private float[] rgb = {0.5f, 0.5f, 0.5f}; // Default gray color
     
     // === Dimensions for collision detection ===
     private static final int[] DEFAULT_DIMENSIONS = {60, 180, 40}; // width, height, depth in cm
@@ -97,12 +106,12 @@ public class BasicMonster implements Monster {
     
     @Override
     public int reactionTime() {
-        return DEFAULT_REACTION_TIME;
+        return reactionTime;
     }
     
     @Override
     public int threatLevel() {
-        return DEFAULT_THREAT_LEVEL;
+        return threatLevel;
     }
     
     @Override
@@ -117,7 +126,7 @@ public class BasicMonster implements Monster {
     
     @Override
     public int intellegence() {
-        return DEFAULT_INTELLIGENCE;
+        return intelligence;
     }
     
     @Override
@@ -219,5 +228,75 @@ public class BasicMonster implements Monster {
             posY + height,     // maxY
             posZ + halfDepth   // maxZ
         };
+    }
+    
+    // === Additional Setter Methods ===
+    
+    /**
+     * Set monster visibility
+     * @param visible Whether monster should be visible
+     */
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+    
+    /**
+     * Check if monster is visible
+     * @return true if visible
+     */
+    public boolean isVisible() {
+        return visible;
+    }
+    
+    /**
+     * Set threat level
+     * @param threatLevel New threat level
+     */
+    public void setThreatLevel(int threatLevel) {
+        this.threatLevel = Math.max(1, Math.min(10, threatLevel));
+    }
+    
+    /**
+     * Set intelligence level
+     * @param intelligence New intelligence level
+     */
+    public void setIntelligence(int intelligence) {
+        this.intelligence = Math.max(1, Math.min(10, intelligence));
+    }
+    
+    /**
+     * Set reaction time
+     * @param reactionTime New reaction time in milliseconds
+     */
+    public void setReactionTime(int reactionTime) {
+        this.reactionTime = Math.max(50, reactionTime);
+    }
+    
+    /**
+     * Set RGB color
+     * @param red Red component (0.0 to 1.0)
+     * @param green Green component (0.0 to 1.0)
+     * @param blue Blue component (0.0 to 1.0)
+     */
+    public void setRGB(float red, float green, float blue) {
+        this.rgb = new float[]{red, green, blue};
+    }
+    
+    /**
+     * Set RGB color
+     * @param rgb RGB array [red, green, blue]
+     */
+    public void setRGB(float[] rgb) {
+        if (rgb != null && rgb.length >= 3) {
+            this.rgb = new float[]{rgb[0], rgb[1], rgb[2]};
+        }
+    }
+    
+    /**
+     * Get RGB color
+     * @return RGB color array [red, green, blue]
+     */
+    public float[] getRGB() {
+        return rgb.clone();
     }
 }
