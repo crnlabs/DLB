@@ -83,7 +83,7 @@ echo "🔍 Testing dependency resolution..."
 
 cd "Don't look back"
 
-if gradle dependencies --configuration compileClasspath --quiet > /dev/null 2>&1; then
+if gradle app:dependencies --configuration compileClasspath --quiet > /dev/null 2>&1; then
     echo "✅ Gradle dependencies resolve successfully"
 else
     echo "❌ Gradle dependency resolution failed"

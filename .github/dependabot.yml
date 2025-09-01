@@ -67,13 +67,15 @@ updates:
           - "minor"
           - "patch"
     ignore:
-      # Ignore major version updates for LWJGL (breaking changes require testing)
+      # Ignore major version updates for LWJGL (breaking changes require test)
       - dependency-name: "org.lwjgl:*"
         update-types: ["version-update:semver-major"]
       # Ignore major JUnit updates (may require test refactoring)
       - dependency-name: "org.junit.*:*"
         update-types: ["version-update:semver-major"]
-    # Enable vulnerability alerts
+    # Enable vulnerability alerts and auto-security updates
     allow:
       - dependency-type: "direct"
       - dependency-type: "indirect"
+    # Version catalog support for Gradle
+    versioning-strategy: increase
