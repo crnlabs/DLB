@@ -12,20 +12,16 @@ repositories {
 }
 
 dependencies {
-    // JUnit Jupiter for testing
-    testImplementation libs.junit.jupiter
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Testing dependencies using version catalog
+    testImplementation libs.bundles.testing
     
-    // LWJGL 3.x dependencies (modern, LTS version)
-    implementation platform('org.lwjgl:lwjgl-bom:3.3.4')
+    // LWJGL 3.x dependencies using version catalog and BOM for version alignment
+    implementation platform(libs.lwjgl.bom)
     
-    // Core LWJGL modules for modern graphics
-    implementation 'org.lwjgl:lwjgl'
-    implementation 'org.lwjgl:lwjgl-opengl'
-    implementation 'org.lwjgl:lwjgl-glfw'
-    implementation 'org.lwjgl:lwjgl-stb'
+    // Core LWJGL modules using version catalog
+    implementation libs.bundles.lwjgl.core
     
-    // Native libraries for all platforms (cross-platform support)
+    // Native libraries for cross-platform support (must be declared individually)
     runtimeOnly "org.lwjgl:lwjgl::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl::natives-linux"
     runtimeOnly "org.lwjgl:lwjgl::natives-macos"
@@ -42,8 +38,8 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::natives-linux"
     runtimeOnly "org.lwjgl:lwjgl-stb::natives-macos"
     
-    // Modern physics engine (replaces legacy JBullet)
-    implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
+    // Physics engine using version catalog
+    implementation libs.jbox2d
 }
 
 // Configure source sets to use simplified structure

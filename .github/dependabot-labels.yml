@@ -1,0 +1,38 @@
+# GitHub repository labels for Dependabot
+# This file documents the labels used by Dependabot for better PR categorization
+
+labels:
+  # Core dependency label - should be created if missing
+  - name: "dependencies"
+    color: "0366d6"
+    description: "Pull requests that update a dependency file"
+    
+  # Ecosystem-specific labels
+  - name: "github-actions"
+    color: "000000"
+    description: "GitHub Actions workflow updates"
+    
+  - name: "java"
+    color: "b07219"
+    description: "Java/Gradle dependency updates"
+    
+  # Optional enhancement labels
+  - name: "security"
+    color: "ee0701"
+    description: "Security vulnerability fixes"
+    
+  - name: "automerge"
+    color: "ededed"
+    description: "PRs safe for automated merging"
+
+# Instructions for creating labels:
+# 1. Via GitHub web interface: Repository → Issues → Labels → New Label
+# 2. Via GitHub CLI: gh label create NAME --color COLOR --description DESCRIPTION
+# 3. Via GitHub API or scripts
+
+# Label Usage Guidelines:
+# - "dependencies": Applied to all Dependabot PRs
+# - "github-actions": Applied to workflow/action updates
+# - "java": Applied to Gradle/Maven dependency updates
+# - "security": Applied to security vulnerability fixes
+# - "automerge": Can be manually added to safe PRs for auto-merge
