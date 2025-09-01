@@ -19,7 +19,36 @@ dependencies {
     testImplementation libs.junit.jupiter
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     
-    // LWJGL dependencies (from local files)
+    // LWJGL 3.x dependencies (modern, LTS version)
+    implementation platform('org.lwjgl:lwjgl-bom:3.3.4')
+    
+    // Core LWJGL modules
+    implementation 'org.lwjgl:lwjgl'
+    implementation 'org.lwjgl:lwjgl-opengl'
+    implementation 'org.lwjgl:lwjgl-glfw'
+    implementation 'org.lwjgl:lwjgl-stb'
+    
+    // Native libraries for all platforms
+    runtimeOnly "org.lwjgl:lwjgl::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl::natives-macos"
+    
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::natives-macos"
+    
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::natives-macos"
+    
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-linux"
+    runtimeOnly "org.lwjgl:lwjgl-stb::natives-macos"
+    
+    // Modern physics engine (replace JBullet)
+    implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
+    
+    // Legacy LWJGL dependencies (temporary during transition)
     implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar")
     implementation files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar")
     implementation files("${project.rootDir}/../lwjgl/jbullet.jar")
@@ -30,15 +59,15 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDirs = ["${project.rootDir}/../src"]
+            srcDirs = ["${project.rootDir}/src"]
         }
         resources {
-            srcDirs = ["${project.rootDir}/../res"]
+            srcDirs = ["${project.rootDir}/res"]
         }
     }
     test {
         java {
-            srcDirs = ["${project.rootDir}/../test"]
+            srcDirs = ["${project.rootDir}/test"]
         }
     }
 }
@@ -51,8 +80,8 @@ java {
 }
 
 application {
-    // Define the main class for the application
-    mainClass = 'dontlookback.DontLookBack'
+    // Define the main class for the application (modern version)
+    mainClass = 'dontlookback.modern.ModernDontLookBack'
 }
 
 // Create fat JAR task
@@ -102,15 +131,34 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-// Custom task to run with proper native library path
-task runGame(type: JavaExec) {
+// Custom task to run the modern game
+task runModern(type: JavaExec) {
     group = 'application'
-    description = 'Run the game with proper native libraries'
+    description = 'Run the modern version of the game using LWJGL 3.x'
+    
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'dontlookback.modern.ModernDontLookBack'
+    
+    // Set JVM arguments for optimal performance
+    jvmArgs = [
+        '-Xms512m',
+        '-Xmx1024m',
+        // Enable hardware acceleration
+        '-Dsun.java2d.opengl=true',
+        // Better performance on some systems
+        '-XX:+UseG1GC'
+    ]
+}
+
+// Custom task to run the legacy game (for comparison)
+task runLegacy(type: JavaExec) {
+    group = 'application'
+    description = 'Run the legacy version of the game using LWJGL 2.x'
     
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'dontlookback.DontLookBack'
     
-    // Set native library path based on OS
+    // Set native library path based on OS for legacy version
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
         systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows"
     } else if (System.getProperty('os.name').toLowerCase().contains('linux')) {
@@ -118,6 +166,17 @@ task runGame(type: JavaExec) {
     } else if (System.getProperty('os.name').toLowerCase().contains('mac')) {
         systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/macosx"
     }
+}
+
+// Default run task uses modern version
+run {
+    mainClass = 'dontlookback.modern.ModernDontLookBack'
+    jvmArgs = [
+        '-Xms512m',
+        '-Xmx1024m',
+        '-Dsun.java2d.opengl=true',
+        '-XX:+UseG1GC'
+    ]
 }
 
 // Comprehensive testing task
