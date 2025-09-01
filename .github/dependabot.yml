@@ -13,8 +13,7 @@ updates:
     assignees:
       - "Gameaday"
     labels:
-      - "dependencies"
-      - "github-actions"
+      - "dependency-update"
     commit-message:
       prefix: "⬆️"
       include: "scope"
@@ -32,8 +31,7 @@ updates:
     assignees:
       - "Gameaday"
     labels:
-      - "dependencies"
-      - "gradle"
+      - "dependency-update"
     commit-message:
       prefix: "⬆️"
       include: "scope"
@@ -55,8 +53,7 @@ updates:
     assignees:
       - "Gameaday"
     labels:
-      - "dependencies"
-      - "maven"
+      - "dependency-update"
     commit-message:
       prefix: "⬆️"
       include: "scope"

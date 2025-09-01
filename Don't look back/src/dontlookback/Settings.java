@@ -163,7 +163,7 @@ public class Settings {
      * Administrator mode provides debug features and bypasses game restrictions
      * 
      * @return true if admin mode is active, false otherwise
-     * @note Admin unlock key: RaindeerFlotilla
+     * Note: Admin unlock key: RaindeerFlotilla
      */
     public boolean admin() {
         return admin; // Admin mode unlock key: RaindeerFlotilla
