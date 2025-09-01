@@ -109,23 +109,18 @@ Don't look back/
 │   ├── build.gradle       # Modern build configuration
 │   └── src/
 │       ├── main/java/     # (references ../src via sourceSets)
-│       └── test/java/     # New comprehensive tests
+│       └── test/java/     # Comprehensive JUnit tests
 ├── src/                   # Original Java source files
 ├── res/                   # Game resources
-├── lwjgl/                 # LWJGL native libraries
-└── build.xml             # Legacy Ant build (preserved)
+└── lwjgl/                 # LWJGL native libraries
 ```
 
-## Legacy Support
+## Modern Build Features
 
-The original Ant build system (`build.xml`) is preserved and still functional:
-```bash
-ant clean compile jar
-```
-
-However, the Gradle build system provides modern features like:
-- Dependency management
-- Fat JAR creation
-- Cross-platform support
-- Automated testing
+The Gradle build system provides modern features including:
+- Dependency management with Maven Central
+- Fat JAR creation with embedded dependencies
+- Cross-platform support (Windows, Linux, macOS)
+- Automated testing with JUnit 5
 - Native executable generation
+- CI/CD integration

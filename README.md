@@ -59,13 +59,10 @@ Every successful build generates:
 git clone https://github.com/crnlabs/DLB.git
 cd DLB
 
-# Build and run (Gradle - Recommended)
+# Build and run (Gradle)
 cd "Don't look back"
 ./gradlew app:buildAll
 java -jar app/build/libs/DontLookBack-1.0-fat.jar
-
-# Alternative: Traditional Ant build
-ant clean compile jar run
 ```
 
 ## 🎯 Gameplay Vision
@@ -92,7 +89,7 @@ ant clean compile jar run
 - **Language**: Java 17 (LTS)
 - **Graphics**: LWJGL 3.3.4 (OpenGL 3.2+)
 - **Physics**: JBox2D 2.2.1.1
-- **Build System**: Gradle 9.0+ with Ant legacy support
+- **Build System**: Gradle 9.0+ with modern dependency management
 - **Testing**: JUnit 5 with custom test suites
 - **CI/CD**: GitHub Actions with comprehensive pipelines
 
@@ -111,16 +108,12 @@ ant clean compile jar run
 
 ### Build Commands
 ```bash
-# Modern Gradle build (recommended)
+# Gradle build system
 ./gradlew app:buildAll              # Complete build with all artifacts
 ./gradlew app:test                  # Run test suite
 ./gradlew app:fatJar               # Create self-contained JAR
-
-# Legacy Ant build (preserved)
-ant clean compile jar              # Basic build
-ant test-headless                 # CI-friendly tests
-ant test-comprehensive            # Full test suite
-ant ci-build                      # Complete CI pipeline
+./gradlew clean                    # Clean build artifacts
+./gradlew build                    # Full build and test pipeline
 ```
 
 ## 🧪 Testing & Quality
