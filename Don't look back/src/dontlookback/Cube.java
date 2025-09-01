@@ -1,250 +1,204 @@
 package dontlookback;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import java.nio.FloatBuffer;
-import org.lwjgl.BufferUtils;
+import dontlookback.modern.ModernCube;
 
+/**
+ * Compatibility wrapper for legacy Cube class
+ * Delegates to ModernCube implementation for LWJGL 3.x compatibility
+ * 
+ * This maintains API compatibility while using modern rendering backend
+ */
 public class Cube extends Objects {
 
-    private float width;
-    final float rotation = (float) (Math.random() * 3);
+    private final ModernCube modernCube;
 
+    /**
+     * Create a new cube with random position and size
+     */
     public Cube() {
         super();
-        randomXYZ();
-        randomSize();
-        orientation = 0;
-        setCurrent();
+        modernCube = new ModernCube();
+        syncFromModern();
     }
 
+    /**
+     * Copy constructor for creating cube from another cube
+     */
     public Cube(Cube cube) {
         super();
-        rgb = cube.rgb;
-        width = cube.width;
-        x = cube.x;
-        y = cube.y;
-        z = cube.z;
-        setCurrent();
+        modernCube = new ModernCube(cube.modernCube);
+        syncFromModern();
     }
 
+    /**
+     * Create cube with specific position, angle and size
+     */
     public Cube(float x, float y, float z, float angle, float width) {
         super(x, y, z, angle);
-        setWidth(width);
-        setCurrent();
+        modernCube = new ModernCube(x, y, z, angle, width);
+        syncFromModern();
     }
 
+    /**
+     * Create cube with coordinate array, angle and size
+     */
     public Cube(float[] coords, float angle, float width) {
         super(coords, angle);
-        setWidth(width);
-        setCurrent();
+        modernCube = new ModernCube(coords, angle, width);
+        syncFromModern();
     }
 
-    private void setCurrent() {
-        cX = x;
-        cY = y;
-        cZ = z;
+    /**
+     * Sync properties from modern cube implementation
+     */
+    private void syncFromModern() {
+        this.x = modernCube.getX();
+        this.y = modernCube.getY();
+        this.z = modernCube.getZ();
+        this.orientation = modernCube.getOrientation();
+        this.rgb = modernCube.getRGB();
     }
 
+    /**
+     * Sync properties to modern cube implementation
+     */
+    private void syncToModern() {
+        modernCube.setX(this.x);
+        modernCube.setY(this.y);
+        modernCube.setZ(this.z);
+        modernCube.setOrientation(this.orientation);
+        modernCube.setColor(this.rgb[0], this.rgb[1], this.rgb[2]);
+    }
+
+    /**
+     * Set the color of this cube
+     */
     public void setColor(float red, float green, float blue) {
-        float[] color = {red, green, blue};
-        this.setRGB(color);
+        rgb[0] = red;
+        rgb[1] = green;
+        rgb[2] = blue;
+        modernCube.setColor(red, green, blue);
     }
 
-    @Override
-    public void setColor(float[] rgb) {
-
-        this.setRGB(rgb);
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
+    /**
+     * Get the width/size of this cube
+     */
     public float getWidth() {
-        return width;
+        return modernCube.getWidth();
     }
 
-    @Override
+    /**
+     * Set the width/size of this cube
+     */
+    public void setWidth(float width) {
+        modernCube.setWidth(width);
+    }
+
+    /**
+     * Get the rotation angle
+     */
+    public float getRotation() {
+        return modernCube.getRotation();
+    }
+
+    /**
+     * Legacy render method - now delegates to modern graphics system
+     * Maintained for API compatibility
+     */
     public void render() {
-        glPushMatrix();
-        //"Of course you can change your matrix midway of drawing" Ofcourse? I didn't knew when I asked, and exactly that is what would had helping me out of my dilemma I guess. So jsut that I got you right, it is possible to do something like glMatrixMode(GL_PROJECTION); /*some stuff*/ glMatrixMode(GL_MODELVIEW); /*some stuff*/ glMatrixMode(GL_PROJECTION); /*some stuff*/ glMatrixMode(GL_MODELVIEW); /*some stuff*/
-        //glMatrixMode(); use GL MATRIX MODE TO MANIPULATE OBJECTS IN SCENE
-        //then put it back, or move it to it's new spot if x,y,z has changed
-        glTranslatef(cX, cY, cZ);   //put it at 0,0,0
-        glRotatef(orientation, 0.f, 1.f, 0.f);     //then do the rotation
-        glTranslatef(-cX, -cY, -cZ);   //put it at 0,0,0
-        //System.out.println(x + ", " + y + ", " + z + ".   " + cX + ", " + cY + ", " + cZ);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glBindBuffer(GL_ARRAY_BUFFER, handle);
-        glVertexPointer(3, GL_FLOAT, 24, 0); //stride is weird.
-        glEnableClientState(GL_COLOR_ARRAY);
-        glColorPointer(3, GL_FLOAT, 24, 12); //should the 12 become 18?
-        glDrawArrays(GL_TRIANGLES, 0, 36); //type, first, count
-        glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_VERTEX_ARRAY);
-
-        glPopMatrix();
-        setCurrent();
+        syncToModern();
+        modernCube.render();
     }
 
-    @Override
-    public void setUpVBO() {
-
-        FloatBuffer vertexData = BufferUtils.createFloatBuffer(216);
-
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)), //+Z THIS IS A SIDE????  (flipped to -z? what) 
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)), //BECAUSE Z IS A SIDE AND Y IS vertical I GET IT NOW
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)), //+X (flipped to -X)
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)), //-X
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)), //+Y  (TOP)
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)), //-Y (error)
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z + (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)), //-Z (flipped to be positive Z?) (error)
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x + (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.put(new float[]{(x + (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y - (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-        vertexData.put(new float[]{(x - (width / 2)), (y + (width / 2)), (z - (width / 2)),
-            (rgb[0]), (rgb[1]), (rgb[2])});
-
-        vertexData.flip();
-
-        handle = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, handle);
-        glBufferData(GL_ARRAY_BUFFER, vertexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    }
-
-    @Override
-    public void delete() {
-
-        glDeleteBuffers(handle);
-
-    }
-
-    @Override
+    /**
+     * Set color using legacy interface
+     */
     public void setColor() {
-        float[] color = Objects.randomColor();
-        this.setRGB(color);
+        modernCube.setColor();
+        syncFromModern();
     }
 
-    public void randomBehavior() {  //no y movement to be clean
-        //x = x + ((float) (Math.random() * 2.2)); // random amount
-        //y = (float) (Math.random() * -15); //
-        //z = z + (((float) (Math.random() * 0.1)) - ((float) (Math.random() * 0.1))); // 
-        rotate();
+    /**
+     * Set color using color array
+     */
+    public void setColor(float[] color) {
+        modernCube.setColor(color);
+        syncFromModern();
     }
 
-    @Override
-    public void rotate() {
-        orientation = orientation + rotation;
-        if (orientation >= 360f) {
-            orientation = orientation - 360f;
-        }
+    /**
+     * Set up VBO for modern rendering (compatibility method)
+     */
+    public void setUpVBO() {
+        modernCube.setUpVBO();
     }
 
-    @Override
-    public void randomXYZ() {
-        x = (float) (Math.random() * -50); // * 256 removed for testing
-        y = (float) (Math.random() * 25); // * 256 removed for testing
-        z = (float) (Math.random() * -50); // * 256 removed for testing
-        //return new float[] {x,y,z};
+    /**
+     * Delete/cleanup resources (compatibility method)
+     */
+    public void delete() {
+        modernCube.delete();
     }
 
-    private void randomSize() {
-        width = (float) (Math.random() * 5); // * 256 removed for testing
-
-    }
-
-    @Override
+    /**
+     * Object behavior/AI (compatibility method)
+     */
     public void behavior() {
-        if (Settings.testMode() == true) {
-            randomBehavior();
+        modernCube.behavior();
+    }
+
+    /**
+     * Update cube state
+     */
+    public void update() {
+        syncToModern();
+        modernCube.update();
+        syncFromModern();
+    }
+
+    /**
+     * Get the underlying modern cube implementation
+     * This allows modern graphics system to access the cube directly
+     */
+    public ModernCube getModernCube() {
+        syncToModern();
+        return modernCube;
+    }
+
+    @Override
+    public void setX(float x) {
+        super.setX(x);
+        if (modernCube != null) {
+            modernCube.setX(x);
         }
     }
 
     @Override
-    public void update() {
-
-        if (Settings.pausedState() == false) {
-            behavior();
+    public void setY(float y) {
+        super.setY(y);
+        if (modernCube != null) {
+            modernCube.setY(y);
         }
-        render();
     }
 
-    private void move(float[] input) {
-
+    @Override
+    public void setZ(float z) {
+        super.setZ(z);
+        if (modernCube != null) {
+            modernCube.setZ(z);
+        }
     }
 
+    @Override
+    public void setOrientation(float angle) {
+        super.setOrientation(angle);
+        if (modernCube != null) {
+            modernCube.setOrientation(angle);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Cube[" + modernCube.toString() + "]";
+    }
 }

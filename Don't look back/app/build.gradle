@@ -1,6 +1,6 @@
 /*
  * Modern Gradle build for Don't Look Back game
- * Supports fat JAR creation and executable generation
+ * Uses modern LWJGL 3.x and JBox2D for cross-platform gaming
  */
 
 plugins {
@@ -9,14 +9,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs '../lwjgl/lwjgl-2.9.1/jar', '../lwjgl'
-    }
-}
-
-// Create a separate configuration for legacy LWJGL dependencies
-configurations {
-    legacy
 }
 
 dependencies {
@@ -27,13 +19,13 @@ dependencies {
     // LWJGL 3.x dependencies (modern, LTS version)
     implementation platform('org.lwjgl:lwjgl-bom:3.3.4')
     
-    // Core LWJGL modules
+    // Core LWJGL modules for modern graphics
     implementation 'org.lwjgl:lwjgl'
     implementation 'org.lwjgl:lwjgl-opengl'
     implementation 'org.lwjgl:lwjgl-glfw'
     implementation 'org.lwjgl:lwjgl-stb'
     
-    // Native libraries for all platforms
+    // Native libraries for all platforms (cross-platform support)
     runtimeOnly "org.lwjgl:lwjgl::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl::natives-linux"
     runtimeOnly "org.lwjgl:lwjgl::natives-macos"
@@ -50,46 +42,34 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::natives-linux"
     runtimeOnly "org.lwjgl:lwjgl-stb::natives-macos"
     
-    // Modern physics engine (replace JBullet)
+    // Modern physics engine (replaces legacy JBullet)
     implementation 'org.jbox2d:jbox2d-library:2.2.1.1'
-    
-    // Legacy LWJGL dependencies (separate configuration to avoid conflicts)
-    legacy files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl.jar")
-    legacy files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/jar/lwjgl_util.jar")
-    legacy files("${project.rootDir}/../lwjgl/jbullet.jar")
-    legacy files("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows/PNGDecoder.jar")
 }
 
-// Configure source sets to use existing source structure
+// Configure source sets to use modern source structure
 sourceSets {
     main {
         java {
-            srcDirs = ["${project.rootDir}/src/dontlookback/modern"]
+            srcDirs = [
+                "${project.rootDir}/src/dontlookback/modern",
+                "${project.rootDir}/src"
+            ]
+            // Exclude legacy LWJGL 2.x specific classes only
+            exclude '**/DontLookBack.java'           // Legacy main class
+            exclude '**/DLB_Graphics.java'           // Legacy graphics system  
+            exclude '**/Window.java'                 // Legacy window management
+            exclude '**/VersionTest.java'            // Legacy version testing
+            // Note: Cube.java is now modernized compatibility wrapper
         }
         resources {
             srcDirs = ["${project.rootDir}/res"]
         }
-    }
-    
-    // Create a separate source set for legacy code
-    legacy {
-        java {
-            srcDirs = ["${project.rootDir}/src"]
-            exclude 'dontlookback/modern/**'
-        }
-        resources {
-            srcDirs = ["${project.rootDir}/res"]
-        }
-        compileClasspath = configurations.legacy
-        runtimeClasspath = output + configurations.legacy
     }
     
     test {
         java {
             srcDirs = ["${project.rootDir}/test"]
         }
-        compileClasspath += configurations.legacy + sourceSets.legacy.output
-        runtimeClasspath += configurations.legacy + sourceSets.legacy.output
     }
 }
 
@@ -101,14 +81,14 @@ java {
 }
 
 application {
-    // Define the main class for the application (modern version)
+    // Modern main class using LWJGL 3.x
     mainClass = 'dontlookback.modern.ModernDontLookBack'
 }
 
-// Create fat JAR task
+// Create fat JAR task with modern dependencies only
 task fatJar(type: Jar) {
     group = 'build'
-    description = 'Create a runnable JAR with all dependencies included'
+    description = 'Create a runnable JAR with all modern dependencies included'
     
     archiveBaseName = 'DontLookBack'
     archiveClassifier = 'fat'
@@ -118,8 +98,8 @@ task fatJar(type: Jar) {
     
     manifest {
         attributes(
-            'Main-Class': 'dontlookback.DontLookBack',
-            'Implementation-Title': 'Don\'t Look Back',
+            'Main-Class': 'dontlookback.modern.ModernDontLookBack',
+            'Implementation-Title': 'Don\'t Look Back - Modern Edition',
             'Implementation-Version': '1.0'
         )
     }
@@ -131,88 +111,43 @@ task fatJar(type: Jar) {
     }
     
     with jar
-    
-    // Include native libraries
-    from("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows") {
-        into 'natives/windows'
-    }
-    from("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/linux") {
-        into 'natives/linux'
-    }
-    from("${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/macosx") {
-        into 'natives/macosx'
-    }
 }
 
 // Make fatJar depend on compileJava
 fatJar.dependsOn compileJava
 
-// Configure test framework
+// Configure test framework for modern implementation
 tasks.named('test') {
     useJUnitPlatform()
+    
+    // Enable headless mode for CI/CD compatibility
+    systemProperty 'java.awt.headless', 'true'
 }
 
-// Custom task to run the modern game
-task runModern(type: JavaExec) {
-    group = 'application'
-    description = 'Run the modern version of the game using LWJGL 3.x'
-    
-    classpath = sourceSets.main.runtimeClasspath
+// Run the modern game (default application run)
+run {
     mainClass = 'dontlookback.modern.ModernDontLookBack'
-    
-    // Set JVM arguments for optimal performance
     jvmArgs = [
         '-Xms512m',
         '-Xmx1024m',
-        // Enable hardware acceleration
+        // Enable hardware acceleration where available
         '-Dsun.java2d.opengl=true',
-        // Better performance on some systems
+        // Use modern G1 garbage collector for better performance
         '-XX:+UseG1GC'
     ]
 }
 
-// Custom task to run headless demo
-task runModernDemo(type: JavaExec) {
+// Task to run headless demo for verification
+task runDemo(type: JavaExec) {
     group = 'application'
     description = 'Run headless demo to verify modern dependencies'
     
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'dontlookback.modern.HeadlessDemo'
     
-    // Headless mode settings
+    // Headless mode settings for CI/CD
     jvmArgs = [
         '-Djava.awt.headless=true'
-    ]
-}
-
-// Custom task to run the legacy game (for comparison)
-task runLegacy(type: JavaExec) {
-    group = 'application'
-    description = 'Run the legacy version of the game using LWJGL 2.x'
-    
-    classpath = sourceSets.legacy.runtimeClasspath
-    mainClass = 'dontlookback.DontLookBack'
-    
-    // Set native library path based on OS for legacy version
-    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/windows"
-    } else if (System.getProperty('os.name').toLowerCase().contains('linux')) {
-        systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/linux"
-    } else if (System.getProperty('os.name').toLowerCase().contains('mac')) {
-        systemProperty 'java.library.path', "${project.rootDir}/../lwjgl/lwjgl-2.9.1/native/macosx"
-    }
-    
-    dependsOn 'legacyClasses'
-}
-
-// Default run task uses modern version
-run {
-    mainClass = 'dontlookback.modern.ModernDontLookBack'
-    jvmArgs = [
-        '-Xms512m',
-        '-Xmx1024m',
-        '-Dsun.java2d.opengl=true',
-        '-XX:+UseG1GC'
     ]
 }
 
@@ -226,15 +161,15 @@ task testComprehensive(type: Test) {
     systemProperty 'java.awt.headless', 'true'
     
     testLogging {
-        events "passed", "skipped", "failed"
-        exceptionFormat "full"
+        events = ["passed", "skipped", "failed"]
+        exceptionFormat = "full"
     }
 }
 
 // Task to create executable wrapper scripts
 task createExecutable {
     group = 'distribution'
-    description = 'Create native executable wrapper scripts'
+    description = 'Create cross-platform executable wrapper scripts'
     dependsOn fatJar
     
     doLast {
@@ -244,24 +179,28 @@ task createExecutable {
         // Create batch file for Windows
         def batFile = new File(distDir, 'DontLookBack.bat')
         batFile.text = '''@echo off
-java -Djava.library.path=natives/windows -jar DontLookBack-1.0-fat.jar
+echo Don't Look Back - Modern Edition
+echo Starting game...
+java -jar DontLookBack-1.0-fat.jar
 pause
 '''
         
-        // Create shell script for Unix
+        // Create shell script for Unix-like systems
         def shFile = new File(distDir, 'DontLookBack.sh')
         shFile.text = '''#!/bin/bash
-java -Djava.library.path=natives/linux -jar DontLookBack-1.0-fat.jar
+echo "Don't Look Back - Modern Edition"
+echo "Starting game..."
+java -jar DontLookBack-1.0-fat.jar
 '''
         shFile.setExecutable(true)
         
-        // Copy the fat JAR
+        // Copy the fat JAR to distribution directory
         copy {
             from fatJar.archiveFile
             into distDir
         }
         
-        println "Executable scripts created in build/distributions/"
+        println "Cross-platform executable scripts created in build/distributions/"
         println "- DontLookBack.bat (Windows)"
         println "- DontLookBack.sh (Linux/Mac)"
         println "- DontLookBack-1.0-fat.jar"
@@ -271,23 +210,25 @@ java -Djava.library.path=natives/linux -jar DontLookBack-1.0-fat.jar
 // Task to create Windows .EXE using launch4j-style approach
 task createWindowsEXE {
     group = 'distribution'
-    description = 'Create Windows .EXE launcher'
+    description = 'Create Windows .EXE launcher instructions'
     dependsOn fatJar
     
     doLast {
         def distDir = project.layout.buildDirectory.dir('distributions').get().asFile
         distDir.mkdirs()
         
-        // Copy the fat JAR to dist directory
+        // Copy the fat JAR to distribution directory
         copy {
             from fatJar.archiveFile
             into distDir
         }
         
-        // Create a simple wrapper EXE launcher script
+        // Create instructions for EXE creation
         def exeScript = new File(distDir, 'create_exe.bat')
         exeScript.text = '''@echo off
 echo Creating Windows executable launcher...
+echo.
+echo Don't Look Back - Modern Edition
 echo.
 echo This script demonstrates how to create a Windows .EXE:
 echo 1. Use launch4j to wrap the JAR in an EXE
@@ -295,16 +236,16 @@ echo 2. Install launch4j from http://launch4j.sourceforge.net/
 echo 3. Create a config XML file pointing to the fat JAR
 echo 4. Use launch4j to generate the EXE
 echo.
-echo For now, you can run the game directly with:
-echo java -Djava.library.path=natives/windows -jar DontLookBack-1.0-fat.jar
+echo For immediate use, run the game directly with:
+echo java -jar DontLookBack-1.0-fat.jar
 echo.
-echo Fat JAR is available: DontLookBack-1.0-fat.jar
+echo Fat JAR available: DontLookBack-1.0-fat.jar
 pause
 '''
         
-        println "Windows EXE creation script created in build/distributions/"
+        println "Windows EXE creation instructions created in build/distributions/"
         println "- create_exe.bat (instructions for .EXE creation)"
-        println "- DontLookBack-1.0-fat.jar (runnable fat JAR)"
+        println "- DontLookBack-1.0-fat.jar (self-contained runnable JAR)"
     }
 }
 

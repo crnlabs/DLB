@@ -101,21 +101,4 @@ public class ModernGraphicsTest {
             tearDown();
         }
     }
-    
-    @Test
-    void testBackwardCompatibility() {
-        try {
-            // Ensure legacy classes still exist for compatibility
-            Class.forName("dontlookback.DontLookBack");
-            Class.forName("dontlookback.DLB_Graphics");
-            Class.forName("dontlookback.Settings");
-            
-            System.out.println("Legacy classes still available for compatibility");
-            
-        } catch (ClassNotFoundException e) {
-            fail("Legacy compatibility classes not found: " + e.getMessage());
-        } finally {
-            tearDown();
-        }
-    }
 }
