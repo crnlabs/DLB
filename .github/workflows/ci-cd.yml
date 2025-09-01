@@ -120,7 +120,8 @@ jobs:
     - name: Build project
       run: |
         cd "Don't look back"
-        gradle build --no-daemon
+        # Use core Gradle tasks that work correctly
+        gradle app:build app:fatJar --no-daemon
         
     - name: Generate Javadoc
       run: |
@@ -130,24 +131,133 @@ jobs:
     - name: Create distribution package
       run: |
         cd "Don't look back"
-        # Create a complete distribution package
-        mkdir -p dist-package
+        # Build the fat JAR first
+        gradle app:fatJar --no-daemon
         
-        # Copy JAR files from Gradle build
-        cp app/build/libs/*.jar dist-package/ 2>/dev/null || echo "No JAR files found in app/build/libs"
-        cp build/libs/*.jar dist-package/ 2>/dev/null || echo "No JAR files found in build/libs"
-        cp build/distributions/*.jar dist-package/ 2>/dev/null || echo "No distribution JARs found"
+        # Create release-style packages (consistent with release pipeline)
+        mkdir -p release
+        
+        # Copy main JAR (fat JAR from Gradle build)
+        cp app/build/libs/DontLookBack-1.0-fat.jar release/
+        
+        # Copy regular JAR as backup
+        cp app/build/libs/app.jar release/ 2>/dev/null || echo "Regular JAR not available"
         
         # Copy resources
-        cp -r res dist-package/ 2>/dev/null || echo "Resources not copied"
+        cp -r res release/ 2>/dev/null || echo "Resources not available"
         
-        # Copy documentation from Gradle build
-        cp -r app/build/docs/javadoc dist-package/ 2>/dev/null || echo "Javadoc not copied"
-        cp -r build/docs/javadoc dist-package/ 2>/dev/null || echo "Javadoc not copied"
+        # Copy documentation (from Gradle build)
+        cp -r app/build/docs/javadoc release/ 2>/dev/null || echo "Javadoc not available"
         
-        # Create README for distribution
+        # Create startup scripts (same as release pipeline)
+        cat > release/run.sh << 'EOF'
+        #!/bin/bash
+        # Don't Look Back - Linux/Mac startup script
+        # Modern version with self-contained JAR
+        
+        # Run the game (fat JAR includes all dependencies)
+        java -jar DontLookBack-1.0-fat.jar
+        EOF
+        
+        cat > release/run.bat << 'EOF'
+        @echo off
+        REM Don't Look Back - Windows startup script
+        REM Modern version with self-contained JAR
+        
+        REM Run the game (fat JAR includes all dependencies)
+        java -jar DontLookBack-1.0-fat.jar
+        
+        pause
+        EOF
+        
+        # Make shell script executable
+        chmod +x release/run.sh
+        
+        # Create release info for CI builds
+        cat > release/BUILD_INFO.txt << EOF
+        Don't Look Back - Development Build
+        ==================================
+        
+        Build Information:
+        - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        - Git Commit: ${{ github.sha }}
+        - Branch: ${{ github.ref_name }}
+        - Build Number: ${{ github.run_number }}
+        - Build System: Gradle with modern dependencies
+        
+        System Requirements:
+        - Java 17 or higher
+        - OpenGL 2.1 compatible graphics card
+        - 512MB RAM minimum
+        - 100MB disk space
+        
+        Installation:
+        1. Extract all files to a directory
+        2. Run run.sh (Linux/Mac) or run.bat (Windows)
+        
+        Files:
+        - DontLookBack-1.0-fat.jar - Main game executable (self-contained)
+        - app.jar - Regular JAR file (backup)
+        - res/ - Game resources and assets
+        - javadoc/ - API documentation
+        - run.sh - Linux/Mac startup script
+        - run.bat - Windows startup script
+        
+        Technical Notes:
+        - Uses modern LWJGL 3.3.4 with embedded native libraries
+        - JBox2D 2.2.1.1 physics engine included
+        - All dependencies bundled in fat JAR
+        
+        For more information, visit: https://github.com/crnlabs/DLB
+        EOF
+        
+        # Create platform-specific packages (same as release pipeline)
+        
+        # Windows package
+        zip -r "DontLookBack-build${{ github.run_number }}-Windows.zip" release/
+        
+        # Linux package  
+        tar -czf "DontLookBack-build${{ github.run_number }}-Linux.tar.gz" release/
+        
+        # Cross-platform package
+        zip -r "DontLookBack-build${{ github.run_number }}-CrossPlatform.zip" release/
+        
+        # Legacy-style package for compatibility
+        mkdir -p dist-package
+        cp -r release/* dist-package/
+        
+        # Create legacy README for compatibility
         cat > dist-package/README.txt << EOF
         Don't Look Back - Distribution Package
+        =====================================
+        
+        Build Information:
+        - Build Date: $(date)
+        - Git Commit: ${{ github.sha }}
+        - Branch: ${{ github.ref_name }}
+        
+        Contents:
+        - DontLookBack-1.0-fat.jar - Main game JAR file
+        - res/ - Game resources and assets
+        - javadoc/ - API documentation
+        
+        To run the game:
+        java -jar DontLookBack-1.0-fat.jar
+        EOF
+        
+        # Create version info file for legacy compatibility
+        cat > dist-package/VERSION.txt << EOF
+        Version: ${{ github.run_number }}
+        Commit: ${{ github.sha }}
+        Branch: ${{ github.ref_name }}
+        Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        Build Number: ${{ github.run_number }}
+        EOF
+        
+        # Create ZIP archive for legacy compatibility
+        cd dist-package
+        zip -r ../DontLookBack-${{ github.run_number }}-${{ github.sha }}.zip .
+        cd ..
         =====================================
         
         Build Information:
@@ -189,7 +299,16 @@ jobs:
           "Don't look back/build/distributions/*.jar"
         retention-days: 30
         
-    - name: Upload complete distribution
+    - name: Upload release packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: dont-look-back-packages-${{ github.run_number }}
+        path: |
+          "Don't look back/DontLookBack-build${{ github.run_number }}-*.zip"
+          "Don't look back/DontLookBack-build${{ github.run_number }}-*.tar.gz"
+        retention-days: 90
+        
+    - name: Upload complete distribution (legacy)
       uses: actions/upload-artifact@v4
       with:
         name: dont-look-back-distribution-${{ github.run_number }}

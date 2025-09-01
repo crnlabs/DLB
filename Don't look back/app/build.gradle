@@ -190,13 +190,14 @@ task createExecutable(type: Copy) {
     
     from fatJar.archiveFile
     into layout.buildDirectory.dir('distributions')
+
     
     doLast {
-        def distDir = layout.buildDirectory.dir('distributions').get().asFile
-        distDir.mkdirs()
+        def dir = distDir.get().asFile
+        dir.mkdirs()
         
         // Create batch file for Windows
-        def batFile = new File(distDir, 'DontLookBack.bat')
+        def batFile = new File(dir, 'DontLookBack.bat')
         batFile.text = '''@echo off
 echo Don't Look Back - Modern Edition
 echo Starting game...
@@ -205,7 +206,7 @@ pause
 '''
         
         // Create shell script for Unix-like systems
-        def shFile = new File(distDir, 'DontLookBack.sh')
+        def shFile = new File(dir, 'DontLookBack.sh')
         shFile.text = '''#!/bin/bash
 echo "Don't Look Back - Modern Edition"
 echo "Starting game..."
@@ -228,13 +229,14 @@ task createWindowsEXE(type: Copy) {
     
     from fatJar.archiveFile
     into layout.buildDirectory.dir('distributions')
+
     
     doLast {
-        def distDir = layout.buildDirectory.dir('distributions').get().asFile
-        distDir.mkdirs()
+        def dir = distDir.get().asFile
+        dir.mkdirs()
         
         // Create instructions for EXE creation
-        def exeScript = new File(distDir, 'create_exe.bat')
+        def exeScript = new File(dir, 'create_exe.bat')
         exeScript.text = '''@echo off
 echo Creating Windows executable launcher...
 echo.
