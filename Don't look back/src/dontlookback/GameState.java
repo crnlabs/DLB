@@ -138,27 +138,13 @@ public enum GameState {
     /** Human-readable description of this state */
     private final String description;
     
-    /** Whether this state allows normal gameplay input */
-    private final boolean allowsInput;
-    
-    /** Whether monsters should be active in this state */
-    private final boolean monstersActive;
-    
-    /** Whether time should progress in this state */
-    private final boolean timeActive;
-    
     
     /**
-     * Create a game state with description and default properties
+     * Create a game state with description
      * @param description Human-readable description
      */
     GameState(String description) {
         this.description = description;
-        
-        // Set default properties based on state type
-        this.allowsInput = calculateInputAllowed();
-        this.monstersActive = calculateMonstersActive();
-        this.timeActive = calculateTimeActive();
     }
     
     
@@ -236,7 +222,7 @@ public enum GameState {
      * @return true if input is allowed
      */
     public boolean allowsInput() {
-        return allowsInput;
+        return calculateInputAllowed();
     }
     
     /**
@@ -244,7 +230,7 @@ public enum GameState {
      * @return true if monsters should be active
      */
     public boolean areMonstersActive() {
-        return monstersActive;
+        return calculateMonstersActive();
     }
     
     /**
@@ -252,7 +238,7 @@ public enum GameState {
      * @return true if time should progress
      */
     public boolean isTimeActive() {
-        return timeActive;
+        return calculateTimeActive();
     }
     
     

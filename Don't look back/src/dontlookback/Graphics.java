@@ -37,6 +37,9 @@ public class Graphics {
     /** Splash screen system */
     private ModernSplash splashScreen;
     
+    /** Main menu system */
+    private MainMenu mainMenu;
+    
     // === Window and Context Management ===
     
     /** GLFW window handle */
@@ -83,6 +86,9 @@ public class Graphics {
         
         // Initialize splash screen
         splashScreen = new ModernSplash();
+        
+        // Initialize main menu
+        mainMenu = new MainMenu(stateManager);
         
         // Set up graphics and start main loop
         initializeGraphics();
@@ -258,11 +264,7 @@ public class Graphics {
      * @param deltaTime Time since last update
      */
     private void updateMainMenu(double deltaTime) {
-        // Simple auto-start for now - in a full game this would handle menu navigation
-        if (stateManager.getTimeInCurrentStateSeconds() > 2.0) {
-            System.out.println("Auto-starting game from main menu (demo mode)");
-            stateManager.startGameplay();
-        }
+        mainMenu.update(deltaTime);
     }
     
     /**
@@ -428,7 +430,10 @@ public class Graphics {
         glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        // Set up 2D rendering for menu
+        // Render menu (console output for headless demo)
+        mainMenu.render();
+        
+        // Set up 2D rendering for menu (placeholder for actual UI)
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
@@ -438,8 +443,8 @@ public class Graphics {
         glPushMatrix();
         glLoadIdentity();
         
-        // Render menu text (placeholder)
-        System.out.println("MAIN MENU: Don't Look Back - Press any key to start");
+        // In a full implementation, render menu UI elements here
+        // For now, we just output to console
         
         // Restore matrices
         glPopMatrix();
