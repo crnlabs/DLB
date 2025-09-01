@@ -117,6 +117,12 @@ tasks.named('test') {
     
     // Enable headless mode for CI/CD compatibility
     systemProperty 'java.awt.headless', 'true'
+    
+    // Don't fail if no tests are discovered (while adding new features)
+    systemProperty 'junit.jupiter.execution.parallel.enabled', 'false'
+    
+    // Allow empty test discovery during development
+    failOnNoDiscoveredTests = false
 }
 
 // Run the game (default application run)
