@@ -545,8 +545,8 @@ public class InventorySystem {
             
             InventoryItem existing = slot.getItem();
             if (existing.canStack(remaining)) {
-                int added = existing.addToStack(remaining.getQuantity());
-                remaining.setQuantity(remaining.getQuantity() - added);
+                int cantAdd = existing.addToStack(remaining.getQuantity()); // Returns amount that COULDN'T be added
+                remaining.setQuantity(cantAdd); // Set remaining to what couldn't be added
                 
                 if (remaining.getQuantity() <= 0) {
                     return null; // Fully stacked

@@ -267,7 +267,7 @@ public class CoreSystemsTest {
         // Should stack together
         assertEquals(10, inventory.countItem("match"));
         
-        // Should be in a single slot
+        // Should be in a single slot (properly stacked)
         InventorySystem.InventoryItem matches = inventory.findItem("match");
         assertNotNull(matches);
         assertEquals(10, matches.getQuantity());

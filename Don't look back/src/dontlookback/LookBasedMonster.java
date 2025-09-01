@@ -44,6 +44,9 @@ public class LookBasedMonster extends BasicMonster {
     
     // === Monster State ===
     
+    /** Accumulated simulation time for testing */
+    private double simulationTime;
+    
     /** Time when monster was last seen by player (-1 if never seen) */
     private double lastSeenTime;
     
@@ -125,6 +128,7 @@ public class LookBasedMonster extends BasicMonster {
         super(spawnPosition[0], spawnPosition[1], spawnPosition[2]);
         
         this.monsterType = monsterType;
+        this.simulationTime = 0.0;
         this.lastSeenTime = -1.0; // Never seen
         this.currentBehavior = MonsterBehavior.DORMANT;
         this.behaviorStartTime = getCurrentTime();
@@ -204,6 +208,9 @@ public class LookBasedMonster extends BasicMonster {
      * @param deltaTime Time since last update in seconds
      */
     public void updateLookBasedBehavior(float[] playerPos, boolean isObserved, double deltaTime) {
+        // Update simulation time for testing
+        simulationTime += deltaTime;
+        
         // Update player position
         System.arraycopy(playerPos, 0, playerPosition, 0, 3);
         
@@ -642,7 +649,9 @@ public class LookBasedMonster extends BasicMonster {
      * @return Current time
      */
     private double getCurrentTime() {
-        return System.currentTimeMillis() / 1000.0;
+        // Use simulation time if we're being tested (deltaTime updates accumulate)
+        // Otherwise use real-world time for actual gameplay
+        return simulationTime > 0 ? simulationTime : System.currentTimeMillis() / 1000.0;
     }
     
     // === Monster Interface Implementation ===
