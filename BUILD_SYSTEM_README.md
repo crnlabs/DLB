@@ -1,11 +1,12 @@
 # Don't Look Back - Modern Build System
 
-This project has been modernized with a Gradle-based build system that supports creating runnable JARs and native executables.
+This project has been completely modernized with a Gradle-based build system using LWJGL 3.3.4 and JBox2D from Maven Central.
 
 ## Build Requirements
 
-- Java 11 or higher
+- Java 11 or higher  
 - Gradle 9.0+ (included via wrapper)
+- **No external dependencies** - everything is downloaded from Maven Central
 
 ## Quick Start
 
