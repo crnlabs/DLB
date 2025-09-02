@@ -1,6 +1,7 @@
+---
 version: 2
 updates:
-  # Enable version updates for GitHub Actions
+  # GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -13,14 +14,20 @@ updates:
     assignees:
       - "Gameaday"
     labels:
-      - "dependency-update"
+      - "dependencies"
+      - "github-actions"
     commit-message:
-      prefix: "⬆️"
+      prefix: "⬆️(deps)"
       include: "scope"
+    groups:
+      actions:
+        patterns:
+          - "actions/*"
+          - "github/*"
 
-  # Enable version updates for Gradle dependencies (if we migrate to Gradle)
+  # Gradle dependencies (primary build system)
   - package-ecosystem: "gradle"
-    directory: "/Don't look back"
+    directory: "/Don't look back/"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -31,33 +38,32 @@ updates:
     assignees:
       - "Gameaday"
     labels:
-      - "dependency-update"
+      - "dependencies"
+      - "java"
     commit-message:
-      prefix: "⬆️"
+      prefix: "⬆️(deps)"
       include: "scope"
+    groups:
+      # Group LWJGL dependencies together since they should be updated in sync
+      lwjgl:
+        patterns:
+          - "org.lwjgl:*"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "org.junit.*:*"
+          - "*junit*"
+      # Group physics engine dependencies
+      physics:
+        patterns:
+          - "org.jbox2d:*"
     ignore:
-      # Ignore major version updates for LWJGL (requires manual testing)
+      # Ignore major version updates for LWJGL (breaking changes require test)
       - dependency-name: "org.lwjgl:*"
         update-types: ["version-update:semver-major"]
-
-  # Enable version updates for Maven dependencies (if we migrate to Maven)
-  - package-ecosystem: "maven"
-    directory: "/Don't look back"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "11:00"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "Gameaday"
-    assignees:
-      - "Gameaday"
-    labels:
-      - "dependency-update"
-    commit-message:
-      prefix: "⬆️"
-      include: "scope"
-    ignore:
-      # Ignore major version updates for LWJGL (requires manual testing)
-      - dependency-name: "org.lwjgl:*"
+      # Ignore major JUnit updates (may require test refactoring)
+      - dependency-name: "org.junit.*:*"
         update-types: ["version-update:semver-major"]
+    # Enable vulnerability alerts for all dependency types
+    allow:
+      - dependency-type: "all"

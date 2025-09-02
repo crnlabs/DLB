@@ -213,6 +213,81 @@ jobs:
         echo "✅ Application startup validation passed"
         echo "✅ All build validation checks completed successfully"
 
+  # Special handling for Dependabot PRs
+  dependabot-validation:
+    runs-on: ubuntu-latest
+    name: Dependabot PR Validation
+    if: github.actor == 'dependabot[bot]'
+    needs: [test, build-validation]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      
+    - name: Dependabot PR Analysis
+      run: |
+        echo "🤖 Dependabot PR detected"
+        echo "PR Title: ${{ github.event.pull_request.title }}"
+        echo "Author: ${{ github.actor }}"
+        
+        # Check if this is a security update
+        if echo "${{ github.event.pull_request.title }}" | grep -i "security\|vulnerability\|cve"; then
+          echo "🔒 Security update detected - high priority review needed"
+          echo "security-update=true" >> $GITHUB_ENV
+        fi
+        
+        # Check if this is a patch/minor update (potentially safe for auto-merge)
+        if echo "${{ github.event.pull_request.title }}" | grep -E "(patch|minor|bump.*from.*[0-9]+\.[0-9]+\.[0-9]+.*to.*[0-9]+\.[0-9]+\.[0-9]+)"; then
+          echo "📦 Patch/minor update detected - potentially safe for auto-merge"
+          echo "safe-update=true" >> $GITHUB_ENV
+        fi
+        
+        # Check for major version updates that need careful review
+        if echo "${{ github.event.pull_request.title }}" | grep -E "major|bump.*from.*[0-9]+\..*to.*[0-9]+\."; then
+          echo "⚠️ Major version update detected - requires manual review"
+          echo "major-update=true" >> $GITHUB_ENV
+        fi
+    
+    - name: Comment on PR with analysis
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const isSecurityUpdate = process.env.security-update === 'true';
+          const isSafeUpdate = process.env.safe-update === 'true';
+          const isMajorUpdate = process.env.major-update === 'true';
+          
+          let comment = `🤖 **Dependabot PR Analysis**\n\n`;
+          
+          if (isSecurityUpdate) {
+            comment += `🔒 **Security Update** - This PR addresses security vulnerabilities and should be prioritized.\n\n`;
+          }
+          
+          if (isSafeUpdate && !isMajorUpdate) {
+            comment += `✅ **Safe Update** - This appears to be a patch/minor update that should be safe to merge after CI passes.\n\n`;
+          }
+          
+          if (isMajorUpdate) {
+            comment += `⚠️ **Major Update** - This is a major version update that may contain breaking changes. Please review carefully.\n\n`;
+          }
+          
+          comment += `**Automated Checks:**\n`;
+          comment += `- ✅ Build validation passed\n`;
+          comment += `- ✅ Test suite passed\n`;
+          comment += `- ✅ Application startup validated\n\n`;
+          
+          comment += `**Review Guidelines:**\n`;
+          comment += `- Check changelog for breaking changes\n`;
+          comment += `- Test graphics/physics functionality if LWJGL/JBox2D updated\n`;
+          comment += `- Verify backward compatibility\n`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
   build:
     runs-on: ubuntu-latest
     name: Build and Package
