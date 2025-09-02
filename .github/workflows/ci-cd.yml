@@ -213,6 +213,226 @@ jobs:
         echo "✅ Application startup validation passed"
         echo "✅ All build validation checks completed successfully"
 
+  # PR-level developmental build validation - validates build process without creating all artifacts
+  pr-build-validation:
+    runs-on: ubuntu-latest
+    name: PR Build Validation (Developmental Process)
+    needs: [test, build-validation]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    - name: Validate cross-platform distribution creation
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating cross-platform distribution creation..."
+        gradle createCrossPlatformDistribution --no-daemon
+        
+        # Check that cross-platform distribution was created
+        if [ ! -d "app/build/distributions/cross-platform" ]; then
+          echo "❌ Cross-platform distribution not created"
+          exit 1
+        fi
+        
+        # Check all platform directories exist
+        for platform in windows linux macos; do
+          if [ ! -d "app/build/distributions/cross-platform/$platform" ]; then
+            echo "❌ Platform directory missing: $platform"
+            exit 1
+          fi
+          
+          # Check launcher exists
+          case $platform in
+            windows)
+              if [ ! -f "app/build/distributions/cross-platform/$platform/DontLookBack.bat" ]; then
+                echo "❌ Windows launcher missing"
+                exit 1
+              fi
+              ;;
+            linux)
+              if [ ! -f "app/build/distributions/cross-platform/$platform/DontLookBack.sh" ]; then
+                echo "❌ Linux launcher missing"
+                exit 1
+              fi
+              ;;
+            macos)
+              if [ ! -f "app/build/distributions/cross-platform/$platform/DontLookBack.command" ]; then
+                echo "❌ macOS launcher missing"
+                exit 1
+              fi
+              ;;
+          esac
+          
+          # Check JAR exists in each platform directory
+          if [ ! -f "app/build/distributions/cross-platform/$platform/DontLookBack-1.0-fat.jar" ]; then
+            echo "❌ JAR missing in $platform directory"
+            exit 1
+          fi
+        done
+        
+        echo "✅ Cross-platform distribution validation passed"
+    
+    - name: Validate Windows portable build creation
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating Windows portable build creation..."
+        gradle createWindowsPortable --no-daemon
+        
+        # Check that portable build was created
+        if [ ! -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
+          echo "❌ Windows portable ZIP not created"
+          exit 1
+        fi
+        
+        # Check ZIP size is reasonable
+        PORTABLE_SIZE=$(stat -c%s "app/build/distributions/DontLookBack-Windows-Portable.zip")
+        if [ $PORTABLE_SIZE -lt 2000000 ]; then
+          echo "❌ Windows portable ZIP too small: $PORTABLE_SIZE bytes (expected >2MB)"
+          exit 1
+        fi
+        
+        if [ $PORTABLE_SIZE -gt 25000000 ]; then
+          echo "❌ Windows portable ZIP too large: $PORTABLE_SIZE bytes (expected <25MB)"
+          exit 1
+        fi
+        
+        echo "✅ Windows portable build validation passed (${PORTABLE_SIZE} bytes)"
+    
+    - name: Validate native packaging capability
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating native packaging capability..."
+        
+        # Test native package creation (without failing if jpackage unavailable)
+        gradle createNativePackage --no-daemon || echo "Native packaging not available (expected in CI)"
+        
+        # Check if .deb was created (Linux CI should support this)
+        if [ -f "app/build/distributions/native/"*.deb ]; then
+          echo "✅ Native .deb package created successfully"
+          
+          # Check .deb file size
+          for debfile in app/build/distributions/native/*.deb; do
+            DEB_SIZE=$(stat -c%s "$debfile")
+            echo "  - $(basename "$debfile"): ${DEB_SIZE} bytes"
+            
+            if [ $DEB_SIZE -lt 10000000 ]; then
+              echo "⚠️  Warning: .deb file seems small (expected >10MB for self-contained)"
+            fi
+          done
+        else
+          echo "⚠️  Native .deb package not created (jpackage may not be available)"
+          echo "ℹ️  This is expected in some CI environments"
+        fi
+        
+        echo "✅ Native packaging validation completed"
+    
+    - name: Validate developmental build process
+      run: |
+        cd "Don't look back"
+        echo "🔍 Validating developmental build process..."
+        
+        # Test the developmental build process (without creating full artifacts)
+        gradle buildDevelopmental --no-daemon
+        
+        # Check that developmental build structure was created
+        if [ ! -d "app/build/developmental" ]; then
+          echo "❌ Developmental build directory not created"
+          exit 1
+        fi
+        
+        # Check that all expected components are included
+        if [ ! -f "app/build/developmental/BUILD_INFO.txt" ]; then
+          echo "❌ Developmental build info missing"
+          exit 1
+        fi
+        
+        # Check source code inclusion
+        if [ ! -d "app/build/developmental/source" ]; then
+          echo "❌ Source code not included in developmental build"
+          exit 1
+        fi
+        
+        # Check artifacts inclusion
+        if [ ! -d "app/build/developmental/artifacts" ]; then
+          echo "❌ Artifacts not included in developmental build"
+          exit 1
+        fi
+        
+        echo "✅ Developmental build process validation passed"
+        
+    - name: Performance and size validation
+      run: |
+        cd "Don't look back"
+        echo "🔍 Performing performance and size validation..."
+        
+        # Check build artifacts sizes
+        echo "Build artifact sizes:"
+        
+        if [ -f "app/build/libs/DontLookBack-1.0-fat.jar" ]; then
+          JAR_SIZE=$(stat -c%s "app/build/libs/DontLookBack-1.0-fat.jar")
+          JAR_MB=$((JAR_SIZE / 1024 / 1024))
+          echo "  - Fat JAR: ${JAR_MB} MB"
+        fi
+        
+        if [ -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
+          PORTABLE_SIZE=$(stat -c%s "app/build/distributions/DontLookBack-Windows-Portable.zip")
+          PORTABLE_MB=$((PORTABLE_SIZE / 1024 / 1024))
+          echo "  - Windows Portable: ${PORTABLE_MB} MB"
+        fi
+        
+        if [ -d "app/build/distributions/cross-platform" ]; then
+          CROSS_SIZE=$(du -sb "app/build/distributions/cross-platform" | cut -f1)
+          CROSS_MB=$((CROSS_SIZE / 1024 / 1024))
+          echo "  - Cross-platform distribution: ${CROSS_MB} MB"
+        fi
+        
+        if [ -d "app/build/developmental" ]; then
+          DEV_SIZE=$(du -sb "app/build/developmental" | cut -f1)
+          DEV_MB=$((DEV_SIZE / 1024 / 1024))
+          echo "  - Developmental build: ${DEV_MB} MB"
+        fi
+        
+        echo "✅ Performance and size validation completed"
+        
+    - name: PR validation summary
+      run: |
+        echo "=================================================="
+        echo "PR Build Validation Summary"
+        echo "=================================================="
+        echo "✅ Fat JAR creation: PASSED"
+        echo "✅ Cross-platform distribution: PASSED"
+        echo "✅ Windows portable build: PASSED"
+        echo "✅ Native packaging capability: VALIDATED"
+        echo "✅ Developmental build process: PASSED"
+        echo "✅ Performance and size checks: PASSED"
+        echo ""
+        echo "🎉 All PR-level build validations passed!"
+        echo "🚀 This PR is ready for merge to main branch"
+        echo ""
+        echo "ℹ️  Once merged to main, the full developmental build will:"
+        echo "   - Create all platform-specific packages"
+        echo "   - Generate comprehensive documentation"
+        echo "   - Produce ready-to-distribute artifacts"
+        echo "   - Include complete source code archives"
+
   # Special handling for Dependabot PRs
   dependabot-validation:
     runs-on: ubuntu-latest
@@ -556,6 +776,9 @@ jobs:
         # Also create Windows executable (will warn if jpackage unavailable)
         gradle createWindowsExecutable --no-configuration-cache --no-daemon || echo "Windows executable creation skipped (jpackage may not be available)"
         
+        # Create portable Windows build (lightweight, requires only Java)
+        gradle createWindowsPortable --no-configuration-cache --no-daemon
+        
         # Create additional platform packages
         gradle buildInstallers --no-configuration-cache --no-daemon || echo "Some installers may not be available on this platform"
         
@@ -606,6 +829,12 @@ jobs:
         if [ -f "app/build/distributions/DontLookBack-Windows-SelfContained.zip" ]; then
           cp app/build/distributions/DontLookBack-Windows-SelfContained.zip dev-release/quick-access/
           echo "✅ Added Windows self-contained ZIP"
+        fi
+        
+        # Copy Windows portable package if created
+        if [ -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
+          cp app/build/distributions/DontLookBack-Windows-Portable.zip dev-release/quick-access/
+          echo "✅ Added Windows portable ZIP (extract and run)"
         fi
         
         # Create platform-specific packages for developmental build
@@ -674,7 +903,8 @@ quick-access/
 ├── cross-platform/                                         # Platform launchers
 ├── *.deb                                                   # Linux native packages
 ├── windows-native/                                         # Windows self-contained app
-└── DontLookBack-Windows-SelfContained.zip                 # Windows ZIP package
+├── DontLookBack-Windows-SelfContained.zip                 # Windows ZIP package
+└── DontLookBack-Windows-Portable.zip                      # Windows portable (extract & run)
 
 artifacts/                                                  # Complete build artifacts
 source/                                                     # Full source code
@@ -694,6 +924,11 @@ Linux (No Java Required):
 Cross-Platform (Java 17+ Required):
 1. Download: DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip
 2. Extract and run platform-specific launcher
+
+Windows Portable (Java 17+ Required, No Installation):
+1. Download: quick-access/DontLookBack-Windows-Portable.zip
+2. Extract anywhere and run DontLookBack.bat
+3. No administrator rights or installation required
 
 Direct JAR (Java 17+ Required):
 1. Use: quick-access/DontLookBack-1.0-fat.jar

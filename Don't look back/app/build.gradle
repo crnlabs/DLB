@@ -365,6 +365,186 @@ task createWindowsExecutable {
     }
 }
 
+// Create portable Windows package that runs directly without installation
+task createWindowsPortable {
+    group = 'distribution'
+    description = 'Create portable Windows package (extract and run, no installation required)'
+    dependsOn fatJar
+    
+    def buildDirPath = layout.buildDirectory.dir('distributions')
+    def jarFilePath = fatJar.archiveFile
+    
+    doLast {
+        def buildDir = buildDirPath.get().asFile
+        buildDir.mkdirs()
+        
+        def jarFile = jarFilePath.get().asFile
+        def appName = 'DontLookBack'
+        def mainClass = 'dontlookback.DontLookBack'
+        def version = '1.0.0'
+        
+        def portableDir = new File(buildDir, 'windows-portable')
+        if (portableDir.exists()) {
+            portableDir.deleteDir()
+        }
+        portableDir.mkdirs()
+        
+        // Create the portable app directory structure
+        def appDir = new File(portableDir, 'DontLookBack-Portable')
+        appDir.mkdirs()
+        
+        // Copy the fat JAR
+        def appJar = new File(appDir, jarFile.name)
+        appJar.bytes = jarFile.bytes
+        
+        // Create a simple launcher batch file
+        def launcherBat = new File(appDir, 'DontLookBack.bat')
+        launcherBat.text = '''@echo off
+title Don't Look Back - Horror Survival Game
+cd /d "%~dp0"
+
+echo ================================================
+echo Don't Look Back - Horror Survival Game
+echo Portable Version (No Installation Required)
+echo ================================================
+echo.
+echo Starting game...
+echo.
+
+REM Check if Java is available
+where java >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    echo ERROR: Java is not installed or not in PATH.
+    echo.
+    echo This portable version requires Java 17 or later.
+    echo Please install Java from: https://adoptium.net/
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit /b 1
+)
+
+REM Run the game with optimal settings
+java -Xmx2048m -Dsun.java2d.opengl=true -jar DontLookBack-1.0-fat.jar
+
+echo.
+echo Game closed. Press any key to exit.
+pause >nul
+'''
+        
+        // Create a PowerShell launcher for modern Windows
+        def launcherPs1 = new File(appDir, 'DontLookBack.ps1')
+        launcherPs1.text = '''# Don't Look Back - PowerShell Launcher
+Write-Host "================================================" -ForegroundColor Cyan
+Write-Host "Don't Look Back - Horror Survival Game" -ForegroundColor Yellow
+Write-Host "Portable Version (No Installation Required)" -ForegroundColor Green
+Write-Host "================================================" -ForegroundColor Cyan
+Write-Host ""
+
+Set-Location $PSScriptRoot
+
+# Check for Java
+$javaVersion = $null
+try {
+    $javaVersion = java -version 2>&1 | Select-String "version"
+    Write-Host "Java found: $($javaVersion -replace '.*"([^"]+)".*', '$1')" -ForegroundColor Green
+} catch {
+    Write-Host "ERROR: Java is not installed or not in PATH." -ForegroundColor Red
+    Write-Host ""
+    Write-Host "This portable version requires Java 17 or later." -ForegroundColor Yellow
+    Write-Host "Please install Java from: https://adoptium.net/" -ForegroundColor Yellow
+    Write-Host ""
+    Read-Host "Press Enter to exit"
+    exit 1
+}
+
+Write-Host "Starting game..." -ForegroundColor Green
+Write-Host ""
+
+# Run the game
+java -Xmx2048m -Dsun.java2d.opengl=true -jar DontLookBack-1.0-fat.jar
+
+Write-Host ""
+Write-Host "Game closed." -ForegroundColor Yellow
+Read-Host "Press Enter to exit"
+'''
+        
+        // Create README for portable version
+        def readmeFile = new File(appDir, 'README-PORTABLE.txt')
+        readmeFile.text = """Don't Look Back - Portable Version
+=================================
+
+This is a portable version that runs directly without installation.
+
+REQUIREMENTS:
+============
+- Java 17 or later installed on your system
+- Windows 7 or later
+- OpenGL 3.3+ compatible graphics card
+- 2GB RAM minimum
+- 100MB disk space
+
+QUICK START:
+===========
+1. Extract this folder anywhere on your computer
+2. Double-click DontLookBack.bat to start the game
+3. No installation or administrator rights required
+
+ALTERNATIVE LAUNCHERS:
+=====================
+- DontLookBack.bat - Traditional batch file launcher
+- DontLookBack.ps1 - Modern PowerShell launcher (may require execution policy change)
+- Direct JAR: java -jar DontLookBack-1.0-fat.jar
+
+JAVA INSTALLATION:
+==================
+If you don't have Java installed:
+1. Visit https://adoptium.net/
+2. Download Java 17 (LTS) or later
+3. Install and restart your computer
+4. Try running the game again
+
+TROUBLESHOOTING:
+===============
+- If the game doesn't start, ensure Java is properly installed
+- For PowerShell script, you may need to run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+- For graphics issues, update your graphics drivers
+- For performance issues, close other applications to free up RAM
+
+PORTABLE FEATURES:
+==================
+- No registry changes
+- No system files modified
+- Can run from USB drive
+- No uninstaller needed (just delete folder)
+- Settings stored in application directory
+
+Version: ${version}
+Build Type: Portable
+Java Requirement: 17+
+
+Contact: https://github.com/crnlabs/DLB/issues
+"""
+        
+        // Create the portable ZIP package
+        def portableZip = new File(buildDir, 'DontLookBack-Windows-Portable.zip')
+        ant.zip(destfile: portableZip.absolutePath) {
+            fileset(dir: appDir.absolutePath)
+        }
+        
+        println "✓ Windows portable package created successfully!"
+        println "  - Location: ${appDir.absolutePath}"
+        println "  - ZIP Package: ${portableZip.name}"
+        println "  - Contents:"
+        appDir.eachFile { file ->
+            println "    - ${file.name}"
+        }
+        println ""
+        println "ℹ️  This portable version requires Java 17+ to be installed but needs no installation itself."
+        println "ℹ️  Users can extract and run DontLookBack.bat directly."
+    }
+}
+
 // Create platform-specific installer packages
 task createInstallerPackages {
     group = 'distribution'
@@ -682,6 +862,14 @@ task buildAll {
             println "Warning: Windows executable creation failed: ${e.message}"
         }
         
+        // Always create portable Windows build (lightweight, no jpackage required)
+        try {
+            println "Creating Windows portable build..."
+            project.tasks.createWindowsPortable.actions.each { action -> action.execute(project.tasks.createWindowsPortable) }
+        } catch (Exception e) {
+            println "Warning: Windows portable build creation failed: ${e.message}"
+        }
+        
         println "✓ Complete build finished successfully!"
     }
 }
@@ -727,6 +915,14 @@ task buildDevelopmental {
             project.tasks.createWindowsExecutable.actions.each { action -> action.execute(project.tasks.createWindowsExecutable) }
         } catch (Exception e) {
             println "Warning: Windows executable creation failed: ${e.message}"
+        }
+        
+        // Create Windows portable build (lightweight alternative)
+        try {
+            println "Creating Windows portable build..."
+            project.tasks.createWindowsPortable.actions.each { action -> action.execute(project.tasks.createWindowsPortable) }
+        } catch (Exception e) {
+            println "Warning: Windows portable build creation failed: ${e.message}"
         }
         
         // Copy all build artifacts
@@ -777,6 +973,14 @@ task buildDevelopmental {
             def destZip = new File(artifactsDir, windowsZip.name)
             destZip.bytes = windowsZip.bytes
             println "✓ Added Windows self-contained ZIP"
+        }
+        
+        // Copy Windows portable ZIP if available
+        def windowsPortableZip = new File(buildDir, 'distributions/DontLookBack-Windows-Portable.zip')
+        if (windowsPortableZip.exists()) {
+            def destPortableZip = new File(artifactsDir, windowsPortableZip.name)
+            destPortableZip.bytes = windowsPortableZip.bytes
+            println "✓ Added Windows portable ZIP (extract and run)"
         }
         
         // Copy documentation
@@ -885,6 +1089,7 @@ artifacts/
 ├── windows-native/                   # Windows self-contained executable
 │   └── DontLookBack/                 # Complete Windows app (no Java required)
 ├── DontLookBack-Windows-SelfContained.zip # Windows ZIP package
+├── DontLookBack-Windows-Portable.zip # Windows portable (extract & run)
 └── javadoc/                          # API documentation
 
 source/
@@ -913,12 +1118,17 @@ Option 2 - Windows Native (No Java Required):
 2. Run DontLookBack.exe directly
 3. No additional software required
 
-Option 3 - Linux Native (No Java Required):
+Option 3 - Windows Portable (Java 17+ Required, No Installation):
+1. Use artifacts/DontLookBack-Windows-Portable.zip
+2. Extract anywhere and run DontLookBack.bat
+3. No administrator rights or installation required
+
+Option 4 - Linux Native (No Java Required):
 1. Use artifacts/native/*.deb
 2. Install with: sudo dpkg -i DontLookBack_1.0.0-1_amd64.deb
 3. Launch from applications menu
 
-Option 4 - Direct JAR:
+Option 5 - Direct JAR:
 1. Use artifacts/DontLookBack-1.0-fat.jar
 2. Run: java -jar DontLookBack-1.0-fat.jar
 
