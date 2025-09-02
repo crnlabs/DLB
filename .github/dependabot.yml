@@ -27,7 +27,7 @@ updates:
 
   # Gradle dependencies (primary build system)
   - package-ecosystem: "gradle"
-    directory: "/Don't look back"
+    directory: "/Don't look back/"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -48,24 +48,15 @@ updates:
       lwjgl:
         patterns:
           - "org.lwjgl:*"
-        update-types:
-          - "minor"
-          - "patch"
       # Group testing dependencies
       testing:
         patterns:
           - "org.junit.*:*"
           - "*junit*"
-        update-types:
-          - "minor"
-          - "patch"
       # Group physics engine dependencies
       physics:
         patterns:
           - "org.jbox2d:*"
-        update-types:
-          - "minor"
-          - "patch"
     ignore:
       # Ignore major version updates for LWJGL (breaking changes require test)
       - dependency-name: "org.lwjgl:*"
@@ -73,9 +64,6 @@ updates:
       # Ignore major JUnit updates (may require test refactoring)
       - dependency-name: "org.junit.*:*"
         update-types: ["version-update:semver-major"]
-    # Enable vulnerability alerts and auto-security updates
+    # Enable vulnerability alerts for all dependency types
     allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
-    # Version catalog support for Gradle
-    versioning-strategy: increase
+      - dependency-type: "all"
