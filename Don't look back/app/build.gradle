@@ -850,14 +850,14 @@ task buildAll {
         // Try to create native packages without failing the build
         try {
             println "Attempting to create native packages..."
-            project.tasks.createNativePackage.actions.each { action -> action.execute(project.tasks.createNativePackage) }
+            tasks.createNativePackage.actions.each { action -> action.execute(tasks.createNativePackage) }
         } catch (Exception e) {
             println "Warning: Native package creation failed: ${e.message}"
         }
         
         try {
             println "Attempting to create Windows executable..."
-            project.tasks.createWindowsExecutable.actions.each { action -> action.execute(project.tasks.createWindowsExecutable) }
+            tasks.createWindowsExecutable.actions.each { action -> action.execute(tasks.createWindowsExecutable) }
         } catch (Exception e) {
             println "Warning: Windows executable creation failed: ${e.message}"
         }
@@ -865,7 +865,7 @@ task buildAll {
         // Always create portable Windows build (lightweight, no jpackage required)
         try {
             println "Creating Windows portable build..."
-            project.tasks.createWindowsPortable.actions.each { action -> action.execute(project.tasks.createWindowsPortable) }
+            tasks.createWindowsPortable.actions.each { action -> action.execute(tasks.createWindowsPortable) }
         } catch (Exception e) {
             println "Warning: Windows portable build creation failed: ${e.message}"
         }
@@ -894,8 +894,14 @@ task buildDevelopmental {
     description = 'Create developmental build with source code, all native packages, and cross-platform support'
     dependsOn fatJar, createCrossPlatformDistribution, javadoc
     
+    // Capture project references at configuration time for configuration cache compatibility
+    def buildDirPath = layout.buildDirectory
+    def fatJarPath = tasks.fatJar.archiveFile
+    def projectRootDir = project.rootDir
+    def projectDir = project.projectDir
+    
     doLast {
-        def buildDir = project.layout.buildDirectory.get().asFile
+        def buildDir = buildDirPath.get().asFile
         def devBuildDir = new File(buildDir, 'developmental')
         devBuildDir.mkdirs()
         
@@ -904,7 +910,7 @@ task buildDevelopmental {
         // Try to run native package creation (don't fail if it doesn't work)
         try {
             println "Attempting to create native package..."
-            project.tasks.createNativePackage.actions.each { action -> action.execute(project.tasks.createNativePackage) }
+            tasks.createNativePackage.actions.each { action -> action.execute(tasks.createNativePackage) }
         } catch (Exception e) {
             println "Warning: Native package creation failed: ${e.message}"
         }
@@ -912,7 +918,7 @@ task buildDevelopmental {
         // Try to run Windows executable creation (don't fail if it doesn't work)
         try {
             println "Attempting to create Windows executable..."
-            project.tasks.createWindowsExecutable.actions.each { action -> action.execute(project.tasks.createWindowsExecutable) }
+            tasks.createWindowsExecutable.actions.each { action -> action.execute(tasks.createWindowsExecutable) }
         } catch (Exception e) {
             println "Warning: Windows executable creation failed: ${e.message}"
         }
@@ -920,7 +926,7 @@ task buildDevelopmental {
         // Create Windows portable build (lightweight alternative)
         try {
             println "Creating Windows portable build..."
-            project.tasks.createWindowsPortable.actions.each { action -> action.execute(project.tasks.createWindowsPortable) }
+            tasks.createWindowsPortable.actions.each { action -> action.execute(tasks.createWindowsPortable) }
         } catch (Exception e) {
             println "Warning: Windows portable build creation failed: ${e.message}"
         }
@@ -930,7 +936,7 @@ task buildDevelopmental {
         artifactsDir.mkdirs()
         
         // Copy fat JAR
-        def fatJarFile = project.tasks.fatJar.archiveFile.get().asFile
+        def fatJarFile = fatJarPath.get().asFile
         if (fatJarFile.exists()) {
             def destJar = new File(artifactsDir, fatJarFile.name)
             destJar.bytes = fatJarFile.bytes
@@ -998,7 +1004,7 @@ task buildDevelopmental {
         sourceDir.mkdirs()
         
         // Copy main source code
-        def mainSrcDir = new File(project.rootDir, 'src')
+        def mainSrcDir = new File(projectRootDir, 'src')
         if (mainSrcDir.exists()) {
             def destSrc = new File(sourceDir, 'src')
             ant.copy(todir: destSrc.absolutePath) {
@@ -1008,7 +1014,7 @@ task buildDevelopmental {
         }
         
         // Copy test source code
-        def testSrcDir = new File(project.projectDir, 'src/test/java')
+        def testSrcDir = new File(projectDir, 'src/test/java')
         if (testSrcDir.exists()) {
             def destTestSrc = new File(sourceDir, 'test')
             ant.copy(todir: destTestSrc.absolutePath) {
@@ -1022,7 +1028,7 @@ task buildDevelopmental {
         buildConfigDir.mkdirs()
         
         // Copy build.gradle
-        def buildGradleFile = new File(project.projectDir, 'build.gradle')
+        def buildGradleFile = new File(projectDir, 'build.gradle')
         if (buildGradleFile.exists()) {
             def destBuildGradle = new File(buildConfigDir, 'build.gradle')
             destBuildGradle.text = buildGradleFile.text
@@ -1030,28 +1036,28 @@ task buildDevelopmental {
         }
         
         // Copy settings.gradle
-        def settingsGradleFile = new File(project.rootDir, 'settings.gradle')
+        def settingsGradleFile = new File(projectRootDir, 'settings.gradle')
         if (settingsGradleFile.exists()) {
             def destSettingsGradle = new File(buildConfigDir, 'settings.gradle')
             destSettingsGradle.text = settingsGradleFile.text
         }
         
         // Copy gradle.properties
-        def gradlePropsFile = new File(project.rootDir, 'gradle.properties')
+        def gradlePropsFile = new File(projectRootDir, 'gradle.properties')
         if (gradlePropsFile.exists()) {
             def destGradleProps = new File(buildConfigDir, 'gradle.properties')
             destGradleProps.text = gradlePropsFile.text
         }
         
         // Copy version catalog if it exists
-        def versionCatalogFile = new File(project.rootDir, 'gradle/libs.versions.toml')
+        def versionCatalogFile = new File(projectRootDir, 'gradle/libs.versions.toml')
         if (versionCatalogFile.exists()) {
             def destVersionCatalog = new File(buildConfigDir, 'libs.versions.toml')
             destVersionCatalog.text = versionCatalogFile.text
         }
         
         // Copy resources
-        def resDir = new File(project.rootDir, 'res')
+        def resDir = new File(projectRootDir, 'res')
         if (resDir.exists()) {
             def destRes = new File(sourceDir, 'res')
             ant.copy(todir: destRes.absolutePath) {
