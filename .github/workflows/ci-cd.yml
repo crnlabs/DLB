@@ -317,16 +317,16 @@ jobs:
       run: |
         cd "Don't look back"
         # Build everything including native packages
-        gradle buildAll --no-daemon
+        gradle buildAll --no-configuration-cache --no-daemon
         
     - name: Create platform-specific distributions
       run: |
         cd "Don't look back"
         # Create native packages for Linux (current CI platform)
-        gradle createNativePackage --no-daemon
+        gradle createNativePackage --no-configuration-cache --no-daemon
         
         # Create installer packages for Linux
-        gradle buildInstallers --no-daemon || echo "Some installer types may not be available on this platform"
+        gradle buildInstallers --no-configuration-cache --no-daemon || echo "Some installer types may not be available on this platform"
         
     - name: Organize release packages
       run: |
@@ -518,6 +518,255 @@ jobs:
           "Don't look back/build/reports/**"
         retention-days: 14
 
+  # Developmental build job - triggered on successful PR merge to main
+  developmental-build:
+    runs-on: ubuntu-latest
+    name: Developmental Build
+    needs: [test, build-validation, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+        
+    - name: Create developmental build with all platforms
+      run: |
+        cd "Don't look back"
+        echo "🚀 Creating developmental build..."
+        
+        # Create comprehensive developmental build including source code
+        gradle buildDevelopmental --no-configuration-cache --no-daemon
+        
+        # Also create Windows executable (will warn if jpackage unavailable)
+        gradle createWindowsExecutable --no-configuration-cache --no-daemon || echo "Windows executable creation skipped (jpackage may not be available)"
+        
+        # Create additional platform packages
+        gradle buildInstallers --no-configuration-cache --no-daemon || echo "Some installers may not be available on this platform"
+        
+    - name: Organize developmental release packages
+      run: |
+        cd "Don't look back"
+        
+        # Create release directory for developmental build
+        mkdir -p dev-release
+        BUILD_NUMBER="${{ github.run_number }}"
+        COMMIT_SHA="${{ github.sha }}"
+        SHORT_SHA="${COMMIT_SHA:0:7}"
+        
+        echo "📦 Organizing developmental build artifacts..."
+        
+        # Copy the comprehensive developmental build
+        if [ -d "app/build/developmental" ]; then
+          cp -r app/build/developmental/* dev-release/
+          echo "✅ Added comprehensive developmental build"
+        fi
+        
+        # Copy individual artifacts for easier access
+        mkdir -p dev-release/quick-access
+        
+        # Copy fat JAR for quick access
+        if [ -f "app/build/libs/DontLookBack-1.0-fat.jar" ]; then
+          cp app/build/libs/DontLookBack-1.0-fat.jar dev-release/quick-access/
+          echo "✅ Added fat JAR to quick access"
+        fi
+        
+        # Copy cross-platform distributions if available
+        if [ -d "app/build/distributions/cross-platform" ]; then
+          cp -r app/build/distributions/cross-platform dev-release/quick-access/
+          echo "✅ Added cross-platform distribution to quick access"
+        fi
+        
+        # Copy native packages
+        if [ -d "app/build/distributions/native" ]; then
+          cp -r app/build/distributions/native/* dev-release/quick-access/ 2>/dev/null || echo "No native packages found"
+        fi
+        
+        # Copy Windows native if available
+        if [ -d "app/build/distributions/windows-native" ]; then
+          cp -r app/build/distributions/windows-native dev-release/quick-access/ 2>/dev/null || echo "No Windows native packages found"
+        fi
+        
+        # Copy Windows ZIP if created
+        if [ -f "app/build/distributions/DontLookBack-Windows-SelfContained.zip" ]; then
+          cp app/build/distributions/DontLookBack-Windows-SelfContained.zip dev-release/quick-access/
+          echo "✅ Added Windows self-contained ZIP"
+        fi
+        
+        # Create platform-specific packages for developmental build
+        
+        # Windows developmental package
+        if [ -d "dev-release/artifacts/cross-platform/windows" ] || [ -d "dev-release/quick-access/windows-native" ]; then
+          echo "Creating Windows developmental package..."
+          mkdir -p dev-release/platform-packages
+          
+          # Use Windows native if available, otherwise cross-platform
+          if [ -d "dev-release/quick-access/windows-native" ]; then
+            zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip" dev-release/quick-access/windows-native/ dev-release/source/ 2>/dev/null || echo "Windows native package creation failed"
+          fi
+          
+          if [ -d "dev-release/artifacts/cross-platform/windows" ]; then
+            zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Windows-CrossPlatform.zip" dev-release/artifacts/cross-platform/windows/ dev-release/source/ 2>/dev/null || echo "Windows cross-platform package creation failed"
+          fi
+        fi
+        
+        # Linux developmental package
+        if [ -d "dev-release/artifacts/cross-platform/linux" ] || [ -f "dev-release/quick-access/"*.deb ]; then
+          echo "Creating Linux developmental package..."
+          mkdir -p dev-release/platform-packages
+          
+          # Create comprehensive Linux package
+          tar -czf "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz" \
+            -C dev-release artifacts/cross-platform/linux/ source/ quick-access/*.deb 2>/dev/null || \
+            tar -czf "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz" \
+            -C dev-release artifacts/cross-platform/linux/ source/ 2>/dev/null || \
+            echo "Linux package creation failed"
+        fi
+        
+        # Cross-platform developmental package (includes all platforms)
+        echo "Creating cross-platform developmental package..."
+        mkdir -p dev-release/platform-packages
+        zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip" \
+          dev-release/artifacts/ dev-release/source/ dev-release/quick-access/ 2>/dev/null || \
+          echo "Cross-platform package creation failed"
+        
+        # Create developmental build manifest
+        cat > dev-release/DEVELOPMENTAL_BUILD_MANIFEST.txt << EOF
+Don't Look Back - Developmental Build ${BUILD_NUMBER}
+================================================
+
+Build Information:
+- Build Number: ${BUILD_NUMBER}
+- Commit: ${COMMIT_SHA}
+- Short SHA: ${SHORT_SHA}
+- Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+- Triggered by: Successful merge to main branch
+- Branch: ${{ github.ref_name }}
+- Java Version: $(java -version 2>&1 | head -1)
+- Gradle Version: $(cd "." && gradle --version | grep "Gradle" | head -1)
+
+Package Contents:
+================
+
+platform-packages/
+├── DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip       # Windows .exe (no Java required)
+├── DontLookBack-dev${BUILD_NUMBER}-Windows-CrossPlatform.zip # Windows .bat + JAR
+├── DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz             # Linux .sh + .deb packages
+└── DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip # All platforms + source
+
+quick-access/
+├── DontLookBack-1.0-fat.jar                                # Direct JAR execution
+├── cross-platform/                                         # Platform launchers
+├── *.deb                                                   # Linux native packages
+├── windows-native/                                         # Windows self-contained app
+└── DontLookBack-Windows-SelfContained.zip                 # Windows ZIP package
+
+artifacts/                                                  # Complete build artifacts
+source/                                                     # Full source code
+BUILD_INFO.txt                                             # Detailed build information
+
+Installation Quick Start:
+========================
+
+Windows (No Java Required):
+1. Download: DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip
+2. Extract and run DontLookBack.exe
+
+Linux (No Java Required):
+1. Download: DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz
+2. Extract and install: sudo dpkg -i *.deb
+
+Cross-Platform (Java 17+ Required):
+1. Download: DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip
+2. Extract and run platform-specific launcher
+
+Direct JAR (Java 17+ Required):
+1. Use: quick-access/DontLookBack-1.0-fat.jar
+2. Run: java -jar DontLookBack-1.0-fat.jar
+
+Developer Notes:
+===============
+- This is a developmental build containing the latest features
+- Source code is included for debugging and development
+- Native packages eliminate Java installation requirements
+- Cross-platform version maintains compatibility across systems
+
+Report Issues: https://github.com/crnlabs/DLB/issues
+EOF
+        
+        echo "📋 Created developmental build manifest"
+        
+        # List all created packages
+        echo ""
+        echo "📦 Developmental build packages created:"
+        find dev-release -name "*.zip" -o -name "*.tar.gz" | sort | while read file; do
+          size=$(du -h "$file" | cut -f1)
+          echo "  📄 $(basename "$file") (${size})"
+        done
+        
+        echo ""
+        echo "🎉 Developmental build completed successfully!"
+        
+    - name: Upload Developmental Build - Windows Native
+      uses: actions/upload-artifact@v4
+      with:
+        name: dont-look-back-dev-${{ github.run_number }}-windows-native
+        path: |
+          "Don't look back/dev-release/platform-packages/*Windows-Native*"
+          "Don't look back/dev-release/quick-access/windows-native/"
+          "Don't look back/dev-release/quick-access/DontLookBack-Windows-SelfContained.zip"
+        retention-days: 90
+        
+    - name: Upload Developmental Build - Linux Native
+      uses: actions/upload-artifact@v4
+      with:
+        name: dont-look-back-dev-${{ github.run_number }}-linux-native
+        path: |
+          "Don't look back/dev-release/platform-packages/*Linux*"
+          "Don't look back/dev-release/quick-access/*.deb"
+        retention-days: 90
+        
+    - name: Upload Developmental Build - Cross-Platform Complete
+      uses: actions/upload-artifact@v4
+      with:
+        name: dont-look-back-dev-${{ github.run_number }}-crossplatform-complete
+        path: |
+          "Don't look back/dev-release/platform-packages/*CrossPlatform-Complete*"
+          "Don't look back/dev-release/artifacts/"
+          "Don't look back/dev-release/source/"
+        retention-days: 90
+        
+    - name: Upload Developmental Build - Quick Access
+      uses: actions/upload-artifact@v4
+      with:
+        name: dont-look-back-dev-${{ github.run_number }}-quick-access
+        path: |
+          "Don't look back/dev-release/quick-access/"
+          "Don't look back/dev-release/DEVELOPMENTAL_BUILD_MANIFEST.txt"
+        retention-days: 90
+        
+    - name: Upload Complete Developmental Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: dont-look-back-dev-${{ github.run_number }}-complete
+        path: "Don't look back/dev-release/"
+        retention-days: 90
+
   security-scan:
     runs-on: ubuntu-latest
     name: Security Scan
@@ -617,7 +866,7 @@ jobs:
   notification:
     runs-on: ubuntu-latest
     name: Build Notification
-    needs: [test, build-validation, build, security-scan]
+    needs: [test, build-validation, build, security-scan, developmental-build]
     if: always()
     
     steps:
@@ -628,13 +877,54 @@ jobs:
         echo "Build Validation Status: ${{ needs.build-validation.result }}"
         echo "Build Status: ${{ needs.build.result }}"
         echo "Security Scan Status: ${{ needs.security-scan.result }}"
+        echo "Developmental Build Status: ${{ needs.developmental-build.result }}"
         echo "Commit: ${{ github.sha }}"
         echo "Branch: ${{ github.ref_name }}"
         echo "Build Number: ${{ github.run_number }}"
         
-        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build-validation.result }}" == "success" && "${{ needs.build.result }}" == "success" ]]; then
-          echo "✅ Build completed successfully!"
+        # Check if this was a main branch push (developmental build trigger)
+        if [[ "${{ github.ref }}" == "refs/heads/main" && "${{ github.event_name }}" == "push" ]]; then
+          echo ""
+          echo "🚀 DEVELOPMENTAL BUILD TRIGGERED"
+          echo "This build was triggered by a successful merge to the main branch."
+          echo "Developmental artifacts include:"
+          echo "  - Windows .exe (no Java required)"
+          echo "  - Linux .deb packages"
+          echo "  - Cross-platform JAR"
+          echo "  - Complete source code"
+          echo "  - API documentation"
+          echo ""
+        fi
+        
+        # Determine overall build status
+        CORE_SUCCESS=true
+        DEV_SUCCESS=true
+        
+        if [[ "${{ needs.test.result }}" != "success" || "${{ needs.build-validation.result }}" != "success" || "${{ needs.build.result }}" != "success" ]]; then
+          CORE_SUCCESS=false
+        fi
+        
+        if [[ "${{ needs.developmental-build.result }}" != "success" && "${{ needs.developmental-build.result }}" != "skipped" ]]; then
+          DEV_SUCCESS=false
+        fi
+        
+        if [[ "$CORE_SUCCESS" == "true" ]]; then
+          echo "✅ Core build completed successfully!"
+          
+          if [[ "${{ needs.developmental-build.result }}" == "success" ]]; then
+            echo "✅ Developmental build completed successfully!"
+            echo ""
+            echo "📦 Available Artifacts:"
+            echo "  - Regular build artifacts (JAR, packages, docs)"
+            echo "  - Developmental build with source code"
+            echo "  - Platform-specific native packages"
+            echo "  - Windows self-contained executable"
+          elif [[ "${{ needs.developmental-build.result }}" == "skipped" ]]; then
+            echo "ℹ️  Developmental build was skipped (not main branch)"
+          else
+            echo "⚠️  Developmental build encountered issues but core build succeeded"
+          fi
         else
-          echo "❌ Build failed!"
+          echo "❌ Core build failed!"
           exit 1
         fi
