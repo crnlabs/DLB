@@ -294,11 +294,13 @@ jobs:
       run: |
         cd "Don't look back"
         echo "🔍 Validating Windows portable build creation..."
+        
+        # Test lightweight portable build
         gradle createWindowsPortable --no-daemon
         
         # Check that portable build was created
         if [ ! -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
-          echo "❌ Windows portable ZIP not created"
+          echo "❌ Windows portable ZIP (lightweight) not created"
           exit 1
         fi
         
@@ -314,7 +316,29 @@ jobs:
           exit 1
         fi
         
-        echo "✅ Windows portable build validation passed (${PORTABLE_SIZE} bytes)"
+        echo "✅ Windows portable build (lightweight) validation passed (${PORTABLE_SIZE} bytes)"
+        
+        # Test self-contained portable build
+        echo "🔍 Validating Windows self-contained portable build creation..."
+        gradle createWindowsPortableSelfContained --no-daemon || echo "Self-contained portable build may not be available in CI"
+        
+        # Check if self-contained portable build was created
+        if [ -f "app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip" ]; then
+          SELFCONTAINED_SIZE=$(stat -c%s "app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip")
+          SELFCONTAINED_MB=$((SELFCONTAINED_SIZE / 1024 / 1024))
+          echo "✅ Windows self-contained portable build created successfully (${SELFCONTAINED_MB} MB)"
+          
+          if [ $SELFCONTAINED_SIZE -lt 30000000 ]; then
+            echo "⚠️  Warning: Self-contained portable ZIP seems small (expected >30MB with embedded JRE)"
+          fi
+          
+          if [ $SELFCONTAINED_SIZE -gt 200000000 ]; then
+            echo "⚠️  Warning: Self-contained portable ZIP seems large (expected <200MB)"
+          fi
+        else
+          echo "⚠️  Self-contained portable build not created (jpackage may not be available in CI)"
+          echo "ℹ️  This is expected in some CI environments, will be available in developmental builds"
+        fi
     
     - name: Validate native packaging capability
       run: |
@@ -776,8 +800,9 @@ jobs:
         # Also create Windows executable (will warn if jpackage unavailable)
         gradle createWindowsExecutable --no-configuration-cache --no-daemon || echo "Windows executable creation skipped (jpackage may not be available)"
         
-        # Create portable Windows build (lightweight, requires only Java)
+        # Create portable Windows build (both lightweight and self-contained)
         gradle createWindowsPortable --no-configuration-cache --no-daemon
+        gradle createWindowsPortableSelfContained --no-configuration-cache --no-daemon || echo "Self-contained portable build skipped (jpackage may not be available)"
         
         # Create additional platform packages
         gradle buildInstallers --no-configuration-cache --no-daemon || echo "Some installers may not be available on this platform"
@@ -831,10 +856,15 @@ jobs:
           echo "✅ Added Windows self-contained ZIP"
         fi
         
-        # Copy Windows portable package if created
+        # Copy Windows portable packages if created
         if [ -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
           cp app/build/distributions/DontLookBack-Windows-Portable.zip dev-release/quick-access/
-          echo "✅ Added Windows portable ZIP (extract and run)"
+          echo "✅ Added Windows portable ZIP (lightweight, Java required)"
+        fi
+        
+        if [ -f "app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip" ]; then
+          cp app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip dev-release/quick-access/
+          echo "✅ Added Windows self-contained portable ZIP (no Java required)"
         fi
         
         # Create platform-specific packages for developmental build
@@ -904,7 +934,8 @@ quick-access/
 ├── *.deb                                                   # Linux native packages
 ├── windows-native/                                         # Windows self-contained app
 ├── DontLookBack-Windows-SelfContained.zip                 # Windows ZIP package
-└── DontLookBack-Windows-Portable.zip                      # Windows portable (extract & run)
+├── DontLookBack-Windows-Portable.zip                      # Windows portable (Java 17+ required)
+└── DontLookBack-Windows-Portable-SelfContained.zip        # Windows portable (no Java required)
 
 artifacts/                                                  # Complete build artifacts
 source/                                                     # Full source code
@@ -928,7 +959,12 @@ Cross-Platform (Java 17+ Required):
 Windows Portable (Java 17+ Required, No Installation):
 1. Download: quick-access/DontLookBack-Windows-Portable.zip
 2. Extract anywhere and run DontLookBack.bat
-3. No administrator rights or installation required
+3. No administrator rights or installation required (but Java 17+ must be installed)
+
+Windows Portable Self-Contained (No Java Required):
+1. Download: quick-access/DontLookBack-Windows-Portable-SelfContained.zip
+2. Extract anywhere and run DontLookBack.bat
+3. No Java installation, administrator rights, or installation required
 
 Direct JAR (Java 17+ Required):
 1. Use: quick-access/DontLookBack-1.0-fat.jar
