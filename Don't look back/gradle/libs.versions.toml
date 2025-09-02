@@ -7,7 +7,7 @@ lwjgl = "3.3.6"
 jbox2d = "2.2.1.1"
 
 # Testing framework
-junit-jupiter = "5.12.1"
+junit-jupiter = "5.13.4"
 
 # Build tools and plugins
 gradle-min = "8.0"
