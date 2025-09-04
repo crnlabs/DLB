@@ -53,6 +53,12 @@ public class ModernSplash {
     /** Text position for animated effects */
     private float textY = 0.0f;
     
+    /** Whether running in headless mode (no graphics) */
+    private boolean headlessMode = false;
+    
+    /** Last output time for headless rendering to avoid spam */
+    private double lastHeadlessOutputTime = -1.0;
+    
     
     // === Content Configuration ===
     
@@ -81,7 +87,22 @@ public class ModernSplash {
      * Initialize splash screen
      */
     public ModernSplash() {
-        System.out.println("Initializing modern splash screen...");
+        this(false); // Default to non-headless mode for backward compatibility
+    }
+    
+    /**
+     * Initialize splash screen with headless mode option
+     * @param headlessMode If true, skip all graphics operations
+     */
+    public ModernSplash(boolean headlessMode) {
+        this.headlessMode = headlessMode;
+        
+        if (headlessMode) {
+            System.out.println("Initializing modern splash screen (headless mode)...");
+        } else {
+            System.out.println("Initializing modern splash screen...");
+        }
+        
         currentTime = 0.0;
         isComplete = false;
         currentAlpha = 0.0f;
@@ -135,6 +156,12 @@ public class ModernSplash {
             return;
         }
         
+        // In headless mode, just output text to console
+        if (headlessMode) {
+            renderHeadlessOutput();
+            return;
+        }
+        
         // Clear to black background
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -171,6 +198,39 @@ public class ModernSplash {
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
+    }
+    
+    /**
+     * Render splash content to console for headless mode
+     */
+    private void renderHeadlessOutput() {
+        // Only output once per phase to avoid spam
+        double phaseTime = currentTime;
+        
+        // Check if we're in a new phase that needs output
+        boolean shouldOutput = false;
+        String message = "";
+        
+        if (phaseTime < TITLE_DISPLAY_TIME + FADE_IN_TIME && lastHeadlessOutputTime < 0) {
+            shouldOutput = true;
+            message = "🎮 " + GAME_TITLE + " - Horror Survival Game";
+            lastHeadlessOutputTime = 0.0;
+        } else if (phaseTime >= TITLE_DISPLAY_TIME + FADE_IN_TIME && 
+                   phaseTime < TITLE_DISPLAY_TIME + CREDITS_DISPLAY_TIME + FADE_IN_TIME &&
+                   lastHeadlessOutputTime < TITLE_DISPLAY_TIME) {
+            shouldOutput = true;
+            message = "👥 A Game By: Game A Day Studios";
+            lastHeadlessOutputTime = TITLE_DISPLAY_TIME;
+        } else if (phaseTime >= TITLE_DISPLAY_TIME + CREDITS_DISPLAY_TIME + FADE_IN_TIME &&
+                   lastHeadlessOutputTime < TITLE_DISPLAY_TIME + CREDITS_DISPLAY_TIME) {
+            shouldOutput = true;
+            message = "⚡ Initializing Game Systems...";
+            lastHeadlessOutputTime = TITLE_DISPLAY_TIME + CREDITS_DISPLAY_TIME;
+        }
+        
+        if (shouldOutput) {
+            System.out.println(message);
+        }
     }
     
     
