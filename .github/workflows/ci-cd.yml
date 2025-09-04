@@ -730,89 +730,89 @@ jobs:
           pause
           EOF
         
-        # Make shell script executable
-        chmod +x release/run.sh
+          # Make shell script executable
+          chmod +x release/run.sh
         
-        # Create release info for CI builds
-        cat > release/BUILD_INFO.txt << EOF
-        Don't Look Back - Development Build
-        ==================================
-        
-        Build Information:
-        - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        - Git Commit: ${{ github.sha }}
-        - Branch: ${{ github.ref_name }}
-        - Build Number: ${{ github.run_number }}
-        - Build System: Gradle with modern dependencies
-        
-        System Requirements:
-        - Java 17 or higher
-        - OpenGL 2.1 compatible graphics card
-        - 512MB RAM minimum
-        - 100MB disk space
-        
-        Installation:
-        1. Extract all files to a directory
-        2. Run run.sh (Linux/Mac) or run.bat (Windows)
-        
-        Files:
-        - DontLookBack-1.0-fat.jar - Main game executable (self-contained)
-        - app.jar - Regular JAR file (backup)
-        - res/ - Game resources and assets
-        - javadoc/ - API documentation
-        - run.sh - Linux/Mac startup script
-        - run.bat - Windows startup script
-        
-        Technical Notes:
-        - Uses modern LWJGL 3.3.4 with embedded native libraries
-        - JBox2D 2.2.1.1 physics engine included
-        - All dependencies bundled in fat JAR
-        
-        For more information, visit: https://github.com/crnlabs/DLB
-        EOF
-        
-        # Create platform-specific packages (same as release pipeline)
-        
-        # Windows package
-        zip -r "DontLookBack-build${{ github.run_number }}-Windows.zip" release/
-        
-        # Linux package  
-        tar -czf "DontLookBack-build${{ github.run_number }}-Linux.tar.gz" release/
-        
-        # Cross-platform package
-        zip -r "DontLookBack-build${{ github.run_number }}-CrossPlatform.zip" release/
-        
-        # Legacy-style package for compatibility
-        mkdir -p dist-package
-        cp -r release/* dist-package/
-        
-        # Create legacy README for compatibility
-        cat > dist-package/README.txt << EOF
-        Don't Look Back - Distribution Package
-        =====================================
-        
-        Build Information:
-        - Build Date: $(date)
-        - Git Commit: ${{ github.sha }}
-        - Branch: ${{ github.ref_name }}
-        
-        Contents:
-        - DontLookBack-1.0-fat.jar - Main game JAR file
-        - res/ - Game resources and assets
-        - javadoc/ - API documentation
-        
-        To run the game:
-        java -jar DontLookBack-1.0-fat.jar
-        EOF
-        
-        # Create version info file for legacy compatibility
-        cat > dist-package/VERSION.txt << EOF
-        Version: ${{ github.run_number }}
-        Commit: ${{ github.sha }}
-        Branch: ${{ github.ref_name }}
-        Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        Build Number: ${{ github.run_number }}
-        EOF
+          # Create release info for CI builds
+          cat > release/BUILD_INFO.txt << EOF
+          Don't Look Back - Development Build
+          ==================================
+          
+          Build Information:
+          - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - Git Commit: ${{ github.sha }}
+          - Branch: ${{ github.ref_name }}
+          - Build Number: ${{ github.run_number }}
+          - Build System: Gradle with modern dependencies
+          
+          System Requirements:
+          - Java 17 or higher
+          - OpenGL 2.1 compatible graphics card
+          - 512MB RAM minimum
+          - 100MB disk space
+          
+          Installation:
+          1. Extract all files to a directory
+          2. Run run.sh (Linux/Mac) or run.bat (Windows)
+          
+          Files:
+          - DontLookBack-1.0-fat.jar - Main game executable (self-contained)
+          - app.jar - Regular JAR file (backup)
+          - res/ - Game resources and assets
+          - javadoc/ - API documentation
+          - run.sh - Linux/Mac startup script
+          - run.bat - Windows startup script
+          
+          Technical Notes:
+          - Uses modern LWJGL 3.3.4 with embedded native libraries
+          - JBox2D 2.2.1.1 physics engine included
+          - All dependencies bundled in fat JAR
+          
+          For more information, visit: https://github.com/crnlabs/DLB
+          EOF
+          
+          # Create platform-specific packages (same as release pipeline)
+          
+          # Windows package
+          zip -r "DontLookBack-build${{ github.run_number }}-Windows.zip" release/
+          
+          # Linux package  
+          tar -czf "DontLookBack-build${{ github.run_number }}-Linux.tar.gz" release/
+          
+          # Cross-platform package
+          zip -r "DontLookBack-build${{ github.run_number }}-CrossPlatform.zip" release/
+          
+          # Legacy-style package for compatibility
+          mkdir -p dist-package
+          cp -r release/* dist-package/
+          
+          # Create legacy README for compatibility
+          cat > dist-package/README.txt << EOF
+          Don't Look Back - Distribution Package
+          =====================================
+          
+          Build Information:
+          - Build Date: $(date)
+          - Git Commit: ${{ github.sha }}
+          - Branch: ${{ github.ref_name }}
+          
+          Contents:
+          - DontLookBack-1.0-fat.jar - Main game JAR file
+          - res/ - Game resources and assets
+          - javadoc/ - API documentation
+          
+          To run the game:
+          java -jar DontLookBack-1.0-fat.jar
+          EOF
+          
+          # Create version info file for legacy compatibility
+          cat > dist-package/VERSION.txt << EOF
+          Version: ${{ github.run_number }}
+          Commit: ${{ github.sha }}
+          Branch: ${{ github.ref_name }}
+          Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          Build Number: ${{ github.run_number }}
+          EOF
         
       - name: Upload Native Packages
         uses: actions/upload-artifact@v4
@@ -947,77 +947,77 @@ jobs:
             echo "::notice::Some installers may not be available on this platform"
           fi
         
-    - name: Organize developmental release packages
-      run: |
-        cd "Don't look back"
-        
-        # Create release directory for developmental build
-        mkdir -p dev-release
-        BUILD_NUMBER="${{ github.run_number }}"
-        COMMIT_SHA="${{ github.sha }}"
-        SHORT_SHA="${COMMIT_SHA:0:7}"
-        
-        echo "📦 Organizing developmental build artifacts..."
-        
-        # Copy the comprehensive developmental build
-        if [ -d "app/build/developmental" ]; then
-          cp -r app/build/developmental/* dev-release/
-          echo "✅ Added comprehensive developmental build"
-        fi
-        
-        # Copy individual artifacts for easier access
-        mkdir -p dev-release/quick-access
-        
-        # Copy fat JAR for quick access
-        if [ -f "app/build/libs/DontLookBack-1.0-fat.jar" ]; then
-          cp app/build/libs/DontLookBack-1.0-fat.jar dev-release/quick-access/
-          echo "✅ Added fat JAR to quick access"
-        fi
-        
-        # Copy cross-platform distributions if available
-        if [ -d "app/build/distributions/cross-platform" ]; then
-          cp -r app/build/distributions/cross-platform dev-release/quick-access/
-          echo "✅ Added cross-platform distribution to quick access"
-        fi
-        
-        # Copy native packages
-        if [ -d "app/build/distributions/native" ]; then
-          cp -r app/build/distributions/native/* dev-release/quick-access/ 2>/dev/null || echo "No native packages found"
-        fi
-        
-        # Copy Windows native if available
-        if [ -d "app/build/distributions/windows-native" ]; then
-          cp -r app/build/distributions/windows-native dev-release/quick-access/ 2>/dev/null || echo "No Windows native packages found"
-        fi
-        
-        # Copy Windows ZIP if created
-        if [ -f "app/build/distributions/DontLookBack-Windows-SelfContained.zip" ]; then
-          cp app/build/distributions/DontLookBack-Windows-SelfContained.zip dev-release/quick-access/
-          echo "✅ Added Windows self-contained ZIP"
-        fi
-        
-        # Copy Windows portable packages if created
-        if [ -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
-          cp app/build/distributions/DontLookBack-Windows-Portable.zip dev-release/quick-access/
-          echo "✅ Added Windows portable ZIP (lightweight, Java required)"
-        fi
-        
-        if [ -f "app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip" ]; then
-          cp app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip dev-release/quick-access/
-          echo "✅ Added Windows self-contained portable ZIP (no Java required)"
-        fi
-        
-        # Create platform-specific packages for developmental build
-        
-        # Windows developmental package
-        if [ -d "dev-release/artifacts/cross-platform/windows" ] || [ -d "dev-release/quick-access/windows-native" ]; then
-          echo "Creating Windows developmental package..."
-          mkdir -p dev-release/platform-packages
+      - name: Organize developmental release packages
+        run: |
+          cd "Don't look back"
           
-          # Use Windows native if available, otherwise cross-platform
-          if [ -d "dev-release/quick-access/windows-native" ]; then
-            zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip" dev-release/quick-access/windows-native/ dev-release/source/ 2>/dev/null || echo "Windows native package creation failed"
+          # Create release directory for developmental build
+          mkdir -p dev-release
+          BUILD_NUMBER="${{ github.run_number }}"
+          COMMIT_SHA="${{ github.sha }}"
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+          
+          echo "📦 Organizing developmental build artifacts..."
+          
+          # Copy the comprehensive developmental build
+          if [ -d "app/build/developmental" ]; then
+            cp -r app/build/developmental/* dev-release/
+            echo "✅ Added comprehensive developmental build"
           fi
+          
+          # Copy individual artifacts for easier access
+          mkdir -p dev-release/quick-access
+          
+          # Copy fat JAR for quick access
+          if [ -f "app/build/libs/DontLookBack-1.0-fat.jar" ]; then
+            cp app/build/libs/DontLookBack-1.0-fat.jar dev-release/quick-access/
+            echo "✅ Added fat JAR to quick access"
+          fi
+          
+          # Copy cross-platform distributions if available
+          if [ -d "app/build/distributions/cross-platform" ]; then
+            cp -r app/build/distributions/cross-platform dev-release/quick-access/
+            echo "✅ Added cross-platform distribution to quick access"
+          fi
+          
+          # Copy native packages
+          if [ -d "app/build/distributions/native" ]; then
+            cp -r app/build/distributions/native/* dev-release/quick-access/ 2>/dev/null || echo "No native packages found"
+          fi
+          
+          # Copy Windows native if available
+          if [ -d "app/build/distributions/windows-native" ]; then
+            cp -r app/build/distributions/windows-native dev-release/quick-access/ 2>/dev/null || echo "No Windows native packages found"
+          fi
+          
+          # Copy Windows ZIP if created
+          if [ -f "app/build/distributions/DontLookBack-Windows-SelfContained.zip" ]; then
+            cp app/build/distributions/DontLookBack-Windows-SelfContained.zip dev-release/quick-access/
+            echo "✅ Added Windows self-contained ZIP"
+          fi
+          
+          # Copy Windows portable packages if created
+          if [ -f "app/build/distributions/DontLookBack-Windows-Portable.zip" ]; then
+            cp app/build/distributions/DontLookBack-Windows-Portable.zip dev-release/quick-access/
+            echo "✅ Added Windows portable ZIP (lightweight, Java required)"
+          fi
+          
+          if [ -f "app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip" ]; then
+            cp app/build/distributions/DontLookBack-Windows-Portable-SelfContained.zip dev-release/quick-access/
+            echo "✅ Added Windows self-contained portable ZIP (no Java required)"
+          fi
+          
+          # Create platform-specific packages for developmental build
+          
+          # Windows developmental package
+          if [ -d "dev-release/artifacts/cross-platform/windows" ] || [ -d "dev-release/quick-access/windows-native" ]; then
+            echo "Creating Windows developmental package..."
+            mkdir -p dev-release/platform-packages
+            
+            # Use Windows native if available, otherwise cross-platform
+            if [ -d "dev-release/quick-access/windows-native" ]; then
+              zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip" dev-release/quick-access/windows-native/ dev-release/source/ 2>/dev/null || echo "Windows native package creation failed"
+            fi
           
           if [ -d "dev-release/artifacts/cross-platform/windows" ]; then
             zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Windows-CrossPlatform.zip" dev-release/artifacts/cross-platform/windows/ dev-release/source/ 2>/dev/null || echo "Windows cross-platform package creation failed"
@@ -1189,7 +1189,7 @@ EOF
         uses: actions/checkout@v5
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
