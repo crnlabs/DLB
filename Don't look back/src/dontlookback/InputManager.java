@@ -1,4 +1,4 @@
-package dontlookback.systems;
+package dontlookback;
 
 /**
  * Input Manager for Controller and Keyboard Support

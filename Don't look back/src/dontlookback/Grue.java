@@ -1,7 +1,6 @@
-package dontlookback.entities;
+package dontlookback;
 
 import dontlookback.interfaces.Monster;
-import dontlookback.systems.LightManager;
 
 /**
  * The Grue - Darkness Monster

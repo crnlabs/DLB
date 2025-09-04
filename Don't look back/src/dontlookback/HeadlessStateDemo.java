@@ -1,4 +1,4 @@
-package dontlookback.demo;
+package dontlookback;
 
 /**
  * Headless demonstration of state management system

@@ -1,4 +1,4 @@
-package dontlookback.demo;
+package dontlookback;
 
 /**
  * Player Survival System Demo

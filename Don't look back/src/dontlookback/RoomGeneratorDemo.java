@@ -1,4 +1,4 @@
-package dontlookback.demo;
+package dontlookback;
 
 /**
  * Enhanced demonstration of the room generator system

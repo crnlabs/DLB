@@ -1,8 +1,7 @@
-package dontlookback.systems;
+package dontlookback;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import dontlookback.GameState;
 
 /**
  * Comprehensive State Management System

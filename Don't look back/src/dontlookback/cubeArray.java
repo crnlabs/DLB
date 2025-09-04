@@ -1,6 +1,5 @@
 package dontlookback;
 
-import dontlookback.entities.Cube;
 
 /**
  *

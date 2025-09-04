@@ -1,4 +1,4 @@
-package dontlookback.systems;
+package dontlookback;
 
 /**
  * Player Survival Mechanics for Don't Look Back

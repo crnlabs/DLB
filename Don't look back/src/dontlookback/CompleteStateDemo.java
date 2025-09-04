@@ -1,4 +1,4 @@
-package dontlookback.demo;
+package dontlookback;
 
 /**
  * Complete demonstration of the state management and splash screen system

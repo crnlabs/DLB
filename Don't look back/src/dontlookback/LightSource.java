@@ -1,4 +1,4 @@
-package dontlookback.entities;
+package dontlookback;
 
 import java.awt.Color;
 import dontlookback.interfaces.Light;

@@ -1,4 +1,4 @@
-package dontlookback.entities;
+package dontlookback;
 
 import dontlookback.interfaces.Monster;
 

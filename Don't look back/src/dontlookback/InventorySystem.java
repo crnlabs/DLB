@@ -1,4 +1,4 @@
-package dontlookback.systems;
+package dontlookback;
 
 import java.util.*;
 

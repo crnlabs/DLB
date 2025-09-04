@@ -1,4 +1,4 @@
-package dontlookback.systems;
+package dontlookback;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;

@@ -1,8 +1,6 @@
-package dontlookback.entities;
+package dontlookback;
 
 import dontlookback.interfaces.Human;
-import dontlookback.PlayerProfile;
-import dontlookback.systems.InputManager;
 
 /**
  * Player Character Controller

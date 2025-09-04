@@ -1,4 +1,4 @@
-package dontlookback.entities;
+package dontlookback;
 
 /**
  * Cube object for 3D rendering in Don't Look Back

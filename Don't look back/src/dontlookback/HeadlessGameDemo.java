@@ -1,7 +1,4 @@
-package dontlookback.demo;
-
-import dontlookback.systems.PlayerSurvivalSystem;
-import dontlookback.systems.InventorySystem;
+package dontlookback;
 
 /**
  * Headless "Don't Look Back" Game Systems Demo

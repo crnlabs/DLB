@@ -1,7 +1,5 @@
-package dontlookback.demo;
+package dontlookback;
 
-import dontlookback.entities.Player;
-import dontlookback.entities.BasicMonster;
 
 /**
  * Collision Detection Demonstration

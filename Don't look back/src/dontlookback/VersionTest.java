@@ -1,4 +1,4 @@
-package dontlookback.demo;
+package dontlookback;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
