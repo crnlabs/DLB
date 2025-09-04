@@ -152,12 +152,32 @@ public class ModernSplash {
      * @param windowHeight Current window height
      */
     public void render(int windowWidth, int windowHeight) {
+        render(windowWidth, windowHeight, true);
+    }
+    
+    /**
+     * Render splash screen content with OpenGL context validation
+     * @param windowWidth Current window width
+     * @param windowHeight Current window height
+     * @param openGLContextValid Whether OpenGL context is safe to use
+     */
+    public void render(int windowWidth, int windowHeight, boolean openGLContextValid) {
         if (isComplete || currentAlpha <= 0.0f) {
             return;
         }
         
-        // In headless mode, just output text to console
-        if (headlessMode) {
+        // In headless mode or when OpenGL context is invalid, just output text to console
+        if (headlessMode || !openGLContextValid) {
+            renderHeadlessOutput();
+            return;
+        }
+        
+        // Additional safety check: verify OpenGL context is actually current
+        try {
+            // Test if OpenGL context is actually available by making a safe call
+            glGetError(); // This will throw if no context is current
+        } catch (Exception e) {
+            System.err.println("OpenGL context validation failed, falling back to headless mode: " + e.getMessage());
             renderHeadlessOutput();
             return;
         }
