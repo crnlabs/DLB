@@ -3,9 +3,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop, 'copilot/**', 'feature/**', 'hotfix/**']
+    branches: [master, develop, 'copilot/**', 'feature/**', 'hotfix/**']
   pull_request:
-    branches: [main, develop]
+    branches: [master, develop]
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
@@ -511,9 +511,9 @@ jobs:
           echo "✅ Performance and size checks: PASSED"
           echo ""
           echo "🎉 All PR-level build validations passed!"
-          echo "🚀 This PR is ready for merge to main branch"
+          echo "🚀 This PR is ready for merge to master branch"
           echo ""
-          echo "ℹ️ Once merged to main, the full developmental build will:"
+          echo "ℹ️ Once merged to master, the full developmental build will:"
           echo "   - Create all platform-specific packages"
           echo "   - Generate comprehensive documentation"
           echo "   - Produce ready-to-distribute artifacts"
@@ -885,7 +885,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Developmental Build
     needs: [test, build-validation, build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     timeout-minutes: 90
 
     steps:
@@ -1054,7 +1054,7 @@ Build Information:
 - Commit: ${COMMIT_SHA}
 - Short SHA: ${SHORT_SHA}
 - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-- Triggered by: Successful merge to main branch
+- Triggered by: Successful merge to master branch
 - Branch: ${{ github.ref_name }}
 - Java Version: $(java -version 2>&1 | head -1)
 - Gradle Version: $(cd "." && gradle --version | grep "Gradle" | head -1)
@@ -1206,7 +1206,7 @@ EOF
     runs-on: ubuntu-latest
     name: Deploy Documentation
     needs: [build, build-validation]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     timeout-minutes: 20
     steps:
       - name: Checkout code
@@ -1280,7 +1280,7 @@ EOF
         
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/master'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
@@ -1306,11 +1306,11 @@ EOF
           echo "Branch: ${{ github.ref_name }}"
           echo "Build Number: ${{ github.run_number }}"
 
-          # Check if this was a main branch push (developmental build trigger)
-          if [[ "${{ github.ref }}" == "refs/heads/main" && "${{ github.event_name }}" == "push" ]]; then
+          # Check if this was a master branch push (developmental build trigger)
+          if [[ "${{ github.ref }}" == "refs/heads/master" && "${{ github.event_name }}" == "push" ]]; then
             echo ""
             echo "🚀 DEVELOPMENTAL BUILD TRIGGERED"
-            echo "This build was triggered by a successful merge to the main branch."
+            echo "This build was triggered by a successful merge to the master branch."
             echo "Developmental artifacts include:"
             echo "  - Windows .exe (no Java required)"
             echo "  - Linux .deb packages"
@@ -1344,7 +1344,7 @@ EOF
               echo "  - Platform-specific native packages"
               echo "  - Windows self-contained executable"
             elif [[ "${{ needs.developmental-build.result }}" == "skipped" ]]; then
-              echo "ℹ️ Developmental build was skipped (not main branch)"
+              echo "ℹ️ Developmental build was skipped (not master branch)"
             else
               echo "⚠️ Developmental build encountered issues but core build succeeded"
             fi
