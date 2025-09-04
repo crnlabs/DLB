@@ -1,5 +1,7 @@
 package dontlookback;
 
+import dontlookback.systems.StateManager;
+
 /**
  * Game Configuration Settings
  * 

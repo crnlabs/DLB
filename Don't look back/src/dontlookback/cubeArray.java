@@ -1,5 +1,7 @@
 package dontlookback;
 
+import dontlookback.entities.Cube;
+
 /**
  *
  * @author Carl

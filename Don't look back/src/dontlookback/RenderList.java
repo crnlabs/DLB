@@ -1,5 +1,7 @@
 package dontlookback;
 
+import dontlookback.entities.Objects;
+
 public class RenderList {
 
     protected Objects[] renderList;

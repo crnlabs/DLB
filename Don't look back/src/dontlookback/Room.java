@@ -2,6 +2,7 @@ package dontlookback;
 
 import java.util.ArrayList;
 import java.util.List;
+import dontlookback.entities.Objects;
 
 /**
  * Represents a single room instance in the game world
