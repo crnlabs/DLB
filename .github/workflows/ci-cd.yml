@@ -814,70 +814,71 @@ jobs:
         Build Number: ${{ github.run_number }}
         EOF
         
-    - name: Upload Native Packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: native-packages-${{ github.run_number }}
-        path: |
-          "Don't look back/app/build/distributions/native/*.deb"
-          "Don't look back/app/build/distributions/installers/*.deb"
-          "Don't look back/app/build/distributions/installers/*.rpm"
-        retention-days: 90
-        
-    - name: Upload Cross-Platform Distribution
-      uses: actions/upload-artifact@v4
-      with:
-        name: cross-platform-distribution-${{ github.run_number }}
-        path: |
-          "Don't look back/app/build/distributions/cross-platform/"
-        retention-days: 30
-        
-    - name: Upload JAR artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-jar-${{ github.run_number }}
-        path: |
-          "Don't look back/app/build/libs/*.jar"
-          "Don't look back/build/libs/*.jar"
-          "Don't look back/build/distributions/*.jar"
-        retention-days: 30
-        
-    - name: Upload release packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-packages-${{ github.run_number }}
-        path: |
-          "Don't look back/DontLookBack-build${{ github.run_number }}-*.zip"
-          "Don't look back/DontLookBack-build${{ github.run_number }}-*.tar.gz"
-        retention-days: 90
-        
-    - name: Upload complete distribution (legacy)
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-distribution-${{ github.run_number }}
-        path: "Don't look back/DontLookBack-*.zip"
-        retention-days: 90
-        
-    - name: Upload Javadoc
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-javadoc-${{ github.run_number }}
-        path: |
-          "Don't look back/app/build/docs/javadoc/**"
-          "Don't look back/build/docs/javadoc/**"
-        retention-days: 30
-        
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ github.run_number }}
-        path: |
-          "Don't look back/app/build/test-results/**"
-          "Don't look back/app/build/reports/**"
-          "Don't look back/build/test-results/**"
-          "Don't look back/build/reports/**"
-        retention-days: 14
+      - name: Upload Native Packages
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-packages-${{ github.run_number }}
+          path: |
+            "Don't look back/app/build/distributions/native/*.deb"
+            "Don't look back/app/build/distributions/installers/*.deb"
+            "Don't look back/app/build/distributions/installers/*.rpm"
+          retention-days: 90
+
+      - name: Upload Cross-Platform Distribution
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cross-platform-distribution-${{ github.run_number }}
+          path: |
+            "Don't look back/app/build/distributions/cross-platform/"
+          retention-days: 30
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dont-look-back-jar-${{ github.run_number }}
+          path: |
+            "Don't look back/app/build/libs/*.jar"
+          retention-days: 30
+
+      - name: Upload release packages
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dont-look-back-packages-${{ github.run_number }}
+          path: |
+            "Don't look back/DontLookBack-build${{ github.run_number }}-*.zip"
+            "Don't look back/DontLookBack-build${{ github.run_number }}-*.tar.gz"
+          retention-days: 90
+
+      - name: Upload complete distribution (legacy)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dont-look-back-distribution-${{ github.run_number }}
+          path: "Don't look back/DontLookBack-*.zip"
+          retention-days: 90
+
+      - name: Upload Javadoc
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dont-look-back-javadoc-${{ github.run_number }}
+          path: |
+            "Don't look back/app/build/docs/javadoc/**"
+          retention-days: 30
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ github.run_number }}
+          path: |
+            "Don't look back/app/build/test-results/**"
+            "Don't look back/app/build/reports/**"
+          retention-days: 14
 
   # Developmental build job - triggered on successful PR merge to main
   developmental-build:
@@ -885,44 +886,66 @@ jobs:
     name: Developmental Build
     needs: [test, build-validation, build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+    timeout-minutes: 90
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Cache Gradle dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-        
-    - name: Create developmental build with all platforms
-      run: |
-        cd "Don't look back"
-        echo "🚀 Creating developmental build..."
-        
-        # Create comprehensive developmental build including source code
-        gradle buildDevelopmental --no-configuration-cache --no-daemon
-        
-        # Also create Windows executable (will warn if jpackage unavailable)
-        gradle createWindowsExecutable --no-configuration-cache --no-daemon || echo "Windows executable creation skipped (jpackage may not be available)"
-        
-        # Create portable Windows build (both lightweight and self-contained)
-        gradle createWindowsPortable --no-configuration-cache --no-daemon
-        gradle createWindowsPortableSelfContained --no-configuration-cache --no-daemon || echo "Self-contained portable build skipped (jpackage may not be available)"
-        
-        # Create additional platform packages
-        gradle buildInstallers --no-configuration-cache --no-daemon || echo "Some installers may not be available on this platform"
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Create developmental build with all platforms
+        timeout-minutes: 60
+        run: |
+          cd "Don't look back"
+          echo "🚀 Creating developmental build..."
+
+          # Create comprehensive developmental build including source code
+          if ! gradle buildDevelopmental --no-configuration-cache --no-daemon; then
+            echo "::error::Developmental build failed"
+            exit 1
+          fi
+
+          # Also create Windows executable (will warn if jpackage unavailable)
+          if gradle createWindowsExecutable --no-configuration-cache --no-daemon; then
+            echo "✅ Windows executable created successfully"
+          else
+            echo "::notice::Windows executable creation skipped (jpackage may not be available)"
+          fi
+
+          # Create portable Windows build (both lightweight and self-contained)
+          if gradle createWindowsPortable --no-configuration-cache --no-daemon; then
+            echo "✅ Windows portable build created"
+          else
+            echo "::warning::Windows portable build failed"
+          fi
+
+          if gradle createWindowsPortableSelfContained --no-configuration-cache --no-daemon; then
+            echo "✅ Windows self-contained portable build created"
+          else
+            echo "::notice::Self-contained portable build skipped (jpackage may not be available)"
+          fi
+
+          # Create additional platform packages
+          if gradle buildInstallers --no-configuration-cache --no-daemon; then
+            echo "✅ Platform installers created"
+          else
+            echo "::notice::Some installers may not be available on this platform"
+          fi
         
     - name: Organize developmental release packages
       run: |
@@ -1159,69 +1182,81 @@ EOF
     runs-on: ubuntu-latest
     name: Security Scan
     needs: [build, build-validation]
-    
+    timeout-minutes: 15
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-        
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
   deploy-docs:
     runs-on: ubuntu-latest
     name: Deploy Documentation
     needs: [build, build-validation]
     if: github.ref == 'refs/heads/main'
-    
+    timeout-minutes: 20
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Cache Gradle dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-          
-    - name: Generate fresh Javadoc
-      run: |
-        cd "Don't look back"
-        gradle javadoc --no-daemon
-        
-    - name: Prepare GitHub Pages content
-      run: |
-        # Create docs directory if it doesn't exist
-        mkdir -p docs/javadoc
-        
-        # Copy the generated Javadoc
-        cp -r "Don't look back/app/build/docs/javadoc"/* docs/javadoc/
-        
-        # Ensure we have the API landing page
-        if [ ! -f docs/index.html ]; then
-          echo "Creating API documentation landing page..."
-          # The index.html should already be in the repository
-        fi
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Generate fresh Javadoc
+        timeout-minutes: 10
+        run: |
+          cd "Don't look back"
+          if ! gradle javadoc --no-daemon; then
+            echo "::error::Javadoc generation failed"
+            exit 1
+          fi
+
+      - name: Prepare GitHub Pages content
+        timeout-minutes: 5
+        run: |
+          # Create docs directory if it doesn't exist
+          mkdir -p docs/javadoc
+
+          # Copy the generated Javadoc
+          if [ -d "Don't look back/app/build/docs/javadoc" ]; then
+            cp -r "Don't look back/app/build/docs/javadoc"/* docs/javadoc/
+            echo "✅ Javadoc copied successfully"
+          else
+            echo "::error::Javadoc not found"
+            exit 1
+          fi
+
+          # Ensure we have the API landing page
+          if [ ! -f docs/index.html ]; then
+            echo "Creating API documentation landing page..."
+            # The index.html should already be in the repository
+          fi
         
         # Create a simple redirect for the root if needed
         if [ ! -f docs/index.html ]; then
@@ -1256,63 +1291,64 @@ EOF
     name: Build Notification
     needs: [test, build-validation, build, security-scan, developmental-build]
     if: always()
-    
+    timeout-minutes: 10
+
     steps:
-    - name: Build Status Summary
-      run: |
-        echo "=== Build Summary ==="
-        echo "Test Status: ${{ needs.test.result }}"
-        echo "Build Validation Status: ${{ needs.build-validation.result }}"
-        echo "Build Status: ${{ needs.build.result }}"
-        echo "Security Scan Status: ${{ needs.security-scan.result }}"
-        echo "Developmental Build Status: ${{ needs.developmental-build.result }}"
-        echo "Commit: ${{ github.sha }}"
-        echo "Branch: ${{ github.ref_name }}"
-        echo "Build Number: ${{ github.run_number }}"
-        
-        # Check if this was a main branch push (developmental build trigger)
-        if [[ "${{ github.ref }}" == "refs/heads/main" && "${{ github.event_name }}" == "push" ]]; then
-          echo ""
-          echo "🚀 DEVELOPMENTAL BUILD TRIGGERED"
-          echo "This build was triggered by a successful merge to the main branch."
-          echo "Developmental artifacts include:"
-          echo "  - Windows .exe (no Java required)"
-          echo "  - Linux .deb packages"
-          echo "  - Cross-platform JAR"
-          echo "  - Complete source code"
-          echo "  - API documentation"
-          echo ""
-        fi
-        
-        # Determine overall build status
-        CORE_SUCCESS=true
-        DEV_SUCCESS=true
-        
-        if [[ "${{ needs.test.result }}" != "success" || "${{ needs.build-validation.result }}" != "success" || "${{ needs.build.result }}" != "success" ]]; then
-          CORE_SUCCESS=false
-        fi
-        
-        if [[ "${{ needs.developmental-build.result }}" != "success" && "${{ needs.developmental-build.result }}" != "skipped" ]]; then
-          DEV_SUCCESS=false
-        fi
-        
-        if [[ "$CORE_SUCCESS" == "true" ]]; then
-          echo "✅ Core build completed successfully!"
-          
-          if [[ "${{ needs.developmental-build.result }}" == "success" ]]; then
-            echo "✅ Developmental build completed successfully!"
+      - name: Build Status Summary
+        run: |
+          echo "=== Build Summary ==="
+          echo "Test Status: ${{ needs.test.result }}"
+          echo "Build Validation Status: ${{ needs.build-validation.result }}"
+          echo "Build Status: ${{ needs.build.result }}"
+          echo "Security Scan Status: ${{ needs.security-scan.result }}"
+          echo "Developmental Build Status: ${{ needs.developmental-build.result }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Build Number: ${{ github.run_number }}"
+
+          # Check if this was a main branch push (developmental build trigger)
+          if [[ "${{ github.ref }}" == "refs/heads/main" && "${{ github.event_name }}" == "push" ]]; then
             echo ""
-            echo "📦 Available Artifacts:"
-            echo "  - Regular build artifacts (JAR, packages, docs)"
-            echo "  - Developmental build with source code"
-            echo "  - Platform-specific native packages"
-            echo "  - Windows self-contained executable"
-          elif [[ "${{ needs.developmental-build.result }}" == "skipped" ]]; then
-            echo "ℹ️  Developmental build was skipped (not main branch)"
-          else
-            echo "⚠️  Developmental build encountered issues but core build succeeded"
+            echo "🚀 DEVELOPMENTAL BUILD TRIGGERED"
+            echo "This build was triggered by a successful merge to the main branch."
+            echo "Developmental artifacts include:"
+            echo "  - Windows .exe (no Java required)"
+            echo "  - Linux .deb packages"
+            echo "  - Cross-platform JAR"
+            echo "  - Complete source code"
+            echo "  - API documentation"
+            echo ""
           fi
-        else
-          echo "❌ Core build failed!"
-          exit 1
-        fi
+
+          # Determine overall build status
+          CORE_SUCCESS=true
+          DEV_SUCCESS=true
+
+          if [[ "${{ needs.test.result }}" != "success" || "${{ needs.build-validation.result }}" != "success" || "${{ needs.build.result }}" != "success" ]]; then
+            CORE_SUCCESS=false
+          fi
+
+          if [[ "${{ needs.developmental-build.result }}" != "success" && "${{ needs.developmental-build.result }}" != "skipped" ]]; then
+            DEV_SUCCESS=false
+          fi
+
+          if [[ "$CORE_SUCCESS" == "true" ]]; then
+            echo "✅ Core build completed successfully!"
+
+            if [[ "${{ needs.developmental-build.result }}" == "success" ]]; then
+              echo "✅ Developmental build completed successfully!"
+              echo ""
+              echo "📦 Available Artifacts:"
+              echo "  - Regular build artifacts (JAR, packages, docs)"
+              echo "  - Developmental build with source code"
+              echo "  - Platform-specific native packages"
+              echo "  - Windows self-contained executable"
+            elif [[ "${{ needs.developmental-build.result }}" == "skipped" ]]; then
+              echo "ℹ️ Developmental build was skipped (not main branch)"
+            else
+              echo "⚠️ Developmental build encountered issues but core build succeeded"
+            fi
+          else
+            echo "::error::Core build failed!"
+            exit 1
+          fi

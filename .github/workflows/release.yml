@@ -1,3 +1,4 @@
+---
 name: Release Pipeline
 
 on:
@@ -10,153 +11,188 @@ on:
         required: true
         default: '1.0.0'
 
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true"
+  JAVA_OPTS: "-Xmx2g"
+
 jobs:
   build-release:
     runs-on: ubuntu-latest
     name: Build Release Artifacts
-    
+    timeout-minutes: 60
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build release with native packages
+        timeout-minutes: 45
+        run: |
+          cd "Don't look back"
+          # Build everything including native packages and documentation
+          if ! gradle buildAll --no-daemon; then
+            echo "::error::Complete build failed"
+            exit 1
+          fi
+
+          # Build platform-specific installers
+          if gradle buildInstallers --no-daemon; then
+            echo "✅ Platform installers created"
+          else
+            echo "::notice::Some installer types may not be available"
+          fi
         
-    - name: Cache Gradle dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: Create comprehensive release packages
+        timeout-minutes: 10
+        run: |
+          cd "Don't look back"
+          VERSION="${{ github.event.inputs.version || github.event.release.tag_name }}"
+
+          # Create release directory
+          mkdir -p release
+
+          # Copy main JAR (fat JAR from Gradle build)
+          if [ -f "app/build/libs/DontLookBack-1.0-fat.jar" ]; then
+            cp app/build/libs/DontLookBack-1.0-fat.jar release/
+            echo "✅ Fat JAR copied"
+          else
+            echo "::error::Fat JAR not found"
+            exit 1
+          fi
+
+          # Copy regular JAR as backup
+          if [ -f "app/build/libs/app.jar" ]; then
+            cp app/build/libs/app.jar release/
+            echo "✅ Regular JAR copied"
+          else
+            echo "::notice::Regular JAR not available"
+          fi
+
+          # Copy dependencies (LWJGL natives are now embedded in fat JAR)
+          echo "Modern build includes all dependencies in fat JAR"
+
+          # Copy resources
+          if [ -d "res" ]; then
+            cp -r res release/
+            echo "✅ Resources copied"
+          else
+            echo "::notice::Resources not available"
+          fi
+
+          # Copy documentation (from Gradle build)
+          if [ -d "app/build/docs/javadoc" ]; then
+            cp -r app/build/docs/javadoc release/
+            echo "✅ Documentation copied"
+          else
+            echo "::notice::Javadoc not available"
+          fi
+
+          # Create startup scripts
+          cat > release/run.sh << 'EOF'
+          #!/bin/bash
+          # Don't Look Back - Linux/Mac startup script
+          # Modern version with self-contained JAR
+
+          # Run the game (fat JAR includes all dependencies)
+          java -jar DontLookBack-1.0-fat.jar
+          EOF
+
+          cat > release/run.bat << 'EOF'
+          @echo off
+          REM Don't Look Back - Windows startup script
+          REM Modern version with self-contained JAR
+
+          REM Run the game (fat JAR includes all dependencies)
+          java -jar DontLookBack-1.0-fat.jar
+
+          pause
+          EOF
         
-    - name: Build release with native packages
-      run: |
-        cd "Don't look back"
-        # Build everything including native packages and documentation
-        gradle buildAll --no-daemon
-        
-        # Build platform-specific installers  
-        gradle buildInstallers --no-daemon || echo "Some installer types may not be available"
-        
-    - name: Create comprehensive release packages
-      run: |
-        cd "Don't look back"
-        VERSION="${{ github.event.inputs.version || github.event.release.tag_name }}"
-        
-        # Create release directory
-        mkdir -p release
-        
-        # Copy main JAR (fat JAR from Gradle build)
-        cp app/build/libs/DontLookBack-1.0-fat.jar release/
-        
-        # Copy regular JAR as backup
-        cp app/build/libs/app.jar release/ 2>/dev/null || echo "Regular JAR not available"
-        
-        # Copy dependencies (LWJGL natives are now embedded in fat JAR)
-        echo "Modern build includes all dependencies in fat JAR"
-        
-        # Copy resources
-        cp -r res release/ 2>/dev/null || echo "Resources not available"
-        
-        # Copy documentation (from Gradle build)
-        cp -r app/build/docs/javadoc release/ 2>/dev/null || echo "Javadoc not available"
-        
-        # Create startup scripts
-        cat > release/run.sh << 'EOF'
-        #!/bin/bash
-        # Don't Look Back - Linux/Mac startup script
-        # Modern version with self-contained JAR
-        
-        # Run the game (fat JAR includes all dependencies)
-        java -jar DontLookBack-1.0-fat.jar
-        EOF
-        
-        cat > release/run.bat << 'EOF'
-        @echo off
-        REM Don't Look Back - Windows startup script
-        REM Modern version with self-contained JAR
-        
-        REM Run the game (fat JAR includes all dependencies)
-        java -jar DontLookBack-1.0-fat.jar
-        
-        pause
-        EOF
-        
-        # Make shell script executable
-        chmod +x release/run.sh
-        
-        # Create release info
-        cat > release/RELEASE_INFO.txt << EOF
-        Don't Look Back - Release ${VERSION}
-        ===================================
-        
-        Release Information:
-        - Version: ${VERSION}
-        - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        - Git Commit: ${{ github.sha }}
-        - Build Number: ${{ github.run_number }}
-        - Build System: Gradle with modern dependencies
-        
-        System Requirements:
-        - Java 17 or higher
-        - OpenGL 2.1 compatible graphics card
-        - 512MB RAM minimum
-        - 100MB disk space
-        
-        Installation:
-        1. Extract all files to a directory
-        2. Run run.sh (Linux/Mac) or run.bat (Windows)
-        
-        Files:
-        - DontLookBack-1.0-fat.jar - Main game executable (self-contained)
-        - app.jar - Regular JAR file (backup)
-        - res/ - Game resources and assets
-        - javadoc/ - API documentation
-        - run.sh - Linux/Mac startup script
-        - run.bat - Windows startup script
-        
-        Technical Notes:
-        - Uses modern LWJGL 3.3.4 with embedded native libraries
-        - JBox2D 2.2.1.1 physics engine included
-        - All dependencies bundled in fat JAR
-        
-        For more information, visit: https://github.com/crnlabs/DLB
-        EOF
-        
-        # Create platform-specific packages
-        
-        # Windows package
-        zip -r "DontLookBack-${VERSION}-Windows.zip" release/
-        
-        # Linux package  
-        tar -czf "DontLookBack-${VERSION}-Linux.tar.gz" release/
-        
-        # Cross-platform package
-        zip -r "DontLookBack-${VERSION}-CrossPlatform.zip" release/
-        
-    - name: Upload Windows Release
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-windows-${{ github.event.inputs.version || github.event.release.tag_name }}
-        path: "Don't look back/DontLookBack-*-Windows.zip"
-        
-    - name: Upload Linux Release
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-linux-${{ github.event.inputs.version || github.event.release.tag_name }}
-        path: "Don't look back/DontLookBack-*-Linux.tar.gz"
-        
-    - name: Upload Cross-Platform Release
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-crossplatform-${{ github.event.inputs.version || github.event.release.tag_name }}
-        path: "Don't look back/DontLookBack-*-CrossPlatform.zip"
+          # Make shell script executable
+          chmod +x release/run.sh
+
+          # Create release info
+          cat > release/RELEASE_INFO.txt << EOF
+          Don't Look Back - Release ${VERSION}
+          ===================================
+
+          Release Information:
+          - Version: ${VERSION}
+          - Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - Git Commit: ${{ github.sha }}
+          - Build Number: ${{ github.run_number }}
+          - Build System: Gradle with modern dependencies
+
+          System Requirements:
+          - Java 17 or higher
+          - OpenGL 2.1 compatible graphics card
+          - 512MB RAM minimum
+          - 100MB disk space
+
+          Installation:
+          1. Extract all files to a directory
+          2. Run run.sh (Linux/Mac) or run.bat (Windows)
+
+          Files:
+          - DontLookBack-1.0-fat.jar - Main game executable (self-contained)
+          - app.jar - Regular JAR file (backup)
+          - res/ - Game resources and assets
+          - javadoc/ - API documentation
+          - run.sh - Linux/Mac startup script
+          - run.bat - Windows startup script
+
+          Technical Notes:
+          - Uses modern LWJGL 3.3.4 with embedded native libraries
+          - JBox2D 2.2.1.1 physics engine included
+          - All dependencies bundled in fat JAR
+
+          For more information, visit: https://github.com/crnlabs/DLB
+          EOF
+
+          # Create platform-specific packages
+
+          # Windows package
+          zip -r "DontLookBack-${VERSION}-Windows.zip" release/
+
+          # Linux package
+          tar -czf "DontLookBack-${VERSION}-Linux.tar.gz" release/
+
+          # Cross-platform package
+          zip -r "DontLookBack-${VERSION}-CrossPlatform.zip" release/
+
+      - name: Upload Windows Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-windows-${{ github.event.inputs.version || github.event.release.tag_name }}
+          path: "Don't look back/DontLookBack-*-Windows.zip"
+
+      - name: Upload Linux Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-linux-${{ github.event.inputs.version || github.event.release.tag_name }}
+          path: "Don't look back/DontLookBack-*-Linux.tar.gz"
+
+      - name: Upload Cross-Platform Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-crossplatform-${{ github.event.inputs.version || github.event.release.tag_name }}
+          path: "Don't look back/DontLookBack-*-CrossPlatform.zip"
         
     - name: Get current date
       if: github.event_name == 'workflow_dispatch'
