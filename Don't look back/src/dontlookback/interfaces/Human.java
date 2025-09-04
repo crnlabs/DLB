@@ -1,4 +1,4 @@
-package dontlookback;
+package dontlookback.interfaces;
 
 /**
  * Human interface extending Biped with human-specific functionality

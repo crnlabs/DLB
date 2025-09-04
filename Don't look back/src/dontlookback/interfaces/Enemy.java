@@ -1,4 +1,4 @@
-package dontlookback;
+package dontlookback.interfaces;
 
 public interface Enemy extends NPC {
 

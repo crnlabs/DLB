@@ -1,5 +1,7 @@
 package dontlookback;
 
+import dontlookback.interfaces.Human;
+
 /**
  * Player Character Controller
  * 

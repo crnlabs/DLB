@@ -1,5 +1,7 @@
 package dontlookback;
 
+import dontlookback.interfaces.Monster;
+
 /**
  * The Grue - Darkness Monster
  * 

@@ -1,5 +1,7 @@
 package dontlookback;
 
+import dontlookback.interfaces.Entities;
+
 public abstract class Objects implements Entities {
 
     protected float x, y, z, cX, cY, cZ;

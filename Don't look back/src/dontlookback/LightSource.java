@@ -1,6 +1,7 @@
 package dontlookback;
 
 import java.awt.Color;
+import dontlookback.interfaces.Light;
 
 /**
  * Light Source Implementation for Don't Look Back
