@@ -20,6 +20,7 @@ public class DontLookBack {
         } catch (Exception e) {
             System.err.println("Failed to initialize graphics: " + e.getMessage());
             e.printStackTrace();
+            System.out.println("Game closed.");
             System.exit(1);
         }
     }
