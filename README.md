@@ -35,6 +35,14 @@
 
 ## 🛠️ Build System & CI/CD
 
+### Modern Multi-Platform Build System
+Our state-of-the-art build system supports multiple platforms and development scenarios:
+
+- **🖥️ Desktop**: Java 17 with LWJGL 3.3.6 and JBox2D physics
+- **📱 Android Ready**: Configured for Android/Compose development with version compatibility
+- **🔄 Cross-Platform**: Windows, Linux, macOS support
+- **📦 Multiple Distribution Formats**: JAR, native packages, portable versions
+
 ### Automated Build Pipeline
 Our comprehensive CI/CD system ensures quality and reliability:
 
@@ -44,6 +52,7 @@ Our comprehensive CI/CD system ensures quality and reliability:
 - **📚 Documentation**: Auto-generated API docs
 - **📦 Artifacts**: Cross-platform distribution packages
 - **🚀 Releases**: Automated release management
+- **📱 Android Compatibility**: Kotlin/Compose version management
 
 ### Build Validation ✅
 Every pull request undergoes rigorous build validation:
@@ -99,12 +108,14 @@ java -jar app/build/libs/DontLookBack-1.0-fat.jar
 ## 🔧 Development
 
 ### Technology Stack
-- **Language**: Java 17 (LTS)
-- **Graphics**: LWJGL 3.3.4 (OpenGL 3.2+)
+- **Language**: Java 17 (LTS) for desktop, Kotlin for Android
+- **Graphics**: LWJGL 3.3.6 (OpenGL 3.2+)
 - **Physics**: JBox2D 2.2.1.1
 - **Build System**: Gradle 9.0+ with modern dependency management
 - **Testing**: JUnit 5 with custom test suites
 - **CI/CD**: GitHub Actions with comprehensive pipelines
+- **Android Support**: Configured for Compose with Kotlin 1.9.24
+- **Version Management**: Centralized version catalog with dependency compatibility
 
 ### System Requirements
 **Minimum:**
@@ -166,6 +177,19 @@ Download the latest build from our [Releases](https://github.com/crnlabs/DLB/rel
 
 ### Development Builds
 Automatic builds are available as [GitHub Actions artifacts](https://github.com/crnlabs/DLB/actions) for every commit.
+
+### Platform Support
+- **Desktop**: Windows, Linux, macOS (Java 17+ required)
+- **Android**: Configuration ready (see [Android Build Guide](ANDROID_BUILD_GUIDE.md))
+
+## 📚 Documentation
+
+### Build & Development
+- **[Build System Guide](BUILD_SYSTEM_README.md)**: Comprehensive build instructions
+- **[Android Build Guide](ANDROID_BUILD_GUIDE.md)**: Android/Compose setup and compatibility
+- **[Native Build Guide](NATIVE_BUILD_GUIDE.md)**: Platform-specific native packages
+- **[Build Validation](BUILD_VALIDATION.md)**: Quality assurance procedures
+- **[Dependabot Guide](DEPENDABOT_GUIDE.md)**: Automated dependency management
 
 ### Platform Support
 - **Windows**: Native executable + JAR

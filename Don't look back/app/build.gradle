@@ -21,7 +21,7 @@ dependencies {
     // Core LWJGL modules using version catalog
     implementation libs.bundles.lwjgl.core
     
-    // Native libraries for cross-platform support (must be declared individually)
+    // Native libraries for cross-platform support (using version catalog reference)
     runtimeOnly "org.lwjgl:lwjgl::natives-windows"
     runtimeOnly "org.lwjgl:lwjgl::natives-linux"
     runtimeOnly "org.lwjgl:lwjgl::natives-macos"
