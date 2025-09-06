@@ -57,6 +57,19 @@ updates:
       physics:
         patterns:
           - "org.jbox2d:*"
+      # Group Android dependencies (for future Android module)
+      android:
+        patterns:
+          - "com.android.*:*"
+          - "androidx.*:*"
+      # Group Compose dependencies
+      compose:
+        patterns:
+          - "androidx.compose.*:*"
+      # Group Kotlin dependencies
+      kotlin:
+        patterns:
+          - "org.jetbrains.kotlin.*:*"
     ignore:
       # Ignore major version updates for LWJGL (breaking changes require test)
       - dependency-name: "org.lwjgl:*"
@@ -64,6 +77,10 @@ updates:
       # Ignore major JUnit updates (may require test refactoring)
       - dependency-name: "org.junit.*:*"
         update-types: ["version-update:semver-major"]
+      # Ignore major Kotlin updates (may require compatibility verification)
+      - dependency-name: "org.jetbrains.kotlin.*:*"
+        update-types: ["version-update:semver-major"]
+      # Allow minor and patch updates for Android/Compose (good compatibility within minor versions)
     # Enable vulnerability alerts for all dependency types
     allow:
       - dependency-type: "all"
