@@ -3,7 +3,7 @@
 
 [versions]
 # Game engine and graphics
-lwjgl = "3.4.0"
+lwjgl = "3.4.1"
 jbox2d = "2.2.1.1"
 
 # Testing framework
