@@ -1022,10 +1022,10 @@ jobs:
           if [ -d "dev-release/artifacts/cross-platform/windows" ]; then
             zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Windows-CrossPlatform.zip" dev-release/artifacts/cross-platform/windows/ dev-release/source/ 2>/dev/null || echo "Windows cross-platform package creation failed"
           fi
-        fi
+          fi
         
-        # Linux developmental package
-        if [ -d "dev-release/artifacts/cross-platform/linux" ] || [ -f "dev-release/quick-access/"*.deb ]; then
+          # Linux developmental package
+          if [ -d "dev-release/artifacts/cross-platform/linux" ] || [ -f "dev-release/quick-access/"*.deb ]; then
           echo "Creating Linux developmental package..."
           mkdir -p dev-release/platform-packages
           
@@ -1035,149 +1035,149 @@ jobs:
             tar -czf "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz" \
             -C dev-release artifacts/cross-platform/linux/ source/ 2>/dev/null || \
             echo "Linux package creation failed"
-        fi
+          fi
         
-        # Cross-platform developmental package (includes all platforms)
-        echo "Creating cross-platform developmental package..."
-        mkdir -p dev-release/platform-packages
-        zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip" \
+          # Cross-platform developmental package (includes all platforms)
+          echo "Creating cross-platform developmental package..."
+          mkdir -p dev-release/platform-packages
+          zip -r "dev-release/platform-packages/DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip" \
           dev-release/artifacts/ dev-release/source/ dev-release/quick-access/ 2>/dev/null || \
           echo "Cross-platform package creation failed"
         
-        # Create developmental build manifest
-        cat > dev-release/DEVELOPMENTAL_BUILD_MANIFEST.txt << EOF
-Don't Look Back - Developmental Build ${BUILD_NUMBER}
-================================================
-
-Build Information:
-- Build Number: ${BUILD_NUMBER}
-- Commit: ${COMMIT_SHA}
-- Short SHA: ${SHORT_SHA}
-- Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-- Triggered by: Successful merge to master branch
-- Branch: ${{ github.ref_name }}
-- Java Version: $(java -version 2>&1 | head -1)
-- Gradle Version: $(cd "." && gradle --version | grep "Gradle" | head -1)
-
-Package Contents:
-================
-
-platform-packages/
-├── DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip       # Windows .exe (no Java required)
-├── DontLookBack-dev${BUILD_NUMBER}-Windows-CrossPlatform.zip # Windows .bat + JAR
-├── DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz             # Linux .sh + .deb packages
-└── DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip # All platforms + source
-
-quick-access/
-├── DontLookBack-1.0-fat.jar                                # Direct JAR execution
-├── cross-platform/                                         # Platform launchers
-├── *.deb                                                   # Linux native packages
-├── windows-native/                                         # Windows self-contained app
-├── DontLookBack-Windows-SelfContained.zip                 # Windows ZIP package
-├── DontLookBack-Windows-Portable.zip                      # Windows portable (Java 17+ required)
-└── DontLookBack-Windows-Portable-SelfContained.zip        # Windows portable (no Java required)
-
-artifacts/                                                  # Complete build artifacts
-source/                                                     # Full source code
-BUILD_INFO.txt                                             # Detailed build information
-
-Installation Quick Start:
-========================
-
-Windows (No Java Required):
-1. Download: DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip
-2. Extract and run DontLookBack.exe
-
-Linux (No Java Required):
-1. Download: DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz
-2. Extract and install: sudo dpkg -i *.deb
-
-Cross-Platform (Java 17+ Required):
-1. Download: DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip
-2. Extract and run platform-specific launcher
-
-Windows Portable (Java 17+ Required, No Installation):
-1. Download: quick-access/DontLookBack-Windows-Portable.zip
-2. Extract anywhere and run DontLookBack.bat
-3. No administrator rights or installation required (but Java 17+ must be installed)
-
-Windows Portable Self-Contained (No Java Required):
-1. Download: quick-access/DontLookBack-Windows-Portable-SelfContained.zip
-2. Extract anywhere and run DontLookBack.bat
-3. No Java installation, administrator rights, or installation required
-
-Direct JAR (Java 17+ Required):
-1. Use: quick-access/DontLookBack-1.0-fat.jar
-2. Run: java -jar DontLookBack-1.0-fat.jar
-
-Developer Notes:
-===============
-- This is a developmental build containing the latest features
-- Source code is included for debugging and development
-- Native packages eliminate Java installation requirements
-- Cross-platform version maintains compatibility across systems
-
-Report Issues: https://github.com/crnlabs/DLB/issues
-EOF
+          # Create developmental build manifest
+          {
+            echo "Don't Look Back - Developmental Build ${BUILD_NUMBER}"
+            echo "================================================"
+            echo ""
+            echo "Build Information:"
+            echo "- Build Number: ${BUILD_NUMBER}"
+            echo "- Commit: ${COMMIT_SHA}"
+            echo "- Short SHA: ${SHORT_SHA}"
+            echo "- Build Date: $(date -u +\"%Y-%m-%d %H:%M:%S UTC\")"
+            echo "- Triggered by: Successful merge to master branch"
+            echo "- Branch: ${{ github.ref_name }}"
+            echo "- Java Version: $(java -version 2>&1 | head -1)"
+            echo "- Gradle Version: $(cd \".\" && gradle --version | grep \"Gradle\" | head -1)"
+            echo ""
+            echo "Package Contents:"
+            echo "================"
+            echo ""
+            echo "platform-packages/"
+            echo "├── DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip       # Windows .exe (no Java required)"
+            echo "├── DontLookBack-dev${BUILD_NUMBER}-Windows-CrossPlatform.zip # Windows .bat + JAR"
+            echo "├── DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz             # Linux .sh + .deb packages"
+            echo "└── DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip # All platforms + source"
+            echo ""
+            echo "quick-access/"
+            echo "├── DontLookBack-1.0-fat.jar                                # Direct JAR execution"
+            echo "├── cross-platform/                                         # Platform launchers"
+            echo "├── *.deb                                                   # Linux native packages"
+            echo "├── windows-native/                                         # Windows self-contained app"
+            echo "├── DontLookBack-Windows-SelfContained.zip                 # Windows ZIP package"
+            echo "├── DontLookBack-Windows-Portable.zip                      # Windows portable (Java 17+ required)"
+            echo "└── DontLookBack-Windows-Portable-SelfContained.zip        # Windows portable (no Java required)"
+            echo ""
+            echo "artifacts/                                                  # Complete build artifacts"
+            echo "source/                                                     # Full source code"
+            echo "BUILD_INFO.txt                                             # Detailed build information"
+            echo ""
+            echo "Installation Quick Start:"
+            echo "========================"
+            echo ""
+            echo "Windows (No Java Required):"
+            echo "1. Download: DontLookBack-dev${BUILD_NUMBER}-Windows-Native.zip"
+            echo "2. Extract and run DontLookBack.exe"
+            echo ""
+            echo "Linux (No Java Required):"
+            echo "1. Download: DontLookBack-dev${BUILD_NUMBER}-Linux.tar.gz"
+            echo "2. Extract and install: sudo dpkg -i *.deb"
+            echo ""
+            echo "Cross-Platform (Java 17+ Required):"
+            echo "1. Download: DontLookBack-dev${BUILD_NUMBER}-CrossPlatform-Complete.zip"
+            echo "2. Extract and run platform-specific launcher"
+            echo ""
+            echo "Windows Portable (Java 17+ Required, No Installation):"
+            echo "1. Download: quick-access/DontLookBack-Windows-Portable.zip"
+            echo "2. Extract anywhere and run DontLookBack.bat"
+            echo "3. No administrator rights or installation required (but Java 17+ must be installed)"
+            echo ""
+            echo "Windows Portable Self-Contained (No Java Required):"
+            echo "1. Download: quick-access/DontLookBack-Windows-Portable-SelfContained.zip"
+            echo "2. Extract anywhere and run DontLookBack.bat"
+            echo "3. No Java installation, administrator rights, or installation required"
+            echo ""
+            echo "Direct JAR (Java 17+ Required):"
+            echo "1. Use: quick-access/DontLookBack-1.0-fat.jar"
+            echo "2. Run: java -jar DontLookBack-1.0-fat.jar"
+            echo ""
+            echo "Developer Notes:"
+            echo "==============="
+            echo "- This is a developmental build containing the latest features"
+            echo "- Source code is included for debugging and development"
+            echo "- Native packages eliminate Java installation requirements"
+            echo "- Cross-platform version maintains compatibility across systems"
+            echo ""
+            echo "Report Issues: https://github.com/crnlabs/DLB/issues"
+          } > dev-release/DEVELOPMENTAL_BUILD_MANIFEST.txt
         
-        echo "📋 Created developmental build manifest"
+          echo "📋 Created developmental build manifest"
         
-        # List all created packages
-        echo ""
-        echo "📦 Developmental build packages created:"
-        find dev-release -name "*.zip" -o -name "*.tar.gz" | sort | while read file; do
+          # List all created packages
+          echo ""
+          echo "📦 Developmental build packages created:"
+          find dev-release -name "*.zip" -o -name "*.tar.gz" | sort | while read file; do
           size=$(du -h "$file" | cut -f1)
           echo "  📄 $(basename "$file") (${size})"
-        done
+          done
         
-        echo ""
-        echo "🎉 Developmental build completed successfully!"
+          echo ""
+          echo "🎉 Developmental build completed successfully!"
         
-    - name: Upload Developmental Build - Windows Native
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-dev-${{ github.run_number }}-windows-native
-        path: |
-          "Don't look back/dev-release/platform-packages/*Windows-Native*"
-          "Don't look back/dev-release/quick-access/windows-native/"
-          "Don't look back/dev-release/quick-access/DontLookBack-Windows-SelfContained.zip"
-        retention-days: 90
-        
-    - name: Upload Developmental Build - Linux Native
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-dev-${{ github.run_number }}-linux-native
-        path: |
-          "Don't look back/dev-release/platform-packages/*Linux*"
-          "Don't look back/dev-release/quick-access/*.deb"
-        retention-days: 90
-        
-    - name: Upload Developmental Build - Cross-Platform Complete
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-dev-${{ github.run_number }}-crossplatform-complete
-        path: |
-          "Don't look back/dev-release/platform-packages/*CrossPlatform-Complete*"
-          "Don't look back/dev-release/artifacts/"
-          "Don't look back/dev-release/source/"
-        retention-days: 90
-        
-    - name: Upload Developmental Build - Quick Access
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-dev-${{ github.run_number }}-quick-access
-        path: |
-          "Don't look back/dev-release/quick-access/"
-          "Don't look back/dev-release/DEVELOPMENTAL_BUILD_MANIFEST.txt"
-        retention-days: 90
-        
-    - name: Upload Complete Developmental Build
-      uses: actions/upload-artifact@v4
-      with:
-        name: dont-look-back-dev-${{ github.run_number }}-complete
-        path: "Don't look back/dev-release/"
-        retention-days: 90
-
+      - name: Upload Developmental Build - Windows Native
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-dev-${{ github.run_number }}-windows-native
+          path: |
+            "Don't look back/dev-release/platform-packages/*Windows-Native*"
+            "Don't look back/dev-release/quick-access/windows-native/"
+            "Don't look back/dev-release/quick-access/DontLookBack-Windows-SelfContained.zip"
+          retention-days: 90
+          
+      - name: Upload Developmental Build - Linux Native
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-dev-${{ github.run_number }}-linux-native
+          path: |
+            "Don't look back/dev-release/platform-packages/*Linux*"
+            "Don't look back/dev-release/quick-access/*.deb"
+          retention-days: 90
+          
+      - name: Upload Developmental Build - Cross-Platform Complete
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-dev-${{ github.run_number }}-crossplatform-complete
+          path: |
+            "Don't look back/dev-release/platform-packages/*CrossPlatform-Complete*"
+            "Don't look back/dev-release/artifacts/"
+            "Don't look back/dev-release/source/"
+          retention-days: 90
+          
+      - name: Upload Developmental Build - Quick Access
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-dev-${{ github.run_number }}-quick-access
+          path: |
+            "Don't look back/dev-release/quick-access/"
+            "Don't look back/dev-release/DEVELOPMENTAL_BUILD_MANIFEST.txt"
+          retention-days: 90
+          
+      - name: Upload Complete Developmental Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: dont-look-back-dev-${{ github.run_number }}-complete
+          path: "Don't look back/dev-release/"
+          retention-days: 90
+  
   security-scan:
     runs-on: ubuntu-latest
     name: Security Scan
@@ -1258,34 +1258,34 @@ EOF
             # The index.html should already be in the repository
           fi
         
-        # Create a simple redirect for the root if needed
-        if [ ! -f docs/index.html ]; then
+          # Create a simple redirect for the root if needed
+          if [ ! -f docs/index.html ]; then
           cat > docs/index.html << 'EOF'
-        <!DOCTYPE html>
-        <html>
-        <head>
+          <!DOCTYPE html>
+          <html>
+          <head>
             <meta http-equiv="refresh" content="0; url=javadoc/index.html">
             <title>Don't Look Back API Documentation</title>
-        </head>
-        <body>
+          </head>
+          <body>
             <p>Redirecting to <a href="javadoc/index.html">API Documentation</a>...</p>
-        </body>
-        </html>
-        EOF
-        fi
+          </body>
+          </html>
+          EOF
+          fi
         
-        # List contents for debugging
-        echo "Documentation structure:"
-        find docs -type f -name "*.html" | head -10
+          # List contents for debugging
+          echo "Documentation structure:"
+          find docs -type f -name "*.html" | head -10
         
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      if: github.ref == 'refs/heads/master'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs
-        cname: # Add custom domain if needed
-        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/master'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          cname: # Add custom domain if needed
+          
   notification:
     runs-on: ubuntu-latest
     name: Build Notification
