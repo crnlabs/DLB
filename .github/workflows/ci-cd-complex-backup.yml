@@ -568,7 +568,7 @@ jobs:
 
       - name: Comment on PR with analysis
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const isSecurityUpdate = '${{ steps.analysis.outputs.security-update }}' === 'true';
