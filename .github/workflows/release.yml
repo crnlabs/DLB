@@ -202,7 +202,7 @@ jobs:
       - name: Create GitHub Release (if manual trigger)
         if: github.event_name == 'workflow_dispatch'
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ github.event.inputs.version || '1.0.0' }}
           name: "Don't Look Back v${{ github.event.inputs.version || '1.0.0' }}"
@@ -248,7 +248,7 @@ jobs:
           
       - name: Attach to Existing GitHub Release  
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             Don't look back/DontLookBack-*-Windows.zip
